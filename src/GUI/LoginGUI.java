@@ -6,15 +6,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class LoginGUI extends JFrame {
+public class LoginGUI extends JPanel {
 
-    public LoginGUI() {
+    public LoginGUI(MainFrameGUI mainFrame) {
 
         // Define the label for login screen
         JLabel screenName = new JLabel("LOGIN");
         screenName.setBounds(315, 80, 95, 50);
         screenName.setFont(new Font("SANS_SERIF", Font.BOLD, 24));
         screenName.setForeground(Color.BLUE);
+
 
         // Define the account name input
         JTextField accountName = new JTextField();
@@ -40,8 +41,7 @@ public class LoginGUI extends JFrame {
         registerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new RegisterGUI(); // Open the RegisterGUI window
-                dispose(); // Close the LoginGUI window if you prefer only one window at a time
+                mainFrame.showRegisterPanel();
             }
         });
 
@@ -58,9 +58,6 @@ public class LoginGUI extends JFrame {
         setSize(700, 500);
         setLayout(null);
         setVisible(true);
-        setResizable(false);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
 }
