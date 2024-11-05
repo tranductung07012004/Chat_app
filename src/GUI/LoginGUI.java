@@ -2,6 +2,8 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class LoginGUI extends JFrame {
@@ -13,14 +15,6 @@ public class LoginGUI extends JFrame {
         screenName.setBounds(315, 80, 95, 50);
         screenName.setFont(new Font("SANS_SERIF", Font.BOLD, 24));
         screenName.setForeground(Color.BLUE);
-
-        // Define the properties for login button
-        JButton loginBtn = new JButton("OK!");
-        loginBtn.setBounds(302, 300, 95, 40);
-
-        // Define the properties for register button
-        JButton registerBtn = new JButton("Register");
-        registerBtn.setBounds(302, 350, 95, 40);
 
         // Define the account name input
         JTextField accountName = new JTextField();
@@ -34,7 +28,22 @@ public class LoginGUI extends JFrame {
         JLabel passLabel = new JLabel("Password");
         passLabel.setBounds(130, 200, 100, 30);
 
+        // Define the properties for login button
+        JButton loginBtn = new JButton("OK!");
+        loginBtn.setBounds(302, 300, 95, 40);
 
+        // Define the properties for register button
+        JButton registerBtn = new JButton("Register ?");
+        registerBtn.setBounds(302, 350, 95, 40);
+
+
+        registerBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new RegisterGUI(); // Open the RegisterGUI window
+                dispose(); // Close the LoginGUI window if you prefer only one window at a time
+            }
+        });
 
         // Add the components above to the JFrame window
         add(registerBtn);
@@ -50,6 +59,7 @@ public class LoginGUI extends JFrame {
         setLayout(null);
         setVisible(true);
         setResizable(false);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 

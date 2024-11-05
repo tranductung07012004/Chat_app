@@ -2,6 +2,8 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
@@ -107,6 +109,15 @@ public class RegisterGUI extends JFrame {
         JButton registerBtn = new JButton("OK!");
         registerBtn.setBounds(302, 435, 95, 40);
 
+        registerBtn.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new LoginGUI();
+                    dispose();
+                }
+            }
+        );
 
 
         // Add to the JFrame
@@ -136,6 +147,7 @@ public class RegisterGUI extends JFrame {
         setLayout(null);
         setVisible(true);
         setResizable(false);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
