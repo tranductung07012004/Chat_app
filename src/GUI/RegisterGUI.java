@@ -107,9 +107,22 @@ public class RegisterGUI extends JPanel {
 
         // Define the properties for login button
         JButton registerBtn = new JButton("OK!");
-        registerBtn.setBounds(302, 435, 95, 40);
+        registerBtn.setBounds(252, 435, 95, 40);
+
+
+        JButton goBackToLogin = new JButton("Go back");
+        goBackToLogin.setBounds(5, 5, 95, 40);
 
         registerBtn.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mainFrame.showLoginPanel();
+                }
+            }
+        );
+
+        goBackToLogin.addActionListener(
             new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -140,10 +153,10 @@ public class RegisterGUI extends JPanel {
         add(emailLabel);
         add(confirmPassField);
         add(confirmPassLabel);
+        add(goBackToLogin);
 
         // Add properties for JFrame window
         setSize(700, 550);
         setLayout(null);
-        setVisible(true);
     }
 }

@@ -31,18 +31,27 @@ public class LoginGUI extends JPanel {
 
         // Define the properties for login button
         JButton loginBtn = new JButton("OK!");
-        loginBtn.setBounds(302, 300, 95, 40);
+        loginBtn.setBounds(247, 300, 95, 40);
 
         // Define the properties for register button
         JButton registerBtn = new JButton("Register ?");
-        registerBtn.setBounds(302, 350, 95, 40);
+        registerBtn.setBounds(347, 300, 95, 40);
 
+        // Define the properties for admin button
+        JButton adminBtn = new JButton("Administrator ?");
+        adminBtn.setBounds(247, 350, 95 * 2 + 5, 40);
 
+        // Add listener
         registerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.showRegisterPanel();
             }
+        });
+
+        adminBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)  { mainFrame.showVerifyAdminGUIPanel(); }
         });
 
         // Add the components above to the JFrame window
@@ -53,11 +62,10 @@ public class LoginGUI extends JPanel {
         add(accountName);
         add(accLabel);
         add(screenName);
+        add(adminBtn);
 
-        // Add properties for JFrame window
         setSize(700, 500);
         setLayout(null);
-        setVisible(true);
     }
 
 }

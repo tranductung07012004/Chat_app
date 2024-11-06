@@ -40,4 +40,28 @@ public class MainFrameGUI extends JFrame {
         repaint();
     }
 
+    public void showVerifyAdminGUIPanel() {
+
+        if (curPanel != null) {
+            remove(curPanel);
+        }
+
+        curPanel = new verifyAdminGUI(this);
+        add(curPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showAdminPanel() {
+
+        if (curPanel != null) {
+            remove(curPanel);
+        }
+
+        curPanel = new AdminOverallGUI(this);
+        add(curPanel);
+        revalidate();
+        repaint();
+    }
+
 }
