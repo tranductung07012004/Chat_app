@@ -1,15 +1,18 @@
 package GUI.Auth;
 
 import GUI.MainFrameGUI;
+import Handler.AuthHandler.RegisterHandler;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 public class RegisterGUI extends JPanel {
+    private final JButton registerBtn;
+    private final JButton goBackToLogin;
+
     public RegisterGUI(MainFrameGUI mainFrame) {
 
         // Define the label for login screen
@@ -108,30 +111,12 @@ public class RegisterGUI extends JPanel {
 
 
         // Define the properties for login button
-        JButton registerBtn = new JButton("OK!");
+        registerBtn = new JButton("OK!");
         registerBtn.setBounds(252, 435, 95, 40);
 
 
-        JButton goBackToLogin = new JButton("Go back");
+        goBackToLogin = new JButton("Go back");
         goBackToLogin.setBounds(5, 5, 95, 40);
-
-        registerBtn.addActionListener(
-            new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.showLoginPanel();
-                }
-            }
-        );
-
-        goBackToLogin.addActionListener(
-            new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.showLoginPanel();
-                }
-            }
-        );
 
 
         // Add to the JFrame
@@ -157,8 +142,12 @@ public class RegisterGUI extends JPanel {
         add(confirmPassLabel);
         add(goBackToLogin);
 
+        new RegisterHandler(this, mainFrame);
+
         // Add properties for JFrame window
         setSize(700, 550);
         setLayout(null);
     }
+    public JButton getRegisterBtn() { return registerBtn; }
+    public JButton getGoBackToLoginBtn() { return goBackToLogin; }
 }

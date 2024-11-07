@@ -1,43 +1,33 @@
 package GUI.AdminBoard;
 
 import GUI.MainFrameGUI;
-
+import Handler.AdminBoardHandler.verifyAdminHandler;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class verifyAdminGUI extends JPanel {
-    public verifyAdminGUI(MainFrameGUI mainFrame) {
+    private JButton goBackToLogin;
+    private JButton adminVerification;
+    private MainFrameGUI mainFrame;
+
+    public verifyAdminGUI(MainFrameGUI inputMainFrame) {
+
+        this.mainFrame = inputMainFrame;
+
         JLabel adminCodeLabel = new JLabel("Admin code:");
         adminCodeLabel.setBounds(150, 200, 100, 40);
 
         JPasswordField adminCode = new JPasswordField();
         adminCode.setBounds(250, 200, 150, 30);
 
-        JButton adminVerification = new JButton("OK!");
+        adminVerification = new JButton("OK!");
         adminVerification.setBounds(280, 250, 100, 40);
 
-        JButton goBackToLogin = new JButton("Go back");
+        goBackToLogin = new JButton("Go back");
         goBackToLogin.setBounds(5, 5, 95, 40);
 
-        adminVerification.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.showAdminPanel();
-                }
-            }
 
-        );
 
-        goBackToLogin.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.showLoginPanel();
-                }
-            }
-
-        );
-
+        new verifyAdminHandler(this, mainFrame);
         add(adminCodeLabel);
         add(adminCode);
         add(adminVerification);
@@ -46,4 +36,7 @@ public class verifyAdminGUI extends JPanel {
         setSize(700, 500);
         setLayout(null);
     }
+
+    public JButton getGoBackToLoginBtn() { return goBackToLogin; }
+    public JButton getAdminVerificationBtn() { return adminVerification; }
 }
