@@ -45,6 +45,14 @@ public class LoginGUI extends JPanel {
             }
         });
 
+        loginBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.showChatPanel();
+            }
+        });
+        
+
         // Add the components above to the JFrame window
         add(registerBtn);
         add(loginBtn);
@@ -58,6 +66,7 @@ public class LoginGUI extends JPanel {
         setSize(700, 500);
         setLayout(null);
         setVisible(true);
+        
     }
 
 }
