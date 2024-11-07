@@ -1,5 +1,10 @@
 package GUI;
 
+import GUI.AdminBoard.AdminOverallGUI;
+import GUI.AdminBoard.verifyAdminGUI;
+import GUI.Auth.LoginGUI;
+import GUI.Auth.RegisterGUI;
+
 import javax.swing.*;
 
 public class MainFrameGUI extends JFrame {

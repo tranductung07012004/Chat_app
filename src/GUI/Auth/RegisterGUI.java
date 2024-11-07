@@ -1,4 +1,6 @@
-package GUI;
+package GUI.Auth;
+
+import GUI.MainFrameGUI;
 
 import javax.swing.*;
 import java.awt.*;
