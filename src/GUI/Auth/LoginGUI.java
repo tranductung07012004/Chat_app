@@ -81,6 +81,7 @@ public class LoginGUI extends JPanel {
         setSize(700, 500);
         setLayout(null);
     }
+
     public JButton getLoginBtn() { return loginBtn; }
     public JButton getRegisterBtn() { return registerBtn; }
     public JButton getAdminBtn() { return adminBtn; }

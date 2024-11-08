@@ -10,7 +10,6 @@ public class AdminOverallGUI extends JPanel {
     public AdminOverallGUI(MainFrameGUI mainFrame) {
 
 
-
         JButton userManagement = new JButton("User management");
         userManagement.setBounds(30, 50, 200, 40);
 
