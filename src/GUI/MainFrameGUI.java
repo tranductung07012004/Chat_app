@@ -1,5 +1,10 @@
 package GUI;
 
+import GUI.AdminBoard.AdminOverallGUI;
+import GUI.AdminBoard.verifyAdminGUI;
+import GUI.Auth.LoginGUI;
+import GUI.Auth.RegisterGUI;
+
 import javax.swing.*;
 
 public class MainFrameGUI extends JFrame {
@@ -35,6 +40,30 @@ public class MainFrameGUI extends JFrame {
         }
 
         curPanel = new RegisterGUI(this);
+        add(curPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showVerifyAdminGUIPanel() {
+
+        if (curPanel != null) {
+            remove(curPanel);
+        }
+
+        curPanel = new verifyAdminGUI(this);
+        add(curPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showAdminPanel() {
+
+        if (curPanel != null) {
+            remove(curPanel);
+        }
+
+        curPanel = new AdminOverallGUI(this);
         add(curPanel);
         revalidate();
         repaint();
