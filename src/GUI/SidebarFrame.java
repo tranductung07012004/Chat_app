@@ -43,7 +43,7 @@ public class SidebarFrame extends JPanel {
         bottomPanel.setLayout(new BorderLayout());
 
         // Dropdown list for actions (on the left side)
-        String[] options = {"Chat", "Home", "Settings"};
+        String[] options = {"Chat", "Notification", "Settings"};
         JComboBox<String> optionsComboBox = new JComboBox<>(options);
         optionsComboBox.addActionListener(e -> {
             String selectedOption = (String) optionsComboBox.getSelectedItem();

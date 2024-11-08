@@ -59,5 +59,14 @@ public class MainFrameGUI extends JFrame {
         revalidate();
         repaint();
     }
+    public void logOut() {
+        if (curPanel != null) {
+            remove(curPanel);
+        }
+        curPanel = new LoginGUI(this); // Display Settings Panel
+        add(curPanel);
+        revalidate();
+        repaint();
+    }
 
 }
