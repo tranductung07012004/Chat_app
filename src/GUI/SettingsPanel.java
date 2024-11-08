@@ -6,8 +6,6 @@ import java.awt.*;
 
 public class SettingsPanel extends JPanel {
     private MainFrameGUI mainFrame;
-    private boolean isUpdateInfoVisible = false;
-    private boolean isPasswordFieldsVisible = false;
 
     public SettingsPanel(MainFrameGUI mainFrame) {
         this.mainFrame = mainFrame;
