@@ -11,7 +11,9 @@ import GUI.MainFrameGUI;
 public class FriendRequestFrame extends JPanel {
     public MainFrameGUI mainFrame;
     private JPanel requestListPanel;
+    private JPanel searchResultsPanel; // Panel to display search results
     private JTextField searchField;
+    private JTextField friendSearchField; // Search bar for finding new friends
     private JButton backButton;
 
     // Public access to friendRequests so handler can manage it
@@ -48,8 +50,36 @@ public class FriendRequestFrame extends JPanel {
         requestListPanel = new JPanel();
         requestListPanel.setLayout(new BoxLayout(requestListPanel, BoxLayout.Y_AXIS));
 
-        JScrollPane scrollPane = new JScrollPane(requestListPanel);
-        add(scrollPane, BorderLayout.CENTER);
+        JScrollPane requestScrollPane = new JScrollPane(requestListPanel);
+
+        // Panel for searching new friends
+        JPanel friendSearchPanel = new JPanel(new BorderLayout());
+        friendSearchPanel.setBorder(BorderFactory.createTitledBorder("Find New Friends"));
+
+        friendSearchField = new JTextField();
+        friendSearchField.setToolTipText("Enter friend's name...");
+        JButton searchFriendButton = new JButton("Search");
+
+        searchFriendButton.addActionListener(e -> friendRequestHandler.handleFriendSearch(friendSearchField.getText()));
+
+        JPanel friendSearchInputPanel = new JPanel(new BorderLayout());
+        friendSearchInputPanel.add(friendSearchField, BorderLayout.CENTER);
+        friendSearchInputPanel.add(searchFriendButton, BorderLayout.EAST);
+
+        friendSearchPanel.add(friendSearchInputPanel, BorderLayout.NORTH);
+
+        // Panel to display search results
+        searchResultsPanel = new JPanel();
+        searchResultsPanel.setLayout(new BoxLayout(searchResultsPanel, BoxLayout.Y_AXIS));
+        JScrollPane searchResultsScrollPane = new JScrollPane(searchResultsPanel);
+
+        friendSearchPanel.add(searchResultsScrollPane, BorderLayout.CENTER);
+
+        // Combine the request list and friend search panels
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, requestScrollPane, friendSearchPanel);
+        splitPane.setResizeWeight(0.5);
+
+        add(splitPane, BorderLayout.CENTER);
 
         // Add initial requests (optional example data)
         friendRequests.add("Alice has sent you a friend request!");
@@ -62,19 +92,7 @@ public class FriendRequestFrame extends JPanel {
         searchField.addActionListener(e -> friendRequestHandler.handleSearch(searchField.getText()));
     }
 
-    // Methods to access UI components for handler
-    public JButton getBackButton() {
-        return backButton;
-    }
-
-    public JTextField getSearchField() {
-        return searchField;
-    }
-
-    public JPanel getRequestListPanel() {
-        return requestListPanel;
-    }
-
+    // Refresh the request list panel
     public void refreshRequests(List<String> requests) {
         requestListPanel.removeAll();
 
@@ -83,10 +101,7 @@ public class FriendRequestFrame extends JPanel {
             requestPanel.setLayout(new BorderLayout());
             requestPanel.setPreferredSize(new Dimension(0, 50));
             requestPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-            requestPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            ));
+            requestPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
 
             JLabel nameLabel = new JLabel(request);
             nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -110,5 +125,29 @@ public class FriendRequestFrame extends JPanel {
 
         requestListPanel.revalidate();
         requestListPanel.repaint();
+    }
+
+    // Update the search results panel
+    public void updateSearchResults(List<String> results) {
+        searchResultsPanel.removeAll();
+
+        for (String result : results) {
+            JPanel resultPanel = new JPanel(new BorderLayout());
+            resultPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+            JLabel nameLabel = new JLabel(result);
+            JButton sendRequestButton = new JButton("Send Request");
+
+            sendRequestButton.addActionListener(e -> friendRequestHandler.handleSendFriendRequest(result));
+
+            resultPanel.add(nameLabel, BorderLayout.CENTER);
+            if (!result.startsWith("No results")) {
+                resultPanel.add(sendRequestButton, BorderLayout.EAST);
+            }
+
+            searchResultsPanel.add(resultPanel);
+        }
+
+        searchResultsPanel.revalidate();
+        searchResultsPanel.repaint();
     }
 }

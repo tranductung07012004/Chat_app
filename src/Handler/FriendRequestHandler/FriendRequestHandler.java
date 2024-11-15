@@ -1,6 +1,7 @@
 package Handler.FriendRequestHandler;
 
 import GUI.UserFriendRequest.FriendRequestFrame;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
@@ -33,5 +34,27 @@ public class FriendRequestHandler {
         friendRequestFrame.friendRequests.remove(request);
         friendRequestFrame.refreshRequests(friendRequestFrame.friendRequests);
         JOptionPane.showMessageDialog(null, "Friend request declined.");
+    }
+
+    // Handle search for friends by name
+    public void handleFriendSearch(String searchQuery) {
+        // Simulate search results (replace with actual search logic)
+        List<String> searchResults = new ArrayList<>();
+        if ("John".toLowerCase().contains(searchQuery.toLowerCase())) {
+            searchResults.add("John");
+        }
+        if ("Doe".toLowerCase().contains(searchQuery.toLowerCase())) {
+            searchResults.add("Doe");
+        }
+        if (searchResults.isEmpty()) {
+            searchResults.add("Find 'John' for example");
+        }
+
+        friendRequestFrame.updateSearchResults(searchResults);
+    }
+
+    // Handle sending a friend request
+    public void handleSendFriendRequest(String friendName) {
+        JOptionPane.showMessageDialog(friendRequestFrame, "Friend request sent to " + friendName + "!");
     }
 }
