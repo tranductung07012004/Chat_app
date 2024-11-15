@@ -1,11 +1,24 @@
-package GUI;
+package GUI.UserSettingGUI;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
+import Handler.SettingPanelHandler.SettingsHandler;
 import java.awt.*;
+import javax.swing.*;
+
+import GUI.MainFrameGUI;
 
 public class SettingsPanel extends JPanel {
     private MainFrameGUI mainFrame;
+    private JButton backButton;
+    private JButton logoutButton;
+    private JButton saveInfoButton;
+    private JButton savePasswordButton;
+    private JTextField fullNameField;
+    private JComboBox<String> genderComboBox;
+    private JTextField addressField;
+    private JTextField dobField;
+    private JTextField emailField;
+    private JPasswordField oldPasswordField;
+    private JPasswordField newPasswordField;
 
     public SettingsPanel(MainFrameGUI mainFrame) {
         this.mainFrame = mainFrame;
@@ -34,21 +47,18 @@ public class SettingsPanel extends JPanel {
 
         // Bottom Navigation Panel
         JPanel navButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        JButton backButton = new JButton("Back");
-        JButton logoutButton = new JButton("Log Out");
-
-        backButton.addActionListener(e -> mainFrame.showChatPanel());
-        logoutButton.addActionListener(e -> mainFrame.logOut());
+        backButton = new JButton("Back");
+        logoutButton = new JButton("Log Out");
 
         navButtonPanel.add(backButton);
         navButtonPanel.add(logoutButton);
 
         add(navButtonPanel, BorderLayout.SOUTH);
+        SettingsHandler settingsHandler = new SettingsHandler(this, mainFrame);
     }
 
     private JPanel createUpdateInfoPanel() {
-        JPanel updateInfoPanel = new JPanel();
-        updateInfoPanel.setLayout(new BorderLayout(10, 10));
+        JPanel updateInfoPanel = new JPanel(new BorderLayout(10, 10));
         updateInfoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Inner panel to hold the fields with a grid layout
@@ -56,20 +66,20 @@ public class SettingsPanel extends JPanel {
 
         // Labels and fields for user information
         JLabel fullNameLabel = new JLabel("Full Name:");
-        JTextField fullNameField = new JTextField();
+        fullNameField = new JTextField();
 
         JLabel genderLabel = new JLabel("Gender:");
         String[] genders = {"Male", "Female", "Other"};
-        JComboBox<String> genderComboBox = new JComboBox<>(genders);
+        genderComboBox = new JComboBox<>(genders);
 
         JLabel addressLabel = new JLabel("Address:");
-        JTextField addressField = new JTextField();
+        addressField = new JTextField();
 
         JLabel dobLabel = new JLabel("Date of Birth:");
-        JTextField dobField = new JTextField();
+        dobField = new JTextField();
 
         JLabel emailLabel = new JLabel("Email:");
-        JTextField emailField = new JTextField();
+        emailField = new JTextField();
 
         infoPanel.add(fullNameLabel);
         infoPanel.add(fullNameField);
@@ -82,11 +92,7 @@ public class SettingsPanel extends JPanel {
         infoPanel.add(emailLabel);
         infoPanel.add(emailField);
 
-        JButton saveInfoButton = new JButton("Save Changes");
-        saveInfoButton.addActionListener(e -> {
-            // Implement save logic here
-        });
-
+        saveInfoButton = new JButton("Save Changes");
         updateInfoPanel.add(infoPanel, BorderLayout.CENTER);
         updateInfoPanel.add(saveInfoButton, BorderLayout.SOUTH);
 
@@ -97,43 +103,75 @@ public class SettingsPanel extends JPanel {
         JPanel passwordPanel = new JPanel();
         passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.Y_AXIS));
         passwordPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         // Panel for both old and new password fields horizontally aligned
-        JPanel passwordFieldsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10)); // Reduced vertical space
-        passwordFieldsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-    
+        JPanel passwordFieldsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+
         // Old Password
         JLabel oldPasswordLabel = new JLabel("Old Password:");
-        oldPasswordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        JPasswordField oldPasswordField = new JPasswordField(15);
+        oldPasswordField = new JPasswordField(15);
         passwordFieldsPanel.add(oldPasswordLabel);
         passwordFieldsPanel.add(oldPasswordField);
-    
+
         // New Password
         JLabel newPasswordLabel = new JLabel("New Password:");
-        newPasswordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        JPasswordField newPasswordField = new JPasswordField(15);
+        newPasswordField = new JPasswordField(15);
         passwordFieldsPanel.add(newPasswordLabel);
         passwordFieldsPanel.add(newPasswordField);
-    
-        // Save button centered below the fields
-        JButton savePasswordButton = new JButton("Save Changes");
-        savePasswordButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Save button
+        savePasswordButton = new JButton("Save Changes");
         savePasswordButton.setPreferredSize(new Dimension(140, 30));
-        savePasswordButton.setFont(new Font("Arial", Font.BOLD, 14));
-        savePasswordButton.addActionListener(e -> {
-            // Implement save logic here
-        });
-    
-        // Add components to passwordPanel with spacing
+
         passwordPanel.add(passwordFieldsPanel);
-        passwordPanel.add(Box.createVerticalStrut(20));  // Spacing between fields and button
+        passwordPanel.add(Box.createVerticalStrut(20));
         passwordPanel.add(savePasswordButton);
-    
+
         return passwordPanel;
     }
-    
-    
-    
-    
+
+    // Getters for handler to access components
+    public JButton getBackButton() {
+        return backButton;
+    }
+
+    public JButton getLogoutButton() {
+        return logoutButton;
+    }
+
+    public JButton getSaveInfoButton() {
+        return saveInfoButton;
+    }
+
+    public JButton getSavePasswordButton() {
+        return savePasswordButton;
+    }
+
+    public JTextField getFullNameField() {
+        return fullNameField;
+    }
+
+    public JComboBox<String> getGenderComboBox() {
+        return genderComboBox;
+    }
+
+    public JTextField getAddressField() {
+        return addressField;
+    }
+
+    public JTextField getDobField() {
+        return dobField;
+    }
+
+    public JTextField getEmailField() {
+        return emailField;
+    }
+
+    public JPasswordField getOldPasswordField() {
+        return oldPasswordField;
+    }
+
+    public JPasswordField getNewPasswordField() {
+        return newPasswordField;
+    }
 }

@@ -1,7 +1,9 @@
 package GUI;
 
+import GUI.ChatPanelGUI.ChatPanelFrame;
+import GUI.UserFriendRequest.FriendRequestFrame;
+import GUI.UserSettingGUI.SettingsPanel;
 import javax.swing.*;
-import java.awt.*;
 
 public class MainFrameGUI extends JFrame {
     private JPanel curPanel;
@@ -12,8 +14,7 @@ public class MainFrameGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-
-        // Initial panel
+        //Initial panel
         showLoginPanel();
     }
 
@@ -59,6 +60,17 @@ public class MainFrameGUI extends JFrame {
         revalidate();
         repaint();
     }
+    public void showFriendRequestFrame() {
+        if (curPanel != null) {
+            remove(curPanel);
+        }
+        curPanel = new FriendRequestFrame(this);
+
+
+        add(curPanel);
+        revalidate();
+        repaint();
+    }
     public void logOut() {
         if (curPanel != null) {
             remove(curPanel);
@@ -68,5 +80,6 @@ public class MainFrameGUI extends JFrame {
         revalidate();
         repaint();
     }
+    
 
 }
