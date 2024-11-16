@@ -13,12 +13,12 @@ public class LoginGUI extends JPanel {
     private final JButton loginBtn;
     private final JButton registerBtn;
     private final JButton adminBtn;
-    private MainFrameGUI mainFrame;
+    //private MainFrameGUI mainFrame;
 
 
     public LoginGUI(MainFrameGUI inputMainFrame) {
 
-        this.mainFrame = inputMainFrame;
+        //this.mainFrame = inputMainFrame;
         // Define the label for login screen
         JLabel screenName = new JLabel("LOGIN");
         screenName.setBounds(315, 80, 95, 50);
@@ -51,21 +51,6 @@ public class LoginGUI extends JPanel {
         adminBtn.setBounds(247, 350, 95 * 2 + 5, 40);
 
 
-        /*
-        // Add listener
-        registerBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.showRegisterPanel();
-            }
-        });
-
-        adminBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)  { mainFrame.showVerifyAdminGUIPanel(); }
-        });
-        */
-
         // Add the components above to the JFrame window
         add(registerBtn);
         add(loginBtn);
@@ -76,7 +61,7 @@ public class LoginGUI extends JPanel {
         add(screenName);
         add(adminBtn);
 
-        new LoginHandler(this, mainFrame);
+        new LoginHandler(this, inputMainFrame);
 
         setSize(700, 500);
         setLayout(null);

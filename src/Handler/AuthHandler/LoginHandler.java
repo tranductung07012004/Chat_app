@@ -14,6 +14,7 @@ public class LoginHandler implements ActionListener {
         this.loginScreen = inputLoginScreen;
         this.mainFrame = inputFrame;
 
+
         loginScreen.getAdminBtn().addActionListener(this);
         loginScreen.getRegisterBtn().addActionListener(this);
         //registerScreen.get
