@@ -84,8 +84,3 @@ public class LoginGUI extends JPanel {
     public JPasswordField getPassField() { return passField; }
     public JLabel getForgotPasswordLink() { return forgotPasswordLink; }
 }
-
-
-
-
-
