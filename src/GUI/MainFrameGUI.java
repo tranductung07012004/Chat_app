@@ -1,87 +1,119 @@
-package GUI;
-
-import GUI.Auth.RegisterGUI;
+import GUI.AdminBoard.AdminFunctions;
+import GUI.AdminBoard.AdminScreenButton;
+import GUI.AdminBoard.verifyAdminGUI;
 import GUI.Auth.LoginGUI;
+import GUI.Auth.RegisterGUI;
 import GUI.ChatPanelGUI.ChatPanelFrame;
 import GUI.UserFriendRequest.FriendRequestFrame;
 import GUI.UserSettingGUI.SettingsPanel;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class MainFrameGUI extends JFrame {
-    private JPanel curPanel;
-
     public MainFrameGUI() {
         setTitle("Main Frame");
-        setSize(700, 550); // Adjusted for a larger layout
+        setSize(700, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setResizable(false);
         setVisible(true);
-        //Initial panel
-        showLoginPanel();
+
+        showLoginPanel(); // Show the login panel initially
+    }
+
+    public void removePanel() {
+        Container container = getContentPane();
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel) {
+                container.remove(component);
+            }
+        }
     }
 
     public void showLoginPanel() {
-        if (curPanel != null) {
-            remove(curPanel);
-        }
-        curPanel = new LoginGUI(this); // Display Login Panel
-        add(curPanel);
+        removePanel();
+        setSize(700, 550);
+        add(new LoginGUI(this));
         revalidate();
         repaint();
     }
 
     public void showRegisterPanel() {
-        if (curPanel != null) {
-            remove(curPanel);
-        }
-        curPanel = new RegisterGUI(this); // Display Register Panel
-        add(curPanel);
+        removePanel();
+        setSize(700, 550);
+        add(new RegisterGUI(this));
+        revalidate();
+        repaint();
+    }
+
+    public void showVerifyAdminGUIPanel() {
+        removePanel();
+        setSize(700, 550);
+        add(new verifyAdminGUI(this));
         revalidate();
         repaint();
     }
 
     public void showChatPanel() {
-        if (curPanel != null) {
-            remove(curPanel);
-        }
+        removePanel(); // Remove the previous panel
 
-        // Use ChatPanelFrame to create the chat panel
-        ChatPanelFrame ChatPanelFrame = new ChatPanelFrame(this);
-        curPanel = ChatPanelFrame.createChatPanel(); // Get chat panel from ChatPanelFrame
+        // Create and add the new chat panel
+        ChatPanelFrame chatPanelFrame = new ChatPanelFrame(this);
+        JPanel chatPanel = chatPanelFrame.createChatPanel(); // Get chat panel from ChatPanelFrame
+        add(chatPanel);
 
-        add(curPanel);
         revalidate();
         repaint();
     }
+
     public void showSettingsPanel() {
-        if (curPanel != null) {
-            remove(curPanel);
-        }
-        curPanel = new SettingsPanel(this); // Display Settings Panel
-        add(curPanel);
+        removePanel(); // Remove the previous panel
+
+        // Create and add the new settings panel
+        JPanel settingsPanel = new SettingsPanel(this);
+        add(settingsPanel);
+
         revalidate();
         repaint();
     }
+
     public void showFriendRequestFrame() {
-        if (curPanel != null) {
-            remove(curPanel);
-        }
-        curPanel = new FriendRequestFrame(this);
+        removePanel(); // Remove the previous panel
 
+        // Create and add the new friend request frame
+        JPanel friendRequestPanel = new FriendRequestFrame(this);
+        add(friendRequestPanel);
 
-        add(curPanel);
         revalidate();
         repaint();
     }
+
     public void logOut() {
-        if (curPanel != null) {
-            remove(curPanel);
-        }
-        curPanel = new LoginGUI(this); // Display Settings Panel
-        add(curPanel);
+        removePanel(); // Remove the previous panel
+
+        // Log out and show the login panel again
+        JPanel loginPanel = new LoginGUI(this);
+        add(loginPanel);
+
         revalidate();
         repaint();
     }
-    
+
+
+    public void showAdminPanel() {
+        removePanel();
+        setSize(1200, 600);
+        setLayout(new BorderLayout());
+
+        AdminFunctions adminFunctions = new AdminFunctions(this);
+        AdminScreenButton adminScreenButton = new AdminScreenButton(this, adminFunctions.getCardLayout(), adminFunctions);
+
+        add(adminScreenButton, BorderLayout.WEST);
+        add(adminFunctions, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
+    }
 
 }
