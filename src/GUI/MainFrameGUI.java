@@ -1,5 +1,7 @@
 package GUI;
 
+import GUI.Auth.RegisterGUI;
+import GUI.Auth.LoginGUI;
 import GUI.ChatPanelGUI.ChatPanelFrame;
 import GUI.UserFriendRequest.FriendRequestFrame;
 import GUI.UserSettingGUI.SettingsPanel;

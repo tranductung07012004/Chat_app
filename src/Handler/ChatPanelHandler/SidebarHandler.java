@@ -1,11 +1,10 @@
 package Handler.ChatPanelHandler;
 
-import GUI.MainFrameGUI;
 import GUI.ChatPanelGUI.SidebarFrame;
-
-import javax.swing.*;
+import GUI.MainFrameGUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class SidebarHandler {
     private SidebarFrame sidebarFrame;
@@ -26,15 +25,23 @@ public class SidebarHandler {
                 handleOptionSelection((String) optionsComboBox.getSelectedItem());
             }
         });
+
+       
     }
 
     private void handleOptionSelection(String selectedOption) {
-        if ("Settings".equals(selectedOption)) {
-            mainFrame.showSettingsPanel(); // Show Settings Panel when selected
-        } else if ("Chat".equals(selectedOption)) {
-            mainFrame.showChatPanel(); // Show Chat Panel when selected
-        } else if ("Friend Request".equals(selectedOption)) {
-            mainFrame.showFriendRequestFrame(); // Show FriendRequest Frame when selected
+        if (null != selectedOption) switch (selectedOption) {
+            case "Settings":
+                mainFrame.showSettingsPanel(); // Show Settings Panel when selected
+                break;
+            case "Chat":
+                mainFrame.showChatPanel(); // Show Chat Panel when selected
+                break;
+            case "Friend Request":
+                mainFrame.showFriendRequestFrame(); // Show FriendRequest Frame when selected
+                break;
+            default:
+                break;
         }
     }
 }

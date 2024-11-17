@@ -1,12 +1,13 @@
 package GUI.ChatPanelGUI;
 
+import GUI.MainFrameGUI;
 import Handler.ChatPanelHandler.SidebarHandler;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-
-import GUI.MainFrameGUI;
 
 public class SidebarFrame extends JPanel {
     private MainFrameGUI mainFrame;
@@ -50,16 +51,27 @@ public class SidebarFrame extends JPanel {
 
         // Panel for the bottom section (dropdown list and action button)
         JPanel bottomPanel = new JPanel(new BorderLayout());
+        JButton friendList=new JButton("Friend List");
+        friendList.setPreferredSize(new Dimension(175, 25));
 
         // Dropdown list for actions (on the left side)
         String[] options = {"Chat", "Friend Request", "Settings"};
         optionsComboBox = new JComboBox<>(options);
         JPanel dropdownPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dropdownPanel.add(optionsComboBox);
-        bottomPanel.add(dropdownPanel, BorderLayout.WEST);
+        bottomPanel.add(friendList, BorderLayout.WEST);
+        bottomPanel.add(dropdownPanel, BorderLayout.SOUTH);
+
 
         add(bottomPanel, BorderLayout.SOUTH);
         SidebarHandler sidebarHandler = new SidebarHandler(this, mainFrame);
+        friendList.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createFriendList();
+            }
+        });
 
     }
 
@@ -119,4 +131,88 @@ public class SidebarFrame extends JPanel {
             return online;
         }
     }
+    public void createFriendList() {
+        // Tạo frame mới cho danh sách bạn bè
+        JFrame friendListFrame = new JFrame("Friend List");
+        friendListFrame.setSize(300, 550); // Kích thước cố định
+        friendListFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        friendListFrame.setLayout(new BorderLayout());
+        friendListFrame.setLocationRelativeTo(null); // Đặt ở giữa màn hình
+    
+        // Tạo panel chính cho danh sách bạn bè
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+    
+        // Ô tìm kiếm để lọc theo tên
+        JTextField searchField = new JTextField("Search...");
+        searchField.setPreferredSize(new Dimension(0, 30)); // Chiều cao 30px
+        searchField.setForeground(Color.GRAY); // Placeholder màu xám
+    
+        // Xóa placeholder khi focus và khôi phục nếu để trống khi mất focus
+        searchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (searchField.getText().equals("Search...")) {
+                    searchField.setText("");
+                    searchField.setForeground(Color.BLACK);
+                }
+            }
+    
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setText("Search...");
+                    searchField.setForeground(Color.GRAY);
+                }
+            }
+        });
+        mainPanel.add(searchField, BorderLayout.NORTH);
+    
+        // Panel chứa danh sách bạn bè
+        JPanel friendListPanel = new JPanel();
+        friendListPanel.setLayout(new BoxLayout(friendListPanel, BoxLayout.Y_AXIS));
+    
+        // Tạo danh sách bạn bè từ `contacts`
+        List<Contact> filteredContacts = new ArrayList<>(contacts);
+        for (Contact contact : filteredContacts) {
+            friendListPanel.add(createContactPanel(contact));
+        }
+    
+        // Thêm thanh cuộn nếu danh sách bạn bè quá dài
+        JScrollPane friendScrollPane = new JScrollPane(friendListPanel);
+        mainPanel.add(friendScrollPane, BorderLayout.CENTER);
+    
+        // Nút để lọc danh sách online
+        JButton filterOnlineButton = new JButton("Show Online Only");
+        filterOnlineButton.addActionListener(e -> {
+            // Lọc danh sách chỉ hiện online
+            friendListPanel.removeAll(); // Xóa tất cả các panel hiện tại
+            for (Contact contact : contacts) {
+                if (contact.isOnline()) {
+                    friendListPanel.add(createContactPanel(contact));
+                }
+            }
+            friendListPanel.revalidate();
+            friendListPanel.repaint();
+        });
+    
+        // Thêm nút lọc ở dưới cùng
+        mainPanel.add(filterOnlineButton, BorderLayout.SOUTH);
+    
+        // Thêm ActionListener cho ô tìm kiếm để lọc theo tên
+        searchField.addActionListener(e -> {
+            String searchText = searchField.getText().trim().toLowerCase();
+            friendListPanel.removeAll(); // Xóa tất cả các panel hiện tại
+            for (Contact contact : contacts) {
+                if (contact.getName().toLowerCase().contains(searchText)) {
+                    friendListPanel.add(createContactPanel(contact));
+                }
+            }
+            friendListPanel.revalidate();
+            friendListPanel.repaint();
+        });
+    
+        // Thêm panel chính vào frame
+        friendListFrame.add(mainPanel);
+        friendListFrame.setVisible(true);
+    }
+    
 }

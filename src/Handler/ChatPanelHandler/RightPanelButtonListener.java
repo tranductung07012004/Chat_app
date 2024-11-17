@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class RightPanelButtonListener implements ActionListener {
-    
+
     private final ChatPanelFrame chatPanelFrame;
     private final JButton sourceButton;
     private final JTextField searchTextField; // Text field for search
@@ -15,7 +15,7 @@ public class RightPanelButtonListener implements ActionListener {
     public RightPanelButtonListener(ChatPanelFrame chatPanelFrame, JButton sourceButton, JTextField searchTextField) {
         this.chatPanelFrame = chatPanelFrame;
         this.sourceButton = sourceButton;
-        this.searchTextField = searchTextField;  // Store the search text field
+        this.searchTextField = searchTextField; // Store the search text field
     }
 
     @Override
@@ -42,11 +42,23 @@ public class RightPanelButtonListener implements ActionListener {
                 handleCreateGroupChat();
 
                 break;
-            case "Add member": 
+            case "Add member":
                 handleAddMember();
                 break;
             case "Change admin":
                 handleChangeAdmin();
+                break;
+            case "Remove member":
+                handleRemoveMember();
+                break;
+            case "Rename group":
+                handleRenameGroup();
+                break;
+            case "Delete group":
+                handleDeleteGroup();
+                break;
+            case "Out group":
+                handleOutGroup();
                 break;
             default:
                 System.out.println("Unknown action: " + buttonText);
@@ -71,9 +83,10 @@ public class RightPanelButtonListener implements ActionListener {
 
     private void handleDeleteChatHistory() {
         // Handle the logic for deleting the chat history
-        int confirmation = JOptionPane.showConfirmDialog(chatPanelFrame, "Are you sure you want to delete chat history?", 
+        int confirmation = JOptionPane.showConfirmDialog(chatPanelFrame,
+                "Are you sure you want to delete chat history?",
                 "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-        
+
         if (confirmation == JOptionPane.YES_OPTION) {
             chatPanelFrame.appendMessage("Chat history deleted.");
         }
@@ -91,15 +104,40 @@ public class RightPanelButtonListener implements ActionListener {
 
     private void handleCreateGroupChat() {
         // Handle the logic to create a group chat
-        JOptionPane.showMessageDialog(chatPanelFrame, "This button is only availaible in one-and-one chats. It would be hidden in group chat");
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "This button is only availaible in one-and-one chats. It would be hidden in group chat");
     }
+
     private void handleAddMember() {
         // Handle logic for adding a new member to the group
-        JOptionPane.showMessageDialog(chatPanelFrame, "Add member is only availaible in group chats. It would be hidden in 1-and-1 chats");
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "Add member is only availaible in group chats. It would be hidden in 1-and-1 chats");
     }
-    
+
     private void handleChangeAdmin() {
         // Handle logic for changing the admin of the group
-        JOptionPane.showMessageDialog(chatPanelFrame, "Add member is only availaible in group chats. It would be hidden in 1-and-1 chats");
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "Add member is only availaible in group chats. It would be hidden in 1-and-1 chats");
     }
+
+    private void handleRemoveMember() {
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "Remove member is only availaible in group chats. It would be hidden in 1-and-1 chats");
+    }
+
+    private void handleRenameGroup() {
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "Rename is only availaible in group chats. It would be hidden in 1-and-1 chats");
+    }
+
+    private void handleDeleteGroup() {
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "Rename is only availaible in group chats. It would be hidden in 1-and-1 chats");
+    }
+
+    private void handleOutGroup() {
+        JOptionPane.showMessageDialog(chatPanelFrame,
+                "Rename is only availaible in group chats. It would be hidden in 1-and-1 chats");
+    }
+
 }

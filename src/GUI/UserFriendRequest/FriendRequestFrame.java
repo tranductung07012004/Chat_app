@@ -1,12 +1,11 @@
 package GUI.UserFriendRequest;
 
+import GUI.MainFrameGUI;
 import Handler.FriendRequestHandler.FriendRequestHandler;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-
-import GUI.MainFrameGUI;
 
 public class FriendRequestFrame extends JPanel {
     public MainFrameGUI mainFrame;

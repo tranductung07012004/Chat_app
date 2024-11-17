@@ -80,17 +80,17 @@ public class ChatPanelFrame extends JPanel {
     }
 
     private JPanel createRightPanel() {
-        JPanel wrapperPanel = new JPanel();
-        wrapperPanel.setLayout(new BorderLayout());
-
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
         JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 1, 10, 10));
-
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS)); // Sử dụng BoxLayout
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
         JTextField searchTextField = new JTextField();
-        searchTextField.setPreferredSize(new Dimension(150, 25)); // Set width and height for the text field
-        searchTextField.setMaximumSize(new Dimension(150, 25)); // Set max size to prevent stretching
+        searchTextField.setMaximumSize(new Dimension(200, 25));
 
+        // Thêm margin bằng EmptyBorder
+        searchTextField.setBorder(BorderFactory.createEmptyBorder(2, 15, 2, 10)); // Top, Left, Bottom, Right
+        
         JButton searchButton = new JButton("Search message");
         JButton reportButton = new JButton("Report spam");
         JButton deleteHistoryButton = new JButton("Delete chat history");
@@ -101,37 +101,56 @@ public class ChatPanelFrame extends JPanel {
         // Add "Add member" and "Change admin" buttons, but keep them hidden by default
         JButton addMemberButton = new JButton("Add member");
         JButton changeAdminButton = new JButton("Change admin");
+        JButton removeMemberButton = new JButton("Remove member");
+        JButton renameButton = new JButton("Rename group");
+        JButton deleteGroupButton = new JButton("Delete group");
+        JButton outGroupButton=new JButton("Out group");
 
-        // Panel for displaying group members
-        JPanel memberListPanel = new JPanel();
-        memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.Y_AXIS));
-        memberListPanel.setBorder(BorderFactory.createTitledBorder("Members"));
 
-        // Set preferred size to increase the width
-        memberListPanel.setPreferredSize(new Dimension(700, 150)); // Width = 250, Height = 150 (adjust as needed)
 
-        memberListPanel.setVisible(false); // Initially hidden
 
-        // Add mock members to the list (replace with real data later)
-        if (isGroup()) {
-            String[] members = { "Alice", "Bob", "Charlie" }; // Example member names
-            for (String member : members) {
-                JLabel memberLabel = new JLabel(member);
-                memberListPanel.add(memberLabel);
-            }
-        }
+         // Member List
+    JPanel memberListPanel = new JPanel();
+    memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.Y_AXIS));
+    memberListPanel.setBorder(BorderFactory.createTitledBorder("Members List"));
+
+    // Mock member list
+    String[] members = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
+    for (String member : members) {
+        JLabel memberLabel = new JLabel(member);
+        memberListPanel.add(memberLabel);
+    }
+
+    // Scrollable panel
+    JScrollPane scrollPane = new JScrollPane(memberListPanel);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setPreferredSize(new Dimension(250, 150));
 
         // Set visibility of buttons and member panel based on `isGroup`
         if (isGroup()) {
-            groupButton.setVisible(true); // Hide "Create group chat" button
+            groupButton.setVisible(false); // Hide "Create group chat" button
             addMemberButton.setVisible(true); // Show "Add member" button
             changeAdminButton.setVisible(true); // Show "Change admin" button
+            removeMemberButton.setVisible(true); //Show "remove member" button
+            renameButton.setVisible(true);//Show "rename group" button
             memberListPanel.setVisible(true); // Show member list
+            deleteGroupButton.setVisible(true);//Show delete group button
+            outGroupButton.setVisible(true);//Show out group button
+            unfriendButton.setVisible(false);
+            blockFriendButton.setVisible(false);
+
         } else {
             groupButton.setVisible(true); // Show "Create group chat" button
             addMemberButton.setVisible(false); // Hide "Add member" button
             changeAdminButton.setVisible(false); // Hide "Change admin" button
             memberListPanel.setVisible(false); // Hide member list
+            removeMemberButton.setVisible(false); //Hide "remove member" button
+            renameButton.setVisible(false);//Hide "rename group" button
+            deleteGroupButton.setVisible(false);//Show delete group button
+            outGroupButton.setVisible(false);//Hide out group button
+            unfriendButton.setVisible(true);
+            blockFriendButton.setVisible(true);
         }
 
         // Add listeners to buttons
@@ -144,6 +163,11 @@ public class ChatPanelFrame extends JPanel {
 
         addMemberButton.addActionListener(new RightPanelButtonListener(this, addMemberButton, searchTextField));
         changeAdminButton.addActionListener(new RightPanelButtonListener(this, changeAdminButton, searchTextField)); 
+        removeMemberButton.addActionListener(new RightPanelButtonListener(this, removeMemberButton, searchTextField));
+        renameButton.addActionListener(new RightPanelButtonListener(this, renameButton, searchTextField));
+        deleteGroupButton.addActionListener(new RightPanelButtonListener(this, deleteGroupButton, searchTextField));
+        outGroupButton.addActionListener(new RightPanelButtonListener(this, outGroupButton, searchTextField));
+
 
         rightPanel.add(new JLabel("Search Chat History:"));
         rightPanel.add(searchTextField); // Add search text field to the panel
@@ -154,11 +178,17 @@ public class ChatPanelFrame extends JPanel {
         rightPanel.add(unfriendButton);
         rightPanel.add(groupButton);
 
-        // Add the new buttons for "Add member" and "Change admin" at the bottom
+
+
         rightPanel.add(addMemberButton);
         rightPanel.add(changeAdminButton);
-        // Add the member list panel at the bottom
-        rightPanel.add(memberListPanel);
+        rightPanel.add(removeMemberButton);
+        rightPanel.add(renameButton);
+        rightPanel.add (outGroupButton);
+        rightPanel.add(deleteGroupButton);
+  // Add scrollable member list
+    rightPanel.add(scrollPane);
+
 
         wrapperPanel.add(rightPanel, BorderLayout.CENTER);
         return wrapperPanel;
@@ -168,5 +198,6 @@ public class ChatPanelFrame extends JPanel {
 
         return true;
     }
+    
 
 }

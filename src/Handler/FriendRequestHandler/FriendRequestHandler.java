@@ -47,7 +47,7 @@ public class FriendRequestHandler {
             searchResults.add("Doe");
         }
         if (searchResults.isEmpty()) {
-            searchResults.add("Find 'John' for example");
+            searchResults.add("Example");
         }
 
         friendRequestFrame.updateSearchResults(searchResults);
