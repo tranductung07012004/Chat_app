@@ -1,6 +1,5 @@
 package GUI.Auth;
 
-<<<<<<< HEAD
 import GUI.MainFrameGUI;
 import Handler.AuthHandler.LoginHandler;
 
@@ -23,21 +22,6 @@ public class LoginGUI extends JPanel {
     public LoginGUI(MainFrameGUI inputMainFrame) {
 
         //this.mainFrame = inputMainFrame;
-=======
-import javax.swing.*;
-
-import GUI.MainFrameGUI;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-
-public class LoginGUI extends JPanel {
-
-    public LoginGUI(MainFrameGUI mainFrame) {
-
->>>>>>> 0c01b7724ff277ffcb914d347bb213f9420d1b0b
         // Define the label for login screen
         JLabel screenName = new JLabel("LOGIN");
         screenName.setBounds(315, 80, 95, 50);
@@ -46,27 +30,18 @@ public class LoginGUI extends JPanel {
 
 
         // Define the account name input
-<<<<<<< HEAD
         accountName = new JTextField();
-=======
-        JTextField accountName = new JTextField();
->>>>>>> 0c01b7724ff277ffcb914d347bb213f9420d1b0b
         accountName.setBounds(200, 150, 300, 30);
         JLabel accLabel = new JLabel("Username:");
         accLabel.setBounds(130, 150, 100, 30);
 
         // Define the password field
-<<<<<<< HEAD
         passField = new JPasswordField();
-=======
-        JPasswordField passField = new JPasswordField();
->>>>>>> 0c01b7724ff277ffcb914d347bb213f9420d1b0b
         passField.setBounds(200, 200, 300, 30);
         JLabel passLabel = new JLabel("Password");
         passLabel.setBounds(130, 200, 100, 30);
 
         // Define the properties for login button
-<<<<<<< HEAD
         loginBtn = new JButton("OK!");
         loginBtn.setBounds(247, 300, 95, 40);
 
@@ -83,30 +58,6 @@ public class LoginGUI extends JPanel {
         forgotPasswordLink.setBounds(390, 240, 130, 40);
         forgotPasswordLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-=======
-        JButton loginBtn = new JButton("OK!");
-        loginBtn.setBounds(302, 300, 95, 40);
-
-        // Define the properties for register button
-        JButton registerBtn = new JButton("Register ?");
-        registerBtn.setBounds(302, 350, 95, 40);
-
-
-        registerBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.showRegisterPanel();
-            }
-        });
-
-        loginBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.showChatPanel();
-            }
-        });
-        
->>>>>>> 0c01b7724ff277ffcb914d347bb213f9420d1b0b
 
         // Add the components above to the JFrame window
         add(registerBtn);
@@ -116,7 +67,6 @@ public class LoginGUI extends JPanel {
         add(accountName);
         add(accLabel);
         add(screenName);
-<<<<<<< HEAD
         add(adminBtn);
         add(forgotPasswordLink);
 
@@ -133,19 +83,4 @@ public class LoginGUI extends JPanel {
     public JTextField getAccountName() { return accountName; }
     public JPasswordField getPassField() { return passField; }
     public JLabel getForgotPasswordLink() { return forgotPasswordLink; }
-=======
-
-        // Add properties for JFrame window
-        setSize(700, 500);
-        setLayout(null);
-        setVisible(true);
-        
-    }
-
->>>>>>> 0c01b7724ff277ffcb914d347bb213f9420d1b0b
 }
-
-
-
-
-
