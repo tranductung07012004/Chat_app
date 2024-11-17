@@ -9,7 +9,8 @@ public class ChatPanelFrame extends JPanel {
     private final MainFrameGUI mainFrame;
     private JTextArea activeChatArea;
     private JLabel friendNameLabel;
-
+    private SidebarFrame sidebar;
+    private boolean isGroup = false;  // Track the group status
 
     public ChatPanelFrame(MainFrameGUI mainFrame) {
         this.mainFrame = mainFrame;
@@ -75,22 +76,40 @@ public class ChatPanelFrame extends JPanel {
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(mainSplitPane, BorderLayout.CENTER);
-
         return panel;
     }
 
     private JPanel createRightPanel() {
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS)); // Sử dụng BoxLayout
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS)); // Use BoxLayout for vertical arrangement
         rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
-        JTextField searchTextField = new JTextField();
+
+        JTextField searchTextField = new JTextField("Search chat"); // Placeholder text
         searchTextField.setMaximumSize(new Dimension(200, 25));
 
-        // Thêm margin bằng EmptyBorder
-        searchTextField.setBorder(BorderFactory.createEmptyBorder(2, 15, 2, 10)); // Top, Left, Bottom, Right
-        
+        // Set initial placeholder color
+        searchTextField.setForeground(Color.GRAY);
+
+        // Add FocusListener to handle placeholder
+        searchTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (searchTextField.getText().equals("Search chat")) {
+                    searchTextField.setText(""); // Clear placeholder
+                    searchTextField.setForeground(Color.BLACK); // Change text color
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (searchTextField.getText().isEmpty()) {
+                    searchTextField.setText("Search chat"); // Restore placeholder
+                    searchTextField.setForeground(Color.GRAY); // Change text color back
+                }
+            }
+        });
+
         JButton searchButton = new JButton("Search message");
         JButton reportButton = new JButton("Report spam");
         JButton deleteHistoryButton = new JButton("Delete chat history");
@@ -98,79 +117,49 @@ public class ChatPanelFrame extends JPanel {
         JButton unfriendButton = new JButton("Unfriend");
         JButton groupButton = new JButton("Create group chat");
 
-        // Add "Add member" and "Change admin" buttons, but keep them hidden by default
+        // Member List Buttons (Add, Change, Remove, etc.)
         JButton addMemberButton = new JButton("Add member");
         JButton changeAdminButton = new JButton("Change admin");
         JButton removeMemberButton = new JButton("Remove member");
         JButton renameButton = new JButton("Rename group");
         JButton deleteGroupButton = new JButton("Delete group");
-        JButton outGroupButton=new JButton("Out group");
+        JButton outGroupButton = new JButton("Out group");
 
+        // Member List
+        JPanel memberListPanel = new JPanel();
+        memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.Y_AXIS));
+        memberListPanel.setBorder(BorderFactory.createTitledBorder("Members List"));
 
+        // Mock member list
+        String[] members = { "Alice", "Bob", "Charlie", "David", "Eve", "Frank" };
+        String[] roles = { "member", "member", "member", "member", "member", "admin" };
 
-
-         // Member List
-    JPanel memberListPanel = new JPanel();
-    memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.Y_AXIS));
-    memberListPanel.setBorder(BorderFactory.createTitledBorder("Members List"));
-
-    // Mock member list
-    String[] members = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
-    for (String member : members) {
-        JLabel memberLabel = new JLabel(member);
-        memberListPanel.add(memberLabel);
-    }
-
-    // Scrollable panel
-    JScrollPane scrollPane = new JScrollPane(memberListPanel);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    scrollPane.setPreferredSize(new Dimension(250, 150));
-
-        // Set visibility of buttons and member panel based on `isGroup`
-        if (isGroup()) {
-            groupButton.setVisible(false); // Hide "Create group chat" button
-            addMemberButton.setVisible(true); // Show "Add member" button
-            changeAdminButton.setVisible(true); // Show "Change admin" button
-            removeMemberButton.setVisible(true); //Show "remove member" button
-            renameButton.setVisible(true);//Show "rename group" button
-            memberListPanel.setVisible(true); // Show member list
-            deleteGroupButton.setVisible(true);//Show delete group button
-            outGroupButton.setVisible(true);//Show out group button
-            unfriendButton.setVisible(false);
-            blockFriendButton.setVisible(false);
-
-        } else {
-            groupButton.setVisible(true); // Show "Create group chat" button
-            addMemberButton.setVisible(false); // Hide "Add member" button
-            changeAdminButton.setVisible(false); // Hide "Change admin" button
-            memberListPanel.setVisible(false); // Hide member list
-            removeMemberButton.setVisible(false); //Hide "remove member" button
-            renameButton.setVisible(false);//Hide "rename group" button
-            deleteGroupButton.setVisible(false);//Show delete group button
-            outGroupButton.setVisible(false);//Hide out group button
-            unfriendButton.setVisible(true);
-            blockFriendButton.setVisible(true);
+        for (int i = 0; i < members.length; i++) {
+            String displayText = members[i] + "  - " + roles[i];
+            JLabel memberLabel = new JLabel(displayText);
+            memberListPanel.add(memberLabel);
         }
 
+        // Scrollable panel
+        JScrollPane scrollPane = new JScrollPane(memberListPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(250, 150));
+
+        // Adjust visibility based on isGroup status
+        updatePanelVisibility(rightPanel, memberListPanel, scrollPane, groupButton, addMemberButton, changeAdminButton, removeMemberButton, renameButton, deleteGroupButton, outGroupButton, unfriendButton, blockFriendButton);
+
         // Add listeners to buttons
-        searchButton.addActionListener(new RightPanelButtonListener(this, searchButton, searchTextField));
-        reportButton.addActionListener(new RightPanelButtonListener(this, reportButton, searchTextField));
-        deleteHistoryButton.addActionListener(new RightPanelButtonListener(this, deleteHistoryButton, searchTextField));
-        blockFriendButton.addActionListener(new RightPanelButtonListener(this, blockFriendButton, searchTextField));
-        unfriendButton.addActionListener(new RightPanelButtonListener(this, unfriendButton, searchTextField));
-        groupButton.addActionListener(new RightPanelButtonListener(this, groupButton, searchTextField));
+        groupButton.addActionListener(e -> {
+            isGroup = !isGroup; // Set the isGroup flag to true when the button is clicked
+            updatePanelVisibility(rightPanel, memberListPanel, scrollPane, groupButton, addMemberButton, changeAdminButton, removeMemberButton, renameButton, deleteGroupButton, outGroupButton, unfriendButton, blockFriendButton);
+            rightPanel.revalidate(); // Revalidate the right panel layout
+            rightPanel.repaint();    // Repaint the right panel
+        });
 
-        addMemberButton.addActionListener(new RightPanelButtonListener(this, addMemberButton, searchTextField));
-        changeAdminButton.addActionListener(new RightPanelButtonListener(this, changeAdminButton, searchTextField)); 
-        removeMemberButton.addActionListener(new RightPanelButtonListener(this, removeMemberButton, searchTextField));
-        renameButton.addActionListener(new RightPanelButtonListener(this, renameButton, searchTextField));
-        deleteGroupButton.addActionListener(new RightPanelButtonListener(this, deleteGroupButton, searchTextField));
-        outGroupButton.addActionListener(new RightPanelButtonListener(this, outGroupButton, searchTextField));
+        // Add listeners for other buttons...
 
-
-        rightPanel.add(new JLabel("Search Chat History:"));
-        rightPanel.add(searchTextField); // Add search text field to the panel
+        rightPanel.add(searchTextField);
         rightPanel.add(searchButton);
         rightPanel.add(reportButton);
         rightPanel.add(deleteHistoryButton);
@@ -178,26 +167,45 @@ public class ChatPanelFrame extends JPanel {
         rightPanel.add(unfriendButton);
         rightPanel.add(groupButton);
 
-
-
         rightPanel.add(addMemberButton);
         rightPanel.add(changeAdminButton);
         rightPanel.add(removeMemberButton);
         rightPanel.add(renameButton);
-        rightPanel.add (outGroupButton);
+        rightPanel.add(outGroupButton);
         rightPanel.add(deleteGroupButton);
-  // Add scrollable member list
-    rightPanel.add(scrollPane);
-
+        rightPanel.add(scrollPane);
 
         wrapperPanel.add(rightPanel, BorderLayout.CENTER);
         return wrapperPanel;
     }
 
-    private boolean isGroup() {
-
-        return true;
+    // Method to update visibility based on isGroup status
+    private void updatePanelVisibility(JPanel rightPanel, JPanel memberListPanel, JScrollPane scrollPane, JButton groupButton, JButton addMemberButton, JButton changeAdminButton, JButton removeMemberButton, JButton renameButton, JButton deleteGroupButton, JButton outGroupButton, JButton unfriendButton, JButton blockFriendButton) {
+        if (isGroup) {
+            groupButton.setVisible(false); // Hide "Create group chat" button
+            addMemberButton.setVisible(true); // Show "Add member" button
+            changeAdminButton.setVisible(true); // Show "Change admin" button
+            removeMemberButton.setVisible(true); // Show "remove member" button
+            renameButton.setVisible(true); // Show "rename group" button
+            memberListPanel.setVisible(true); // Show member list
+            deleteGroupButton.setVisible(true); // Show delete group button
+            outGroupButton.setVisible(true); // Show out group button
+            unfriendButton.setVisible(false); // Hide "Unfriend" button
+            blockFriendButton.setVisible(false); // Hide "Block" button
+            scrollPane.setVisible(true); // Show member list scroll
+        } else {
+            groupButton.setVisible(true); // Show "Create group chat" button
+            addMemberButton.setVisible(false); // Hide "Add member" button
+            changeAdminButton.setVisible(false); // Hide "Change admin" button
+            memberListPanel.setVisible(false); // Hide member list
+            removeMemberButton.setVisible(false); // Hide "remove member" button
+            renameButton.setVisible(false); // Hide "rename group" button
+            deleteGroupButton.setVisible(false); // Hide delete group button
+            outGroupButton.setVisible(false); // Hide out group button
+            unfriendButton.setVisible(true); // Show "Unfriend" button
+            blockFriendButton.setVisible(true); // Show "Block" button
+            scrollPane.setVisible(false); // Hide member list scroll
+        }
     }
-    
-
 }
+

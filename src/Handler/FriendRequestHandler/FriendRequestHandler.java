@@ -41,13 +41,13 @@ public class FriendRequestHandler {
         // Simulate search results (replace with actual search logic)
         List<String> searchResults = new ArrayList<>();
         if ("John".toLowerCase().contains(searchQuery.toLowerCase())) {
-            searchResults.add("John");
+            searchResults.add("John#123");
         }
         if ("Doe".toLowerCase().contains(searchQuery.toLowerCase())) {
-            searchResults.add("Doe");
+            searchResults.add("Doe#456");
         }
         if (searchResults.isEmpty()) {
-            searchResults.add("Example");
+            searchResults.add("Example#1234");
         }
 
         friendRequestFrame.updateSearchResults(searchResults);
@@ -57,4 +57,10 @@ public class FriendRequestHandler {
     public void handleSendFriendRequest(String friendName) {
         JOptionPane.showMessageDialog(friendRequestFrame, "Friend request sent to " + friendName + "!");
     }
+    public void handleBlockUser(String friendName) {
+        JOptionPane.showMessageDialog(friendRequestFrame, "Friend request sent to " + friendName + "!");
+
+    }
+    
 }
+

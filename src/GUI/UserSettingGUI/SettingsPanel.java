@@ -103,33 +103,49 @@ public class SettingsPanel extends JPanel {
         JPanel passwordPanel = new JPanel();
         passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.Y_AXIS));
         passwordPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Panel for both old and new password fields horizontally aligned
-        JPanel passwordFieldsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-
+    
+        // Panel for password fields
+        JPanel passwordFieldsPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+    
         // Old Password
         JLabel oldPasswordLabel = new JLabel("Old Password:");
         oldPasswordField = new JPasswordField(15);
-        passwordFieldsPanel.add(oldPasswordLabel);
-        passwordFieldsPanel.add(oldPasswordField);
-
+    
         // New Password
         JLabel newPasswordLabel = new JLabel("New Password:");
         newPasswordField = new JPasswordField(15);
+    
+        // Confirm New Password
+        JLabel confirmPasswordLabel = new JLabel("Confirm New Password:");
+        JPasswordField confirmPasswordField = new JPasswordField(15);
+    
+        // Add all fields to the panel
+        passwordFieldsPanel.add(oldPasswordLabel);
+        passwordFieldsPanel.add(oldPasswordField);
         passwordFieldsPanel.add(newPasswordLabel);
         passwordFieldsPanel.add(newPasswordField);
-
+        passwordFieldsPanel.add(confirmPasswordLabel);
+        passwordFieldsPanel.add(confirmPasswordField);
+    
         // Save button
         savePasswordButton = new JButton("Save Changes");
         savePasswordButton.setPreferredSize(new Dimension(140, 30));
-
+        
+        // Add validation on Save Changes button
+        savePasswordButton.addActionListener(e -> {
+            String newPassword = new String(newPasswordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+          
+        });
+    
+        // Layout arrangement
         passwordPanel.add(passwordFieldsPanel);
         passwordPanel.add(Box.createVerticalStrut(20));
         passwordPanel.add(savePasswordButton);
-
+    
         return passwordPanel;
     }
-
+    
     // Getters for handler to access components
     public JButton getBackButton() {
         return backButton;
@@ -175,3 +191,4 @@ public class SettingsPanel extends JPanel {
         return newPasswordField;
     }
 }
+

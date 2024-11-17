@@ -132,12 +132,14 @@ public class RightPanelButtonListener implements ActionListener {
 
     private void handleDeleteGroup() {
         JOptionPane.showMessageDialog(chatPanelFrame,
-                "Rename is only availaible in group chats. It would be hidden in 1-and-1 chats");
+                "delete is only availaible in group chats. It would be hidden in 1-and-1 chats");
     }
 
     private void handleOutGroup() {
         JOptionPane.showMessageDialog(chatPanelFrame,
-                "Rename is only availaible in group chats. It would be hidden in 1-and-1 chats");
+                "out group is only availaible in group chats. It would be hidden in 1-and-1 chats");
     }
+    
 
 }
+
