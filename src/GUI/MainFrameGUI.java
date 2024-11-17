@@ -5,6 +5,9 @@ import GUI.AdminBoard.AdminScreenButton;
 import GUI.AdminBoard.verifyAdminGUI;
 import GUI.Auth.LoginGUI;
 import GUI.Auth.RegisterGUI;
+import GUI.ChatPanelGUI.ChatPanelFrame;
+import GUI.UserFriendRequest.FriendRequestFrame;
+import GUI.UserSettingGUI.SettingsPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,5 +84,50 @@ public class MainFrameGUI extends JFrame {
         repaint();
 
     }
+    public void showChatPanel() {
+        removePanel(); // Remove the previous panel
+
+        // Create and add the new chat panel
+        ChatPanelFrame chatPanelFrame = new ChatPanelFrame(this);
+        JPanel chatPanel = chatPanelFrame.createChatPanel(); // Get chat panel from ChatPanelFrame
+        add(chatPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    public void logOut() {
+        removePanel(); // Remove the previous panel
+
+        // Log out and show the login panel again
+        JPanel loginPanel = new LoginGUI(this);
+        add(loginPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    public void showSettingsPanel() {
+        removePanel(); // Remove the previous panel
+
+        // Create and add the new settings panel
+        JPanel settingsPanel = new SettingsPanel(this);
+        add(settingsPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    public void showFriendRequestFrame() {
+        removePanel(); // Remove the previous panel
+
+        // Create and add the new friend request frame
+        JPanel friendRequestPanel = new FriendRequestFrame(this);
+        add(friendRequestPanel);
+
+        revalidate();
+        repaint();
+    }
+
 
 }

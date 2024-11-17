@@ -27,6 +27,7 @@ public class LoginHandler implements ActionListener {
                 openForgotPasswordDialog(inputFrame);
             }
         });
+        loginScreen.getLoginBtn().addActionListener(this);
     }
 
     @Override
@@ -36,6 +37,9 @@ public class LoginHandler implements ActionListener {
         }
         else if (e.getSource() == loginScreen.getRegisterBtn()) {
             mainFrame.showRegisterPanel();
+        }
+        else if (e.getSource() == loginScreen.getLoginBtn()) {
+            mainFrame.showChatPanel();
         }
     }
     private void openForgotPasswordDialog(JFrame parentFrame) {
