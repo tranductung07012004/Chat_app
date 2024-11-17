@@ -58,8 +58,8 @@ public class RegisterGUI extends JPanel {
         addLabelAndField("Confirm Password:", new JPasswordField(), formPanel, gbc, 7);
 
         // Admin Checkbox
-        JCheckBox adminCheckbox = new JCheckBox("Admin");
-        addLabelAndComponent("Admin:", adminCheckbox, formPanel, gbc, 8);
+        JTextField adminCodeInput = new JTextField();
+        addLabelAndComponent("Admin code:", adminCodeInput, formPanel, gbc, 8);
 
         add(formPanel, BorderLayout.CENTER);
 

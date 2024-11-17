@@ -65,7 +65,7 @@ public class MainFrameGUI extends JFrame {
     public void showAdminPanel() {
 
         removePanel();
-        setSize(1150, 600);
+        setSize(1200, 600);
 
         setLayout(new BorderLayout());
 

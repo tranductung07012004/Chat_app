@@ -39,7 +39,7 @@ public class NewRegistrationByYear extends JPanel {
         );
 
         BarRenderer renderer = (BarRenderer) barChart.getCategoryPlot().getRenderer();
-        renderer.setSeriesPaint(0, new Color(52, 28, 128)); // Màu xanh dương cho cột đầu tiên
+        renderer.setSeriesPaint(0, new Color(52, 28, 128));
         renderer.setBarPainter(new StandardBarPainter()); // Đảm bảo màu hiển thị đơn giản
 
         // Tạo Panel chứa biểu đồ

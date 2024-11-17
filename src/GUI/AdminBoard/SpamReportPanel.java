@@ -1,7 +1,11 @@
 package GUI.AdminBoard;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class SpamReportPanel extends JPanel {
     public SpamReportPanel() {
@@ -63,7 +67,35 @@ public class SpamReportPanel extends JPanel {
                 {"2024-12-01 09:59:00", "user3"},
                 {"2024-12-10 03:40:10", "user5"}
         }; // Dữ liệu báo cáo spam
-        JTable spamTable = new JTable(data, columnNames);
+
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không cho phép chỉnh sửa bất kỳ ô nào
+            }
+        };
+
+
+        JTable spamTable = new JTable(tableModel){
+            public String getToolTipText( MouseEvent e )
+            {
+                int row = rowAtPoint( e.getPoint() );
+                int column = columnAtPoint( e.getPoint() );
+
+                Object value = getValueAt(row, column);
+                return value == null ? null : value.toString();
+            }
+        };
+
+        // Tính năng sắp xếp
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
+        spamTable.setRowSorter(sorter);
+
+
+        sorter.setSortable(0, true);
+        sorter.setSortable(1, true);
+
+
         JScrollPane scrollPane = new JScrollPane(spamTable);
 
         // Panel chức năng
@@ -71,10 +103,8 @@ public class SpamReportPanel extends JPanel {
         JButton lockUserButton = new JButton("Khóa tài khoản");
         JButton filterTimeButton = new JButton("Lọc theo thời gian");
         JButton filterAccountNameButton = new JButton("Lọc theo tên đăng nhập");
-        JButton sortButton = new JButton("Sắp xếp");
 
 
-        actionPanel.add(sortButton);
         actionPanel.add(filterAccountNameButton);
         actionPanel.add(filterTimeButton);
         actionPanel.add(lockUserButton);
@@ -84,7 +114,6 @@ public class SpamReportPanel extends JPanel {
 
         // Xử lý sự kiện khóa tài khoản
         lockUserButton.addActionListener(e -> lockUser());
-        sortButton.addActionListener(e -> sort());
         filterTimeButton.addActionListener(e -> filterTime());
         filterAccountNameButton.addActionListener(e -> filterAccountName());
 
@@ -93,12 +122,11 @@ public class SpamReportPanel extends JPanel {
     private void lockUser() {
 
     }
-    private void sort(){
 
-    }
     private void filterAccountName() {
 
     }
+
     private void filterTime() {
 
     }

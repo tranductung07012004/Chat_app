@@ -5,6 +5,8 @@ import Handler.AuthHandler.LoginHandler;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 public class LoginGUI extends JPanel {
@@ -13,6 +15,7 @@ public class LoginGUI extends JPanel {
     private final JButton loginBtn;
     private final JButton registerBtn;
     private final JButton adminBtn;
+    private final JLabel forgotPasswordLink;
     //private MainFrameGUI mainFrame;
 
 
@@ -50,6 +53,11 @@ public class LoginGUI extends JPanel {
         adminBtn = new JButton("Administrator ?");
         adminBtn.setBounds(247, 350, 95 * 2 + 5, 40);
 
+        // Tạo JLabel giống như một hyperlink cho "Quên mật khẩu"
+        forgotPasswordLink = new JLabel("<html><a href='#'>Khởi tạo mật khẩu?</a></html>");
+        forgotPasswordLink.setBounds(390, 240, 130, 40);
+        forgotPasswordLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
 
         // Add the components above to the JFrame window
         add(registerBtn);
@@ -60,6 +68,7 @@ public class LoginGUI extends JPanel {
         add(accLabel);
         add(screenName);
         add(adminBtn);
+        add(forgotPasswordLink);
 
         new LoginHandler(this, inputMainFrame);
 
@@ -67,11 +76,13 @@ public class LoginGUI extends JPanel {
         setLayout(null);
     }
 
+
     public JButton getLoginBtn() { return loginBtn; }
     public JButton getRegisterBtn() { return registerBtn; }
     public JButton getAdminBtn() { return adminBtn; }
     public JTextField getAccountName() { return accountName; }
     public JPasswordField getPassField() { return passField; }
+    public JLabel getForgotPasswordLink() { return forgotPasswordLink; }
 }
 
 

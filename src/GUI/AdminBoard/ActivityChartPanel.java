@@ -27,7 +27,7 @@ public class ActivityChartPanel extends JPanel {
         // Lấy dữ liệu ban đầu cho biểu đồ
         CategoryDataset dataset = createActivityDataset("2022");
 
-        // Tạo biểu đồ cột với JFreeChart
+        // Tạo biểu đồ cột
         JFreeChart barChart = ChartFactory.createBarChart(
                 "Số lượng người dùng hoạt động từng năm", // Tiêu đề
                 "Tháng",                                  // Trục x
@@ -40,7 +40,7 @@ public class ActivityChartPanel extends JPanel {
         );
 
         BarRenderer renderer = (BarRenderer) barChart.getCategoryPlot().getRenderer();
-        renderer.setSeriesPaint(0, new Color(72, 145, 40)); // Màu xanh dương cho cột đầu tiên
+        renderer.setSeriesPaint(0, new Color(72, 145, 40));
         renderer.setBarPainter(new StandardBarPainter()); // Đảm bảo màu hiển thị đơn giản
 
         // Tạo Panel chứa biểu đồ
