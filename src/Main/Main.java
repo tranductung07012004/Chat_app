@@ -17,7 +17,7 @@ public class Main {
         }
 
         // Khởi tạo và hiển thị MainFrameGUI
-        java.awt.EventQueue.invokeLater(() -> new MainFrameGUI().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new MainFrameGUI());
     }
 }
 
