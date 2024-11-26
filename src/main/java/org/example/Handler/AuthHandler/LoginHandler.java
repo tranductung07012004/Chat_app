@@ -21,12 +21,14 @@ public class LoginHandler implements ActionListener {
 
         loginScreen.getAdminBtn().addActionListener(this);
         loginScreen.getRegisterBtn().addActionListener(this);
+
         loginScreen.getForgotPasswordLink().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 openForgotPasswordDialog(inputFrame);
             }
         });
+
         loginScreen.getLoginBtn().addActionListener(this);
     }
 

@@ -1,5 +1,7 @@
 package org.example.GUI.AdminBoard;
 
+import org.example.Handler.AdminBoardHandler.UserManagementHandler;
+
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,87 +10,27 @@ import javax.swing.table.*;
 
 
 public class UserManagementPanel extends JPanel {
+
+    private JButton addButton;
+    private JButton updateButton;
+    private JButton deleteButton;
+    private JButton lockButton;
+    private JButton searchBtn;
+    private JButton loginHistoryBtn;
+    private JButton friendBtn;
+    private DefaultTableModel tableModel;
+    private DefaultTableModel tableModelLogin;
+    private DefaultTableModel tableModelFriend;
+
     public UserManagementPanel() {
 
         setLayout(new BorderLayout());
 
         // Tạo bảng hiển thị danh sách người dùng
         String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)"};
-        Object[][] data = {
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"},
-                {"manu", "marcus rashford", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "Hồ Chí Minh", "1998-03-22", "Nữ", "user2@example.com", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "Đà Nẵng", "2000-12-01", "Nam", "user3@example.com", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "Cần Thơ", "1992-11-11", "Nữ", "user4@example.com", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "Hải Phòng", "1985-05-05", "Nam", "user5@example.com", "2020-01-30 09:04:06"},
-                {"user1", "Nguyễn Văn A", "Hà Nội", "1995-06-15", "Nam", "eyesontheprize2k4@gmail.com", "2024-02-27 09:59:03"}
+        Object[][] data = {};
 
-        };
-
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+        this.tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa bất kỳ ô nào
@@ -96,7 +38,7 @@ public class UserManagementPanel extends JPanel {
         };
 
 
-        JTable userTable = new JTable(tableModel){
+        JTable userTable = new JTable(this.tableModel){
             public String getToolTipText( MouseEvent e )
             {
                 int row = rowAtPoint( e.getPoint() );
@@ -108,7 +50,7 @@ public class UserManagementPanel extends JPanel {
         };
 
         // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.tableModel);
         userTable.setRowSorter(sorter);
 
 
@@ -125,77 +67,9 @@ public class UserManagementPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(userTable);
 
         String[] columnNamesLogin = {"Lịch sử đăng nhập"};
-        Object[][] dataLogin = {
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"},
-                {"2021-12-16 10:59:01"},
-                {"2022-01-30 11:22:10"},
-                {"2022-02-27 01:27:30"},
-                {"2023-05-29 05:36:54"},
-                {"2023-05-11 08:44:01"},
-                {"2024-09-10 17:51:59"}
+        Object[][] dataLogin = {};
 
-        };
-
-        DefaultTableModel tableModelLogin = new DefaultTableModel(dataLogin, columnNamesLogin) {
+        this.tableModelLogin = new DefaultTableModel(dataLogin, columnNamesLogin) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa bất kỳ ô nào
@@ -203,7 +77,7 @@ public class UserManagementPanel extends JPanel {
         };
 
 
-        JTable LoginTable = new JTable(tableModelLogin){
+        JTable LoginTable = new JTable(this.tableModelLogin){
             public String getToolTipText( MouseEvent e )
             {
                 int row = rowAtPoint( e.getPoint() );
@@ -215,7 +89,7 @@ public class UserManagementPanel extends JPanel {
         };
 
         // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorterLoginTable = new TableRowSorter<>(tableModelLogin);
+        TableRowSorter<TableModel> sorterLoginTable = new TableRowSorter<>(this.tableModelLogin);
         LoginTable.setRowSorter(sorterLoginTable);
 
 
@@ -224,47 +98,10 @@ public class UserManagementPanel extends JPanel {
         JScrollPane scrollPaneLogin = new JScrollPane(LoginTable);
 
 
-        String[] columnNamesFriend = {"Account name", "Họ tên"};
-        Object[][] dataFriend = {
-                {"manu", "marcus rashford"},
-                {"user1", "Nguyễn Văn A"},
-                {"user2", "Trần Thị B"},
-                {"user3", "Lê Văn C"},
-                {"user4", "Phạm Thị D"},
-                {"user5", "Hoàng Văn E"},
-                {"manu", "marcus rashford"},
-                {"user1", "Nguyễn Văn A"},
-                {"user2", "Trần Thị B"},
-                {"user3", "Lê Văn C"},
-                {"user4", "Phạm Thị D"},
-                {"user5", "Hoàng Văn E"},
-                {"manu", "marcus rashford"},
-                {"user1", "Nguyễn Văn A"},
-                {"user2", "Trần Thị B"},
-                {"user3", "Lê Văn C"},
-                {"user4", "Phạm Thị D"},
-                {"user5", "Hoàng Văn E"},
-                {"manu", "marcus rashford"},
-                {"user1", "Nguyễn Văn A"},
-                {"user2", "Trần Thị B"},
-                {"user3", "Lê Văn C"},
-                {"user4", "Phạm Thị D"},
-                {"user5", "Hoàng Văn E"},
-                {"manu", "marcus rashford"},
-                {"user1", "Nguyễn Văn A"},
-                {"user2", "Trần Thị B"},
-                {"user3", "Lê Văn C"},
-                {"user4", "Phạm Thị D"},
-                {"user5", "Hoàng Văn E"},
-                {"manu", "marcus rashford"},
-                {"user1", "Nguyễn Văn A"},
-                {"user2", "Trần Thị B"},
-                {"user3", "Lê Văn C"},
-                {"user4", "Phạm Thị D"},
-                {"user5", "Hoàng Văn E"}
-        };
+        String[] columnNamesFriend = {"Tên đăng nhập", "Họ tên"};
+        Object[][] dataFriend = {};
 
-        DefaultTableModel tableModelFriend = new DefaultTableModel(dataFriend, columnNamesFriend) {
+        this.tableModelFriend = new DefaultTableModel(dataFriend, columnNamesFriend) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa bất kỳ ô nào
@@ -272,7 +109,7 @@ public class UserManagementPanel extends JPanel {
         };
 
 
-        JTable FriendTable = new JTable(tableModelFriend){
+        JTable FriendTable = new JTable(this.tableModelFriend){
             public String getToolTipText( MouseEvent e )
             {
                 int row = rowAtPoint( e.getPoint() );
@@ -284,7 +121,7 @@ public class UserManagementPanel extends JPanel {
         };
 
         // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorterFriendTable = new TableRowSorter<>(tableModelFriend);
+        TableRowSorter<TableModel> sorterFriendTable = new TableRowSorter<>(this.tableModelFriend);
         FriendTable.setRowSorter(sorterFriendTable);
 
 
@@ -303,65 +140,50 @@ public class UserManagementPanel extends JPanel {
 
         // Tạo panel cho các chức năng
         JPanel actionPanel = new JPanel();
-        JButton addButton = new JButton("Thêm");
-        JButton updateButton = new JButton("Cập nhật");
-        JButton deleteButton = new JButton("Xóa");
-        JButton lockButton = new JButton("Khóa / Mở khóa");
-        JButton searchBtn = new JButton("Tìm kiếm");
-        JButton loginHistoryBtn = new JButton("Lịch sử đăng nhập");
-        JButton friendListBtn = new JButton("Bạn bè");
+        this.addButton = new JButton("Thêm");
+        this.updateButton = new JButton("Cập nhật");
+        this.deleteButton = new JButton("Xóa");
+        this.lockButton = new JButton("Khóa / Mở khóa");
+        this.searchBtn = new JButton("Tìm kiếm");
+        this.loginHistoryBtn = new JButton("Lịch sử đăng nhập");
+        this.friendBtn = new JButton("Bạn bè");
 
-        actionPanel.add(loginHistoryBtn);
-        actionPanel.add(friendListBtn);
+
         actionPanel.add(searchBtn);
         actionPanel.add(addButton);
         actionPanel.add(updateButton);
         actionPanel.add(deleteButton);
         actionPanel.add(lockButton);
+        actionPanel.add(loginHistoryBtn);
+        actionPanel.add(friendBtn);
 
         // Thêm các thành phần vào panel
         add(splitPane, BorderLayout.CENTER);
         add(actionPanel, BorderLayout.SOUTH);
 
         // Xử lý sự kiện cho các nút
-        addButton.addActionListener(e -> addUser());
-        updateButton.addActionListener(e -> updateUser());
-        deleteButton.addActionListener(e -> deleteUser());
-        lockButton.addActionListener(e -> lockUnlockUser());
-        searchBtn.addActionListener(e -> search());
-        loginHistoryBtn.addActionListener(e -> showLoginHistory());
-        friendListBtn.addActionListener(e -> showFriendList());
+        new UserManagementHandler(this);
 
 
     }
 
+    public void updateTableData(Object[][] data) {
+        // Xóa dữ liệu cũ
+        this.tableModel.setRowCount(0);
 
-    private void addUser() {
-
+        // Thêm dữ liệu mới
+        for (Object[] row : data) {
+            this.tableModel.addRow(row);
+        }
     }
 
 
-    private void updateUser() {
-
-    }
-
-
-    private void deleteUser() {
-
-    }
-
-    private void lockUnlockUser() {
-
-    }
-    private void search() {
-
-    }
-    private void showLoginHistory() {
-
-    }
-    private void showFriendList() {
-
-    }
-
+   public JButton getAddButton() { return this.addButton; }
+   public JButton getUpdateButton() { return this.updateButton; }
+   public JButton getDeleteButton() { return this.deleteButton; }
+   public JButton getLockButton() { return this.lockButton; }
+   public JButton getSearchBtn() { return this.searchBtn; }
+   public JButton getLoginHistoryBtn() { return this.loginHistoryBtn; }
+   public JButton getFriendBtn() { return this.friendBtn; }
 
 }
