@@ -21,7 +21,7 @@ public class AdminFunctions extends JPanel {
 
 
         // Khởi tạo các panel cho từng chức năng
-        JPanel userManagementPanel = new UserManagementPanel();
+        JPanel userManagementPanel = new UserManagementPanel(inputMainFrame);
         JPanel loginHistoryPanel = new LoginHistoryPanel();
         JPanel chatGroupPanel = new ChatGroupPanel();
         JPanel spamReportPanel = new SpamReportPanel();
