@@ -2,6 +2,8 @@ package org.example.Handler.AdminBoardHandler;
 
 import org.example.GUI.AdminBoard.UserManagementPanel;
 import org.example.Model.endUserModel;
+import org.example.Model.loginHistoryModel;
+import org.example.Model.userFriendModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,47 +21,59 @@ public class UserManagementHandler  {
         this.userManagement = inputUserManagement;
 
         // Gắn sự kiện trực tiếp với lambda expressions
-        userManagement.components.deleteButton.addActionListener(e -> handleDeleteButton());
-        userManagement.components.submitDeleteBtn.addActionListener(e -> handleSubmitDelete());
-        userManagement.components.cancelDeleteBtn.addActionListener(e -> handleCancelDelete());
+        userManagement.deleteComponents.deleteButton.addActionListener(e -> handleDeleteButton());
+        userManagement.deleteComponents.submitDeleteBtn.addActionListener(e -> handleSubmitDelete());
+        userManagement.deleteComponents.cancelDeleteBtn.addActionListener(e -> handleCancelDelete());
 
-        userManagement.components.addButton.addActionListener(e -> handleAddButton());
-        userManagement.components.cancelAddButton.addActionListener(e -> handleCancelAddButton());
-        userManagement.components.submitAddButton.addActionListener(e -> handleSubmitAddButton());
+        userManagement.addComponents.addButton.addActionListener(e -> handleAddButton());
+        userManagement.addComponents.cancelAddButton.addActionListener(e -> handleCancelAddButton());
+        userManagement.addComponents.submitAddButton.addActionListener(e -> handleSubmitAddButton());
 
-        userManagement.components.searchBtn.addActionListener(e -> handleSearchButton());
-        userManagement.components.submitSearchButton.addActionListener(e -> handleSubmitSearchButton());
-        userManagement.components.cancelSearchButton.addActionListener(e -> handleCancelSearchButton());
+        userManagement.searchComponents.searchBtn.addActionListener(e -> handleSearchButton());
+        userManagement.searchComponents.submitSearchButton.addActionListener(e -> handleSubmitSearchButton());
+        userManagement.searchComponents.cancelSearchButton.addActionListener(e -> handleCancelSearchButton());
 
-        userManagement.components.updateButton.addActionListener(e -> handleUpdateButton());
-        userManagement.components.cancelUpdateButton.addActionListener(e -> handleCancelUpdateButton());
-        userManagement.components.usernameOkUpdateButton.addActionListener(e -> handleUsernameOKUpdateButton());
-        userManagement.components.confirmUpdateButton.addActionListener(e -> handleConfirmUpdateButton());
+        userManagement.updateComponents.updateButton.addActionListener(e -> handleUpdateButton());
+        userManagement.updateComponents.cancelUpdateButton.addActionListener(e -> handleCancelUpdateButton());
+        userManagement.updateComponents.usernameOkUpdateButton.addActionListener(e -> handleUsernameOKUpdateButton());
+        userManagement.updateComponents.confirmUpdateButton.addActionListener(e -> handleConfirmUpdateButton());
 
-        //userManagement.components.friendBtn.addActionListener(e -> handleFriendButton());
-        //userManagement.components.lockButton.addActionListener(e -> handleLockButton());
-        //userManagement.components.loginHistoryBtn.addActionListener(e -> handleLoginHistoryButton());
+        userManagement.lockComponents.lockButton.addActionListener(e -> handleLockButton());
+        userManagement.lockComponents.submitUnlockButton.addActionListener(e -> handleSubmitUnlockButton());
+        userManagement.lockComponents.cancelLockButton.addActionListener(e -> handleCancelLockButton());
+        userManagement.lockComponents.submitLockButton.addActionListener(e -> handleSubmitLockButton());
 
+        userManagement.loginHistoryComponents.submitLoginHistoryBtn.addActionListener(e -> handleSubmitLoginHistoryBtn());
+        userManagement.loginHistoryComponents.cancelLoginHistoryBtn.addActionListener(e -> handleCancelLoginHistoryBtn());
+        userManagement.loginHistoryComponents.loginHistoryBtn.addActionListener(e -> handleLoginHistoryBtn());
 
+        userManagement.friendComponents.friendBtn.addActionListener(e -> handleFriendBtn());
+        userManagement.friendComponents.cancelFriendBtn.addActionListener(e -> handleCancelFriendBtn());
+        userManagement.friendComponents.submitFriendBtn.addActionListener(e -> handleSubmitFriendBtn());
+
+        userManagement.updatePassComponents.cancelUpdatePassBtn.addActionListener(e -> handleCancelUpdatePassBtn());
+        userManagement.updatePassComponents.submitUpdatePassBtn.addActionListener(e -> handleSubmitUpdatePassBtn());
+        userManagement.updatePassComponents.updatePassword.addActionListener(e -> handleUpdatePassBtn());
         loadUserData();
     }
 
     private void loadUserData() {
         Object[][] userData = endUserModel.getAllUser();
-        userManagement.updateTableData(userData);
+        userManagement.updateTableData(userManagement.components.tableModel, userData);
     }
+
 
 
     private void handleDeleteButton() {
-        userManagement.components.deleteDialog.setVisible(true);
+        userManagement.deleteComponents.deleteDialog.setVisible(true);
     }
 
     private void handleCancelDelete() {
-        userManagement.components.deleteDialog.setVisible(false);
+        userManagement.deleteComponents.deleteDialog.setVisible(false);
     }
 
     private void handleSubmitDelete() {
-        String username = userManagement.components.textFieldDeleteBtn.getText();
+        String username = userManagement.deleteComponents.textFieldDeleteBtn.getText();
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Username không thể để trống.", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
@@ -70,22 +84,22 @@ public class UserManagementHandler  {
     }
 
     private void handleAddButton() {
-        userManagement.components.addDialog.setVisible(true);
+        userManagement.addComponents.addDialog.setVisible(true);
     }
 
     private void handleCancelAddButton() {
-        userManagement.components.addDialog.setVisible(false);
+        userManagement.addComponents.addDialog.setVisible(false);
     }
 
     private void handleSubmitAddButton() {
         // Lấy dữ liệu từ các JTextField
-        String username = userManagement.components.usernameFieldAddButton.getText();
-        String password = userManagement.components.passFieldAddButton.getText();
-        String accountName = userManagement.components.accountnameFieldAddButton.getText();
-        String dob = userManagement.components.dobFieldAddButton.getText();
-        String address = userManagement.components.addressFieldAddButton.getText();
-        String gender = userManagement.components.genderFieldAddButton.getText();
-        String email = userManagement.components.emailFieldAddButton.getText();
+        String username = userManagement.addComponents.usernameFieldAddButton.getText();
+        String password = userManagement.addComponents.passFieldAddButton.getText();
+        String accountName = userManagement.addComponents.accountnameFieldAddButton.getText();
+        String dob = userManagement.addComponents.dobFieldAddButton.getText();
+        String address = userManagement.addComponents.addressFieldAddButton.getText();
+        String gender = userManagement.addComponents.genderFieldAddButton.getText();
+        String email = userManagement.addComponents.emailFieldAddButton.getText();
 
         // Kiểm tra nếu có trường nào để trống
         if (username.isEmpty() || password.isEmpty() || accountName.isEmpty() || dob.isEmpty() ||
@@ -118,16 +132,16 @@ public class UserManagementHandler  {
 
 
     private void handleCancelSearchButton() {
-        userManagement.components.searchDialog.setVisible(false);
+        userManagement.searchComponents.searchDialog.setVisible(false);
     }
 
     private void handleSearchButton() {
-        userManagement.components.searchDialog.setVisible(true);
+        userManagement.searchComponents.searchDialog.setVisible(true);
     }
 
     private void handleSubmitSearchButton() {
         // Lấy dữ liệu từ JTextField
-        String username = userManagement.components.textFieldSearchDialog.getText();
+        String username = userManagement.searchComponents.textFieldSearchDialog.getText();
 
         // Kiểm tra nếu người dùng không nhập gì
         if (username.isEmpty()) {
@@ -157,15 +171,15 @@ public class UserManagementHandler  {
     }
 
     private void handleUpdateButton() {
-        userManagement.components.updateUserDialog.setVisible(true);
+        userManagement.updateComponents.updateUserDialog.setVisible(true);
     }
 
     private void handleCancelUpdateButton() {
-        userManagement.components.updateUserDialog.setVisible(false);
+        userManagement.updateComponents.updateUserDialog.setVisible(false);
     }
 
     private void handleUsernameOKUpdateButton() {
-        String username = userManagement.components.usernameFieldUpdateButton.getText();
+        String username = userManagement.updateComponents.usernameFieldUpdateButton.getText();
 
         // Kiểm tra nếu người dùng không nhập gì
         if (username.isEmpty()) {
@@ -183,12 +197,12 @@ public class UserManagementHandler  {
     }
 
     private void handleConfirmUpdateButton() {
-        String curUsername = userManagement.components.usernameFieldUpdateButton.getText();
-        String newAccountName = userManagement.components.accountNameUpdateField.getText();
-        String newDOB = userManagement.components.dobUpdateField.getText();
-        String newAddress = userManagement.components.addressUpdateField.getText();
-        String newGender = userManagement.components.genderUpdateField.getText();
-        String newEmail = userManagement.components.emailUpdateField.getText();
+        String curUsername = userManagement.updateComponents.usernameFieldUpdateButton.getText();
+        String newAccountName = userManagement.updateComponents.accountNameUpdateField.getText();
+        String newDOB = userManagement.updateComponents.dobUpdateField.getText();
+        String newAddress = userManagement.updateComponents.addressUpdateField.getText();
+        String newGender = userManagement.updateComponents.genderUpdateField.getText();
+        String newEmail = userManagement.updateComponents.emailUpdateField.getText();
 
         if (curUsername.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập hiện tại trước.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -224,5 +238,150 @@ public class UserManagementHandler  {
         }
 
     }
+
+    private void handleCancelLockButton() {
+        userManagement.lockComponents.lockDialog.setVisible(false);
+    }
+
+    private void handleLockButton() {
+        userManagement.lockComponents.lockDialog.setVisible(true);
+    }
+
+    private void handleSubmitLockButton() {
+        String username = userManagement.lockComponents.userNameTextField.getText();
+
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (endUserModel.lockUser(username) > 0) {
+            loadUserData();
+        }
+    }
+
+    private void handleSubmitUnlockButton() {
+        String username = userManagement.lockComponents.userNameTextField.getText();
+
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (endUserModel.unLockUser(username) > 0) {
+            loadUserData();
+        }
+    }
+
+    private void handleLoginHistoryBtn() {
+        userManagement.loginHistoryComponents.loginHistoryDialog.setVisible(true);
+    }
+
+    private void handleSubmitLoginHistoryBtn() {
+        String username = userManagement.loginHistoryComponents.usernameTextField.getText();
+
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            Object[][] loginHistoryData = loginHistoryModel.getLoginHistoryOfUsername(username);
+
+            if (loginHistoryData == null) {
+                // Tên đăng nhập không tồn tại
+                JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong database.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (loginHistoryData.length == 0) {
+                // Tên đăng nhập không có lịch sử đăng nhập
+                JOptionPane.showMessageDialog(null, "Người dùng này không có lịch sử đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Hiển thị dữ liệu
+                JOptionPane.showMessageDialog(null, "Tìm kiếm lịch sử đăng nhập thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                userManagement.updateTableData(userManagement.components.tableModelLogin, loginHistoryData);
+            }
+        }
+    }
+
+
+    private void handleCancelLoginHistoryBtn() {
+        userManagement.loginHistoryComponents.loginHistoryDialog.setVisible(false);
+    }
+
+    private void handleFriendBtn() {
+        userManagement.friendComponents.friendDialog.setVisible(true);
+    }
+
+    private void handleCancelFriendBtn() {
+        userManagement.friendComponents.friendDialog.setVisible(false);
+    }
+
+    private void handleSubmitFriendBtn() {
+        // Lấy tên đăng nhập từ giao diện
+        String username = userManagement.friendComponents.usernameTextField.getText();
+
+        if (username.isEmpty()) {
+            // Thông báo lỗi nếu tên đăng nhập bị để trống
+            JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Lấy danh sách bạn bè từ hàm getFriendOfUsername
+            Object[][] friendsData = userFriendModel.getFriendOfUsername(username);
+
+            if (friendsData == null) {
+                // Thông báo lỗi nếu tên đăng nhập không tồn tại
+                JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong hệ thống.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (friendsData.length == 0) {
+                // Thông báo nếu không có bạn bè
+                JOptionPane.showMessageDialog(null, "Người dùng này không có bạn bè.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Hiển thị danh sách bạn bè
+                JOptionPane.showMessageDialog(null, "Tìm kiếm danh sách bạn bè thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                userManagement.updateTableData(userManagement.components.tableModelFriend, friendsData);
+            }
+        }
+    }
+
+    private void handleCancelUpdatePassBtn() {
+        userManagement.updatePassComponents.updatePassDialog.setVisible(false);
+    }
+
+    private void handleUpdatePassBtn() {
+        userManagement.updatePassComponents.updatePassDialog.setVisible(true);
+    }
+
+    private void handleSubmitUpdatePassBtn() {
+        String username = userManagement.updatePassComponents.usernameTextField.getText();
+        char[] oldPassArray = userManagement.updatePassComponents.oldPassTextField.getPassword();
+        char[] newPassArray = userManagement.updatePassComponents.newPassTextField.getPassword();
+
+        // Chuyển mảng char[] thành String để so sánh (nên xóa mảng sau khi sử dụng để bảo mật)
+        String oldPass = new String(oldPassArray);
+        String newPass = new String(newPassArray);
+
+        // Kiểm tra nếu username rỗng
+        if (username.isEmpty() || oldPass.isEmpty() || newPass.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phải nhập đầy đủ thông tin.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng hàm nếu username rỗng
+        }
+
+        // Kiểm tra nếu user tồn tại trong hệ thống
+        if (!endUserModel.checkIfUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng hàm nếu username không tồn tại
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (!endUserModel.checkOldPassword(username, oldPass)) {
+            JOptionPane.showMessageDialog(null, "Mật khẩu cũ không đúng.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng hàm nếu mật khẩu cũ không đúng
+        }
+
+        // Cập nhật mật khẩu mới
+        if (endUserModel.updatePassword(username, newPass)) {
+            JOptionPane.showMessageDialog(null, "Cập nhật mật khẩu thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Cập nhật mật khẩu thất bại.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Xóa mảng char[] sau khi sử dụng để bảo mật
+        java.util.Arrays.fill(oldPassArray, '0');
+        java.util.Arrays.fill(newPassArray, '0');
+    }
+
+
 
 }

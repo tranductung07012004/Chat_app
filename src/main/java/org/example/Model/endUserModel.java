@@ -242,5 +242,99 @@ public class endUserModel {
         return rowsAffected > 0 ? 1 : 0;
     }
 
+    public static int lockUser(String username) {
+        String query = "UPDATE end_user SET blockedaccountbyadmin = ? WHERE username = ?";
+
+        int rowsAffected = 0;
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Set các tham số cho PreparedStatement
+            stmt.setBoolean(1, true);
+            stmt.setString(2, username);
+
+            // Thực thi câu lệnh cập nhật
+            rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Người dùng đã bị khóa.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Không thể thực hiện tác vụ, có thể người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("An error occurred while trying to update the user: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return rowsAffected > 0 ? 1 : 0;
+    }
+
+    public static int unLockUser(String username) {
+        String query = "UPDATE end_user SET blockedaccountbyadmin = ? WHERE username = ?";
+
+        int rowsAffected = 0;
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Set các tham số cho PreparedStatement
+            stmt.setBoolean(1, false);
+            stmt.setString(2, username);
+
+            // Thực thi câu lệnh cập nhật
+            rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Người dùng đã được mở khóa.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Không thể thực hiện tác vụ, có thể người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("An error occurred while trying to update the user: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return rowsAffected > 0 ? 1 : 0;
+    }
+
+    public static boolean checkOldPassword(String username, String oldPass) {
+        String query = "SELECT pass FROM end_user WHERE username = ?";
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("pass");
+                    System.out.println(storedPassword);
+                    System.out.println(oldPass);
+                    return storedPassword.equals(oldPass); // So sánh mật khẩu lưu trữ với mật khẩu cũ nhập vào
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Trả về false nếu xảy ra lỗi hoặc không tìm thấy user
+    }
+
+    public static boolean updatePassword(String username, String newPass) {
+        String query = "UPDATE end_user SET pass = ? WHERE username = ?";
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, newPass);
+            stmt.setString(2, username);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Trả về true nếu cập nhật thành công
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Trả về false nếu xảy ra lỗi hoặc không cập nhật được
+    }
+
+
+
 
 }
