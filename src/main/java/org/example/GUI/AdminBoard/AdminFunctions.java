@@ -13,7 +13,7 @@ public class AdminFunctions extends JPanel {
     public AdminFunctions(MainFrameGUI inputMainFrame) {
 
 
-        setSize(1150, 600);
+        setSize(1200, 600);
 
         cardLayout = new CardLayout();
         setLayout(cardLayout);

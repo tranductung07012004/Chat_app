@@ -44,7 +44,7 @@ public class endUserModel {
 
     public static Object[][] getAllUser() {
         List<Object[]> userList = new ArrayList<>();
-        String query = "SELECT username, account_name, address, dob, gender, email, time_registered FROM end_user";
+        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user";
 
         // try-with-resources
         try (Connection conn = DBConn.getConnection();
@@ -59,7 +59,9 @@ public class endUserModel {
                 String gender = rs.getString("gender");
                 String email = rs.getString("email");
                 Timestamp timeRegistered = rs.getTimestamp("time_registered");
+                boolean blocked = rs.getBoolean("blockedaccountbyadmin");
 
+                String blockedString = blocked ? "True" : "False";
                 userList.add(new Object[]{
                         username,
                         accountName,
@@ -67,7 +69,8 @@ public class endUserModel {
                         dob.toString(),
                         gender,
                         email,
-                        timeRegistered.toString()
+                        timeRegistered.toString(),
+                        blockedString
                 });
             }
 
@@ -177,6 +180,66 @@ public class endUserModel {
         }
 
         return userData;
+    }
+
+    public static boolean checkIfUserExists(String username) {
+        String query = "SELECT 1 FROM end_user WHERE username = ?";
+        boolean exists = false;
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, username);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Nếu có dữ liệu trả về thì người dùng tồn tại
+                    exists = true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return exists;
+    }
+
+    public static int updateUser(String curUsername, String newAccountName, Date sqlDate,
+                                 String newAddress, String newGender, String newEmail) {
+        String query = "UPDATE end_user SET account_name = ?, dob = ?, address = ?, gender = ?, email = ? " +
+                "WHERE username = ?";
+        int rowsAffected = 0;
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Set các tham số cho PreparedStatement
+            stmt.setString(1, newAccountName);
+            stmt.setDate(2, sqlDate);
+            stmt.setString(3, newAddress);
+            stmt.setString(4, newGender);
+            stmt.setString(5, newEmail);
+            stmt.setString(6, curUsername);
+
+            // Thực thi câu lệnh cập nhật
+            rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "User information was updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to update user information. User might not exist.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("An error occurred while trying to update the user: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return rowsAffected > 0 ? 1 : 0;
     }
 
 

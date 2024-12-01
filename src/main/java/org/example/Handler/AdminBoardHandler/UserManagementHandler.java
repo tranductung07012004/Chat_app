@@ -12,44 +12,34 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
 
-public class UserManagementHandler implements ActionListener {
+public class UserManagementHandler  {
     private UserManagementPanel userManagement;
-    private Map<Object, Runnable> actionMap;
 
     public UserManagementHandler(UserManagementPanel inputUserManagement) {
         this.userManagement = inputUserManagement;
-        this.actionMap = new HashMap<>();
 
-        // Đăng ký các hành động
-        actionMap.put(userManagement.components.deleteButton, this::handleDeleteButton);
-        actionMap.put(userManagement.components.submitDeleteBtn, this::handleSubmitDelete);
-        actionMap.put(userManagement.components.cancelDeleteBtn, this::handleCancelDelete);
-        actionMap.put(userManagement.components.addButton, this::handleAddButton);
-        actionMap.put(userManagement.components.cancelAddButton, this::handleCancelAddButton);
-        actionMap.put(userManagement.components.submitAddButton, this::handleSubmitAddButton);
+        // Gắn sự kiện trực tiếp với lambda expressions
+        userManagement.components.deleteButton.addActionListener(e -> handleDeleteButton());
+        userManagement.components.submitDeleteBtn.addActionListener(e -> handleSubmitDelete());
+        userManagement.components.cancelDeleteBtn.addActionListener(e -> handleCancelDelete());
 
-        actionMap.put(userManagement.components.searchBtn, this::handleSearchButton);
-        actionMap.put(userManagement.components.submitSearchButton, this::handleSubmitSearchButton);
-        actionMap.put(userManagement.components.cancelSearchButton, this::handleCancelSearchButton);
+        userManagement.components.addButton.addActionListener(e -> handleAddButton());
+        userManagement.components.cancelAddButton.addActionListener(e -> handleCancelAddButton());
+        userManagement.components.submitAddButton.addActionListener(e -> handleSubmitAddButton());
 
+        userManagement.components.searchBtn.addActionListener(e -> handleSearchButton());
+        userManagement.components.submitSearchButton.addActionListener(e -> handleSubmitSearchButton());
+        userManagement.components.cancelSearchButton.addActionListener(e -> handleCancelSearchButton());
 
-        // Gắn sự kiện
-        userManagement.components.deleteButton.addActionListener(this);
-        userManagement.components.submitDeleteBtn.addActionListener(this);
-        userManagement.components.cancelDeleteBtn.addActionListener(this);
+        userManagement.components.updateButton.addActionListener(e -> handleUpdateButton());
+        userManagement.components.cancelUpdateButton.addActionListener(e -> handleCancelUpdateButton());
+        userManagement.components.usernameOkUpdateButton.addActionListener(e -> handleUsernameOKUpdateButton());
+        userManagement.components.confirmUpdateButton.addActionListener(e -> handleConfirmUpdateButton());
 
-        userManagement.components.addButton.addActionListener(this);
-        userManagement.components.cancelAddButton.addActionListener(this);
-        userManagement.components.submitAddButton.addActionListener(this);
+        //userManagement.components.friendBtn.addActionListener(e -> handleFriendButton());
+        //userManagement.components.lockButton.addActionListener(e -> handleLockButton());
+        //userManagement.components.loginHistoryBtn.addActionListener(e -> handleLoginHistoryButton());
 
-        userManagement.components.searchBtn.addActionListener(this);
-        userManagement.components.submitSearchButton.addActionListener(this);
-        userManagement.components.cancelSearchButton.addActionListener(this);
-
-        userManagement.components.friendBtn.addActionListener(this);
-        userManagement.components.lockButton.addActionListener(this);
-        userManagement.components.loginHistoryBtn.addActionListener(this);
-        userManagement.components.updateButton.addActionListener(this);
 
         loadUserData();
     }
@@ -59,13 +49,6 @@ public class UserManagementHandler implements ActionListener {
         userManagement.updateTableData(userData);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
-        if (actionMap.containsKey(source)) {
-            actionMap.get(source).run();
-        }
-    }
 
     private void handleDeleteButton() {
         userManagement.components.deleteDialog.setVisible(true);
@@ -171,6 +154,75 @@ public class UserManagementHandler implements ActionListener {
             // Thông báo nếu không tìm thấy người dùng
             JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void handleUpdateButton() {
+        userManagement.components.updateUserDialog.setVisible(true);
+    }
+
+    private void handleCancelUpdateButton() {
+        userManagement.components.updateUserDialog.setVisible(false);
+    }
+
+    private void handleUsernameOKUpdateButton() {
+        String username = userManagement.components.usernameFieldUpdateButton.getText();
+
+        // Kiểm tra nếu người dùng không nhập gì
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Hãy nhập một tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Kiểm tra nếu tên người dùng tồn tại hay không
+        if (endUserModel.checkIfUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "Người dùng tồn tại, có thể cập nhật.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Người dùng không tồn tại, hãy thêm vào.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    }
+
+    private void handleConfirmUpdateButton() {
+        String curUsername = userManagement.components.usernameFieldUpdateButton.getText();
+        String newAccountName = userManagement.components.accountNameUpdateField.getText();
+        String newDOB = userManagement.components.dobUpdateField.getText();
+        String newAddress = userManagement.components.addressUpdateField.getText();
+        String newGender = userManagement.components.genderUpdateField.getText();
+        String newEmail = userManagement.components.emailUpdateField.getText();
+
+        if (curUsername.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập hiện tại trước.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Nếu tất cả các trường đều để trống thì không update
+        if (newAccountName.isEmpty() && newDOB.isEmpty() && newAddress.isEmpty() &&
+                newGender.isEmpty() && newEmail.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Phải điền một thông tin nào đó.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Kiểm tra định dạng ngày sinh (yyyy/mm/dd)
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        dateFormat.setLenient(false); // Không cho phép ngày không hợp lệ (ví dụ: 2024/02/30)
+        java.util.Date utilDate;
+        try {
+            utilDate = dateFormat.parse(newDOB);
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(null, "DOB phải có dạng là yyyy/mm/dd.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Chuyển đổi java.util.Date thành java.sql.Date
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+        // Cập nhật thông tin người dùng nếu tất cả điều kiện đều hợp lệ
+        if (endUserModel.updateUser(curUsername, newAccountName, sqlDate, newAddress, newGender, newEmail) > 0) {
+            loadUserData(); // Tải lại dữ liệu người dùng nếu thêm thành công
+        } else {
+            JOptionPane.showMessageDialog(null, "Failed to add user. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
 }

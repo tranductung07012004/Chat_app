@@ -24,131 +24,33 @@ public class UserManagementPanel extends JPanel {
         this.mainFrame = inputmainFrame;
         setLayout(new BorderLayout());
 
+
         // Tạo bảng hiển thị danh sách người dùng
-        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)"};
-        Object[][] data = {};
-
-        this.components.tableModel = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Không cho phép chỉnh sửa bất kỳ ô nào
-            }
-        };
-
-
-        JTable userTable = new JTable(this.components.tableModel){
-            public String getToolTipText( MouseEvent e )
-            {
-                int row = rowAtPoint( e.getPoint() );
-                int column = columnAtPoint( e.getPoint() );
-
-                Object value = getValueAt(row, column);
-                return value == null ? null : value.toString();
-            }
-        };
-
-        // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModel);
-        userTable.setRowSorter(sorter);
-
-
-        sorter.setSortable(0, false);
-        sorter.setSortable(1, true);
-        sorter.setSortable(2, false);
-        sorter.setSortable(3, false);
-        sorter.setSortable(4, false);
-        sorter.setSortable(5, false);
-        sorter.setSortable(6, true);
-
-
-
+        JTable userTable = createUserTable();
         JScrollPane scrollPane = new JScrollPane(userTable);
 
-        String[] columnNamesLogin = {"Lịch sử đăng nhập"};
-        Object[][] dataLogin = {};
+        // Tạo bảng lịch sử đăng nhập
+        JTable loginTable = createLoginTable();
+        JScrollPane scrollPaneLogin = new JScrollPane(loginTable);
 
-        this.components.tableModelLogin = new DefaultTableModel(dataLogin, columnNamesLogin) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Không cho phép chỉnh sửa bất kỳ ô nào
-            }
-        };
+        // Tạo bảng bạn bè
+        JTable friendTable = createFriendTable();
+        JScrollPane scrollPaneFriend = new JScrollPane(friendTable);
 
+        // Kết hợp bảng lịch sử đăng nhập và bạn bè
+        JSplitPane friendLoginPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPaneLogin, scrollPaneFriend);
+        friendLoginPane.setDividerLocation(200);
+        friendLoginPane.setResizeWeight(0.5);
 
-        JTable LoginTable = new JTable(this.components.tableModelLogin){
-            public String getToolTipText( MouseEvent e )
-            {
-                int row = rowAtPoint( e.getPoint() );
-                int column = columnAtPoint( e.getPoint() );
-
-                Object value = getValueAt(row, column);
-                return value == null ? null : value.toString();
-            }
-        };
-
-        // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorterLoginTable = new TableRowSorter<>(this.components.tableModelLogin);
-        LoginTable.setRowSorter(sorterLoginTable);
-
-
-        sorterLoginTable.setSortable(0, true);
-
-        JScrollPane scrollPaneLogin = new JScrollPane(LoginTable);
-
-
-        String[] columnNamesFriend = {"Tên đăng nhập", "Họ tên"};
-        Object[][] dataFriend = {};
-
-        this.components.tableModelFriend = new DefaultTableModel(dataFriend, columnNamesFriend) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Không cho phép chỉnh sửa bất kỳ ô nào
-            }
-        };
-
-
-        JTable FriendTable = new JTable(this.components.tableModelFriend){
-            public String getToolTipText( MouseEvent e )
-            {
-                int row = rowAtPoint( e.getPoint() );
-                int column = columnAtPoint( e.getPoint() );
-
-                Object value = getValueAt(row, column);
-                return value == null ? null : value.toString();
-            }
-        };
-
-        // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorterFriendTable = new TableRowSorter<>(this.components.tableModelFriend);
-        FriendTable.setRowSorter(sorterFriendTable);
-
-
-        sorterFriendTable.setSortable(0, true);
-
-        JScrollPane scrollPanelFriend = new JScrollPane(FriendTable);
-
-        JSplitPane FriendLoginPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPaneLogin, scrollPanelFriend);
-        FriendLoginPane.setDividerLocation(200); // Đặt vị trí chia
-        FriendLoginPane.setResizeWeight(0.5); // Đặt tỷ lệ kích thước giữa hai bảng
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, FriendLoginPane);
-        splitPane.setDividerLocation(200); // Đặt vị trí chia
-        splitPane.setResizeWeight(0.5); // Đặt tỷ lệ kích thước giữa hai bảng
+        // Kết hợp bảng người dùng với bảng lịch sử đăng nhập và bạn bè
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, friendLoginPane);
+        splitPane.setDividerLocation(200);
+        splitPane.setResizeWeight(0.5);
 
 
         // Tạo panel cho các chức năng
-        JPanel actionPanel = new JPanel();
+        JPanel actionPanel = createActionPanel();
 
-
-
-
-        actionPanel.add(this.components.deleteButton);
-        actionPanel.add(this.components.addButton);
-        actionPanel.add(this.components.searchBtn);
-        actionPanel.add(this.components.updateButton);
-        actionPanel.add(this.components.lockButton);
-        actionPanel.add(this.components.loginHistoryBtn);
-        actionPanel.add(this.components.friendBtn);
 
         // Thêm các thành phần vào panel
         add(splitPane, BorderLayout.CENTER);
@@ -159,11 +61,119 @@ public class UserManagementPanel extends JPanel {
         deleteUserDialog();
         addUserDialog();
         searchUserDialog();
+        updateUserDialog();
 
         // Xử lý sự kiện cho các nút
         new UserManagementHandler(this);
 
 
+    }
+
+    private JTable createUserTable() {
+        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)", "Khóa"};
+        Object[][] data = {};
+        this.components.tableModel = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable userTable = new JTable(this.components.tableModel) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                int row = rowAtPoint(e.getPoint());
+                int column = columnAtPoint(e.getPoint());
+                Object value = getValueAt(row, column);
+                return value == null ? null : value.toString();
+            }
+        };
+
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModel);
+        userTable.setRowSorter(sorter);
+
+        sorter.setSortable(0, false);
+        sorter.setSortable(1, true);
+        sorter.setSortable(2, false);
+        sorter.setSortable(3, false);
+        sorter.setSortable(4, false);
+        sorter.setSortable(5, false);
+        sorter.setSortable(6, true);
+        sorter.setSortable(7, false);
+
+
+        return userTable;
+    }
+
+    private JTable createLoginTable() {
+        String[] columnNames = {"Lịch sử đăng nhập"};
+        Object[][] data = {};
+        this.components.tableModelLogin = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable loginTable = new JTable(this.components.tableModelLogin) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                int row = rowAtPoint(e.getPoint());
+                int column = columnAtPoint(e.getPoint());
+                Object value = getValueAt(row, column);
+                return value == null ? null : value.toString();
+            }
+        };
+
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModelLogin);
+        loginTable.setRowSorter(sorter);
+
+        sorter.setSortable(0, true);
+
+        return loginTable;
+    }
+
+    private JTable createFriendTable() {
+        String[] columnNames = {"Tên đăng nhập", "Họ tên"};
+        Object[][] data = {};
+        this.components.tableModelFriend = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable friendTable = new JTable(this.components.tableModelFriend) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                int row = rowAtPoint(e.getPoint());
+                int column = columnAtPoint(e.getPoint());
+                Object value = getValueAt(row, column);
+                return value == null ? null : value.toString();
+            }
+        };
+
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModelFriend);
+        friendTable.setRowSorter(sorter);
+
+        sorter.setSortable(0, true);
+        sorter.setSortable(1, true);
+
+        return friendTable;
+    }
+
+    public JPanel createActionPanel() {
+        JPanel actionPanel = new JPanel();
+
+        actionPanel.add(this.components.deleteButton);
+        actionPanel.add(this.components.addButton);
+        actionPanel.add(this.components.searchBtn);
+        actionPanel.add(this.components.updateButton);
+        actionPanel.add(this.components.lockButton);
+        actionPanel.add(this.components.loginHistoryBtn);
+        actionPanel.add(this.components.friendBtn);
+        actionPanel.add(this.components.updatePassword);
+        return actionPanel;
     }
 
     public void updateTableData(Object[][] data) {
@@ -263,6 +273,72 @@ public class UserManagementPanel extends JPanel {
     }
 
 
+    public void updateUserDialog() {
+        // Tạo dialog chính
+        this.components.updateUserDialog.setSize(400, 500);
+        this.components.updateUserDialog.setLayout(new BorderLayout());
+
+        // Panel nhập username
+        JPanel usernamePanel = new JPanel(new BorderLayout());
+        usernamePanel.setBorder(BorderFactory.createTitledBorder("Nhập tên đăng nhập hiện tại"));
+        usernamePanel.add(this.components.usernameFieldUpdateButton, BorderLayout.CENTER);
+        usernamePanel.add(this.components.usernameOkUpdateButton, BorderLayout.EAST);
+
+        String[] labels = {
+                "Họ tên:",
+                "Ngày sinh (yyyy/mm/dd):",
+                "Địa chỉ:",
+                "Giới tính:",
+                "Email:"
+        };
+
+        JComponent[] components = {
+                this.components.accountNameUpdateField,
+                this.components.dobUpdateField,
+                this.components.addressUpdateField,
+                this.components.genderUpdateField,
+                this.components.emailUpdateField
+        };
+
+        // Panel cập nhật thông tin
+        JPanel updatePanel = new JPanel(new GridBagLayout());
+        updatePanel.setBorder(BorderFactory.createTitledBorder("Cập nhật thông tin"));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 2, 2, 5); // Khoảng cách giữa các thành phần
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Dùng vòng lặp để thêm các thành phần vào panel
+        for (int i = 0; i < labels.length; i++) {
+            // Thêm nhãn
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            updatePanel.add(new JLabel(labels[i]), gbc);
+
+            // Thêm trường dữ liệu
+            gbc.gridx = 1;
+            gbc.gridy = i;
+            updatePanel.add(components[i], gbc);
+        }
+
+
+        // Panel nút hành động
+        JPanel actionPanel = new JPanel();
+        actionPanel.add(this.components.cancelUpdateButton);
+        actionPanel.add(this.components.confirmUpdateButton);
+
+        // Thêm các thành phần vào dialog
+        this.components.updateUserDialog.add(usernamePanel, BorderLayout.NORTH);
+        this.components.updateUserDialog.add(updatePanel, BorderLayout.CENTER);
+        this.components.updateUserDialog.add(actionPanel, BorderLayout.SOUTH);
+
+        // Hiển thị dialog
+        this.components.updateUserDialog.setLocationRelativeTo(mainFrame);
+        this.components.updateUserDialog.setVisible(false);
+
+    }
+
+
 
     public class UserManagementComponents {
 
@@ -271,6 +347,7 @@ public class UserManagementPanel extends JPanel {
         public JButton searchBtn = new JButton("Tìm kiếm");
         public JButton loginHistoryBtn = new JButton("Lịch sử đăng nhập");
         public JButton friendBtn = new JButton("Bạn bè");
+        public JButton updatePassword = new JButton("Cập nhật mật khẩu");
 
 
         // Tính năng xóa người dùng
@@ -285,19 +362,35 @@ public class UserManagementPanel extends JPanel {
         public JDialog addDialog = new JDialog(mainFrame, "Thêm người dùng", true);
         public JButton submitAddButton = new JButton("OK");
         public JButton cancelAddButton = new JButton("Hủy");
-        public JTextField usernameFieldAddButton = new JTextField(10);
-        public JTextField passFieldAddButton = new JTextField(10);
-        public JTextField accountnameFieldAddButton = new JTextField(10);
-        public JTextField dobFieldAddButton = new JTextField(10);
-        public JTextField addressFieldAddButton = new JTextField(10);
-        public JTextField genderFieldAddButton = new JTextField(10);
-        public JTextField emailFieldAddButton = new JTextField(10);
+        public JTextField usernameFieldAddButton = new JTextField(15);
+        public JTextField passFieldAddButton = new JTextField(15);
+        public JTextField accountnameFieldAddButton = new JTextField(15);
+        public JTextField dobFieldAddButton = new JTextField(15);
+        public JTextField addressFieldAddButton = new JTextField(15);
+        public JTextField genderFieldAddButton = new JTextField(15);
+        public JTextField emailFieldAddButton = new JTextField(15);
 
         // Tính năng tìm kiếm
         public JDialog searchDialog = new JDialog(mainFrame, "Tìm kiếm người dùng", true);
         public JTextField textFieldSearchDialog = new JTextField(10);
         public JButton submitSearchButton = new JButton("OK");
         public JButton cancelSearchButton = new JButton("Hủy");
+
+
+        // Tính năng cập nhật
+        public JDialog updateUserDialog = new JDialog(mainFrame, "Cập nhật thông tin người dùng", true);
+
+        public JTextField usernameFieldUpdateButton = new JTextField(10);
+        public JButton usernameOkUpdateButton = new JButton("OK");
+
+        public JTextField accountNameUpdateField = new JTextField(10);
+        public JTextField dobUpdateField = new JTextField(10);
+        public JTextField addressUpdateField = new JTextField(10);
+        public JTextField genderUpdateField = new JTextField(10);
+        public JTextField emailUpdateField = new JTextField(10);
+
+        public JButton cancelUpdateButton = new JButton("Hủy");
+        public JButton confirmUpdateButton = new JButton("Cập nhật");
 
 
         public DefaultTableModel tableModel;
