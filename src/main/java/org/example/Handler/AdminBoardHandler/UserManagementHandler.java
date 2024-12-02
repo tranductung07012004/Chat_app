@@ -20,40 +20,56 @@ public class UserManagementHandler  {
     public UserManagementHandler(UserManagementPanel inputUserManagement) {
         this.userManagement = inputUserManagement;
 
-        // Gắn sự kiện trực tiếp với lambda expressions
+        // Reload function
+        userManagement.components.reloadBtn.addActionListener(e -> handleReloadBtn());
+
+        // Delete function
         userManagement.deleteComponents.deleteButton.addActionListener(e -> handleDeleteButton());
         userManagement.deleteComponents.submitDeleteBtn.addActionListener(e -> handleSubmitDelete());
         userManagement.deleteComponents.cancelDeleteBtn.addActionListener(e -> handleCancelDelete());
 
+        // Add function
         userManagement.addComponents.addButton.addActionListener(e -> handleAddButton());
         userManagement.addComponents.cancelAddButton.addActionListener(e -> handleCancelAddButton());
         userManagement.addComponents.submitAddButton.addActionListener(e -> handleSubmitAddButton());
 
+        // Search function
         userManagement.searchComponents.searchBtn.addActionListener(e -> handleSearchButton());
-        userManagement.searchComponents.submitSearchButton.addActionListener(e -> handleSubmitSearchButton());
+        userManagement.searchComponents.submitUsernameBtn.addActionListener(e -> handleSubmitUsernameBtn());
+        userManagement.searchComponents.submitAccountnameBtn.addActionListener(e -> handleSubmitAccountnameBtn());
+        userManagement.searchComponents.submitStateBtn.addActionListener(e -> handleSubmitStateBtn());
         userManagement.searchComponents.cancelSearchButton.addActionListener(e -> handleCancelSearchButton());
 
+        // Update function
         userManagement.updateComponents.updateButton.addActionListener(e -> handleUpdateButton());
         userManagement.updateComponents.cancelUpdateButton.addActionListener(e -> handleCancelUpdateButton());
         userManagement.updateComponents.usernameOkUpdateButton.addActionListener(e -> handleUsernameOKUpdateButton());
         userManagement.updateComponents.confirmUpdateButton.addActionListener(e -> handleConfirmUpdateButton());
 
+        // Lock function
         userManagement.lockComponents.lockButton.addActionListener(e -> handleLockButton());
         userManagement.lockComponents.submitUnlockButton.addActionListener(e -> handleSubmitUnlockButton());
         userManagement.lockComponents.cancelLockButton.addActionListener(e -> handleCancelLockButton());
         userManagement.lockComponents.submitLockButton.addActionListener(e -> handleSubmitLockButton());
 
+        // Login history function
         userManagement.loginHistoryComponents.submitLoginHistoryBtn.addActionListener(e -> handleSubmitLoginHistoryBtn());
         userManagement.loginHistoryComponents.cancelLoginHistoryBtn.addActionListener(e -> handleCancelLoginHistoryBtn());
         userManagement.loginHistoryComponents.loginHistoryBtn.addActionListener(e -> handleLoginHistoryBtn());
 
+        // Friend function
         userManagement.friendComponents.friendBtn.addActionListener(e -> handleFriendBtn());
         userManagement.friendComponents.cancelFriendBtn.addActionListener(e -> handleCancelFriendBtn());
         userManagement.friendComponents.submitFriendBtn.addActionListener(e -> handleSubmitFriendBtn());
 
+        // Update-pass function
         userManagement.updatePassComponents.cancelUpdatePassBtn.addActionListener(e -> handleCancelUpdatePassBtn());
         userManagement.updatePassComponents.submitUpdatePassBtn.addActionListener(e -> handleSubmitUpdatePassBtn());
         userManagement.updatePassComponents.updatePassword.addActionListener(e -> handleUpdatePassBtn());
+        loadUserData();
+    }
+
+    private void handleReloadBtn() {
         loadUserData();
     }
 
@@ -139,9 +155,9 @@ public class UserManagementHandler  {
         userManagement.searchComponents.searchDialog.setVisible(true);
     }
 
-    private void handleSubmitSearchButton() {
+    private void handleSubmitUsernameBtn() {
         // Lấy dữ liệu từ JTextField
-        String username = userManagement.searchComponents.textFieldSearchDialog.getText();
+        String username = userManagement.searchComponents.usernameField.getText();
 
         // Kiểm tra nếu người dùng không nhập gì
         if (username.isEmpty()) {
@@ -168,6 +184,33 @@ public class UserManagementHandler  {
             // Thông báo nếu không tìm thấy người dùng
             JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void handleSubmitAccountnameBtn() {
+        // Lấy dữ liệu từ JTextField
+        String accountname = userManagement.searchComponents.accountnameField.getText();
+
+        // Kiểm tra nếu người dùng không nhập gì
+        if (accountname.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Hãy nhập một họ tên.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Gọi hàm tìm kiếm trong cơ sở dữ liệu
+        Object[][] userData = endUserModel.searchUserByAccountName(accountname);
+
+        // Kiểm tra kết quả trả về
+        if (userData.length > 0) {
+            JOptionPane.showMessageDialog(null, "Tìm kiếm thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            userManagement.updateTableData(userManagement.components.tableModel, userData);
+        }
+        else {
+            // Thông báo nếu không tìm thấy người dùng
+            JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void handleSubmitStateBtn() {
+        return;
     }
 
     private void handleUpdateButton() {
@@ -317,17 +360,24 @@ public class UserManagementHandler  {
         if (username.isEmpty()) {
             // Thông báo lỗi nếu tên đăng nhập bị để trống
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            // Lấy danh sách bạn bè từ hàm getFriendOfUsername
-            Object[][] friendsData = userFriendModel.getFriendOfUsername(username);
+            return;
+        }
 
-            if (friendsData == null) {
-                // Thông báo lỗi nếu tên đăng nhập không tồn tại
-                JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong hệ thống.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (friendsData.length == 0) {
+
+        if (!endUserModel.checkIfUserExists(username)) {
+            // Thông báo lỗi nếu tên đăng nhập không tồn tại
+            JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong hệ thống.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+         // Lấy danh sách bạn bè từ hàm getFriendOfUsername
+        Object[][] friendsData = userFriendModel.getFriendOfUsername(username);
+
+        if (friendsData != null) {
+            if (friendsData.length == 0) {
                 // Thông báo nếu không có bạn bè
                 JOptionPane.showMessageDialog(null, "Người dùng này không có bạn bè.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            }
+            else {
                 // Hiển thị danh sách bạn bè
                 JOptionPane.showMessageDialog(null, "Tìm kiếm danh sách bạn bè thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 userManagement.updateTableData(userManagement.components.tableModelFriend, friendsData);

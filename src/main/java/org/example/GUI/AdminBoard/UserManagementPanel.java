@@ -186,6 +186,7 @@ public class UserManagementPanel extends JPanel {
     public JPanel createActionPanel() {
         JPanel actionPanel = new JPanel();
 
+        actionPanel.add(this.components.reloadBtn);
         actionPanel.add(this.deleteComponents.deleteButton);
         actionPanel.add(this.addComponents.addButton);
         actionPanel.add(this.searchComponents.searchBtn);
@@ -194,6 +195,7 @@ public class UserManagementPanel extends JPanel {
         actionPanel.add(this.loginHistoryComponents.loginHistoryBtn);
         actionPanel.add(this.friendComponents.friendBtn);
         actionPanel.add(this.updatePassComponents.updatePassword);
+
         return actionPanel;
     }
 
@@ -276,24 +278,61 @@ public class UserManagementPanel extends JPanel {
     }
 
     public void searchUserDialog() {
+        // Tạo searchDialog
+        this.searchComponents.searchDialog.setSize(400, 200);
+        this.searchComponents.searchDialog.setLayout(new BorderLayout(10, 10)); // Layout chính
 
-        this.searchComponents.searchDialog.setSize(400, 130);
-        this.searchComponents.searchDialog.setLayout(new BorderLayout());
+        // Tạo panel chính với GridBagLayout
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Padding giữa các thành phần
 
-        JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Tên đăng nhập:"));
-        inputPanel.add(this.searchComponents.textFieldSearchDialog);
+        String[] labels = {"Tên đăng nhập", "Họ tên", "Trạng thái"};
+        JTextField[] textFields = {
+                this.searchComponents.usernameField,
+                this.searchComponents.accountnameField,
+                this.searchComponents.stateField
+        };
+        JButton[] buttons = {
+                this.searchComponents.submitUsernameBtn,
+                this.searchComponents.submitAccountnameBtn,
+                this.searchComponents.submitStateBtn
+        };
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.add(this.searchComponents.submitSearchButton);
-        buttonPanel.add(this.searchComponents.cancelSearchButton);
+        // Thêm các thành phần vào mainPanel
+        for (int i = 0; i < labels.length; i++) {
+            gbc.gridx = 0; gbc.gridy = i;
+            gbc.weightx = 0;
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.anchor = GridBagConstraints.WEST;
+            mainPanel.add(new JLabel(labels[i]), gbc);
 
-        this.searchComponents.searchDialog.add(inputPanel, BorderLayout.CENTER);
-        this.searchComponents.searchDialog.add(buttonPanel, BorderLayout.SOUTH);
+            gbc.gridx = 1;
+            gbc.weightx = 1;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            mainPanel.add(textFields[i], gbc);
 
-        this.searchComponents.searchDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+            gbc.gridx = 2;
+            gbc.weightx = 0;
+            gbc.fill = GridBagConstraints.NONE;
+            mainPanel.add(buttons[i], gbc);
+        }
+
+        // Tạo panel cho nút Cancel
+        JPanel cancelPanel = new JPanel();
+        cancelPanel.add(this.searchComponents.cancelSearchButton);
+
+        // Thêm các panel vào searchDialog
+        this.searchComponents.searchDialog.add(mainPanel, BorderLayout.CENTER);
+        this.searchComponents.searchDialog.add(cancelPanel, BorderLayout.SOUTH);
+
+        // Hiển thị dialog
+        this.searchComponents.searchDialog.setLocationRelativeTo(mainFrame);
         this.searchComponents.searchDialog.setVisible(false);
     }
+
+
+
 
 
     public void updateUserDialog() {
@@ -464,8 +503,7 @@ public class UserManagementPanel extends JPanel {
 
     public class UserManagementComponents {
 
-
-
+        public JButton reloadBtn = new JButton("RELOAD");
 
         public DefaultTableModel tableModel;
         public DefaultTableModel tableModelLogin;
@@ -500,11 +538,16 @@ public class UserManagementPanel extends JPanel {
     public class searchUserComponents {
 
         // Tính năng tìm kiếm
-        public JButton searchBtn = new JButton("Tìm kiếm");
+        public JButton searchBtn = new JButton("Lọc");
         public JDialog searchDialog = new JDialog(mainFrame, "Tìm kiếm người dùng", true);
-        public JTextField textFieldSearchDialog = new JTextField(10);
-        public JButton submitSearchButton = new JButton("OK");
+        public JTextField usernameField = new JTextField(10);
+        public JTextField accountnameField = new JTextField(10);
+        public JTextField stateField = new JTextField(10);
+        public JButton submitUsernameBtn = new JButton("OK");
+        public JButton submitAccountnameBtn = new JButton("OK");
+        public JButton submitStateBtn = new JButton("OK");
         public JButton cancelSearchButton = new JButton("Hủy");
+
     }
 
     public class updateUserComponents {

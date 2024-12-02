@@ -182,6 +182,51 @@ public class endUserModel {
         return userData;
     }
 
+    public static Object[][] searchUserByAccountName(String accountname) {
+        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user WHERE account_name = ?";
+        List<Object[]> userData = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, accountname);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ kết quả truy vấn
+                    String resultUsername = rs.getString("username");
+                    String accountName = rs.getString("account_name");
+                    String address = rs.getString("address");
+                    Date dob = rs.getDate("dob");
+                    String gender = rs.getString("gender");
+                    String email = rs.getString("email");
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+
+                    // Gán dữ liệu vào mảng
+                    userData.add(new Object[]{
+                        resultUsername,
+                        accountName,
+                        address,
+                        dob,
+                        gender,
+                        email,
+                        timeRegistered.toString()
+                    });
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2D
+        Object[][] userArray = new Object[userData.size()][];
+        return userData.toArray(userArray);
+    }
+
     public static boolean checkIfUserExists(String username) {
         String query = "SELECT 1 FROM end_user WHERE username = ?";
         boolean exists = false;
