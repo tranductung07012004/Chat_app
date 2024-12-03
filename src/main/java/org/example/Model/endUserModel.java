@@ -376,7 +376,7 @@ public class endUserModel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false; // Trả về false nếu xảy ra lỗi hoặc không cập nhật được
+        return false; 
     }
 
 
