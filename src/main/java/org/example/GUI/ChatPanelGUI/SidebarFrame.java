@@ -2,6 +2,9 @@ package org.example.GUI.ChatPanelGUI;
 
 import org.example.GUI.MainFrameGUI;
 import org.example.Handler.ChatPanelHandler.SidebarHandler;
+import org.example.Model.endUserModel;
+import org.example.Model.userFriendModel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,26 +100,26 @@ public class SidebarFrame extends JPanel {
         JPanel contactPanel = new JPanel(new BorderLayout());
         contactPanel.setPreferredSize(new Dimension(0, 50)); // Fixed height
         contactPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Full width
-    
+
         // Name label
         JLabel nameLabel = new JLabel(contact.getName());
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-    
+
         // Status label
         JLabel statusLabel = new JLabel(contact.isOnline() ? "Online" : "Offline");
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         statusLabel.setForeground(contact.isOnline() ? Color.GREEN : Color.RED);
         statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-    
+
         contactPanel.add(nameLabel, BorderLayout.CENTER);
         contactPanel.add(statusLabel, BorderLayout.EAST);
-    
+
         // Add padding and a bottom border for spacing
         contactPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY), // Bottom border
                 BorderFactory.createEmptyBorder(5, 5, 5, 5) // Padding
         ));
-    
+
         // Add mouse listener to detect click events
         contactPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -125,11 +128,38 @@ public class SidebarFrame extends JPanel {
                 contactIsGroup=contact.isGroup;
             }
         });
-    
+
+        return contactPanel;
+    }
+    private JPanel createFriendListObject(endUserModel user) {
+        JPanel contactPanel = new JPanel(new BorderLayout());
+        contactPanel.setPreferredSize(new Dimension(0, 50)); // Fixed height
+        contactPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Full width
+
+        // Name label
+        JLabel nameLabel = new JLabel(user.getAccountName());
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Status label
+        JLabel statusLabel = new JLabel(user.getOnline() ? "Online" : "Offline");
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        statusLabel.setForeground(user.getOnline() ? Color.GREEN : Color.RED);
+        statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        contactPanel.add(nameLabel, BorderLayout.CENTER);
+        contactPanel.add(statusLabel, BorderLayout.EAST);
+
+        // Add padding and a bottom border for spacing
+        contactPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY), // Bottom border
+                BorderFactory.createEmptyBorder(5, 5, 5, 5) // Padding
+        ));
+
+
         return contactPanel;
     }
 
-        
+
     public JComboBox<String> getOptionsComboBox() {
         return optionsComboBox;
     }
@@ -157,26 +187,36 @@ public class SidebarFrame extends JPanel {
             return online;
         }
     }
-    
 
-    public void createFriendList() {
-        // Tạo frame mới cho danh sách bạn bè
+
+    private void createFriendList() {
+        // Fetch user friends from the database
+        List<userFriendModel> friends = userFriendModel.loadUserFriends(mainFrame.getCurrentUserId());  // Assuming you have the userId available
+        List<endUserModel> filteredUsers = new ArrayList<>();
+
+        // Convert the userFriendModel list to endUserModel list
+        for (userFriendModel friend : friends) {
+            endUserModel person = endUserModel.getUserFromId(friend.getFriend_id());
+            filteredUsers.add(person); // Add the endUserModel directly
+        }
+
+        // Create the frame for the Friend List
         JFrame friendListFrame = new JFrame("Friend List");
-        friendListFrame.setSize(300, 550); // Kích thước cố định
+        friendListFrame.setSize(300, 550); // Fixed size
         friendListFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         friendListFrame.setLayout(new BorderLayout());
-        friendListFrame.setLocationRelativeTo(null); // Đặt ở giữa màn hình
+        friendListFrame.setLocationRelativeTo(null); // Center the frame
 
-        // Tạo panel chính cho danh sách bạn bè
+        // Main panel for the friend list
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // Ô tìm kiếm để lọc theo tên
+        // Search field to filter friends
         JTextField searchField = new JTextField("Search...");
-        searchField.setPreferredSize(new Dimension(0, 30)); // Chiều cao 30px
-        searchField.setForeground(Color.GRAY); // Placeholder màu xám
+        searchField.setPreferredSize(new Dimension(0, 30)); // Height 30px
+        searchField.setForeground(Color.GRAY); // Placeholder text color
 
-        // Xóa placeholder khi focus và khôi phục nếu để trống khi mất focus
+        // Remove placeholder on focus
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 if (searchField.getText().equals("Search...")) {
@@ -194,68 +234,65 @@ public class SidebarFrame extends JPanel {
         });
         mainPanel.add(searchField, BorderLayout.NORTH);
 
-        // Panel chứa danh sách bạn bè
+        // Panel to hold friends list
         JPanel friendListPanel = new JPanel();
         friendListPanel.setLayout(new BoxLayout(friendListPanel, BoxLayout.Y_AXIS));
 
-        // Tạo danh sách bạn bè từ `contacts`
-        List<Contact> filteredContacts = new ArrayList<>();
-        filteredContacts.add(new Contact("Alice", true, false));
-        filteredContacts.add(new Contact("Bob", false, false));
-        for (Contact contact : filteredContacts) {
-            friendListPanel.add(createContactPanel(contact));
+        // Add each friend to the panel directly using endUserModel
+        for (endUserModel user : filteredUsers) {
+            friendListPanel.add(createFriendListObject(user));
         }
 
-        // Thêm thanh cuộn nếu danh sách bạn bè quá dài
+        // Add a scroll pane for the list
         JScrollPane friendScrollPane = new JScrollPane(friendListPanel);
         mainPanel.add(friendScrollPane, BorderLayout.CENTER);
 
-        // Nút để lọc danh sách online
+        // Button to filter online friends only
         JButton filterOnlineButton = new JButton("Show Online Only");
         filterOnlineButton.addActionListener(new ActionListener() {
-            private boolean isFilteringOnline = false; // Trạng thái lọc
+            private boolean isFilteringOnline = false;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                friendListPanel.removeAll(); // Xóa tất cả các panel hiện tại
+                friendListPanel.removeAll(); // Clear the current list
                 if (isFilteringOnline) {
-                    // Thoát chế độ lọc, hiển thị toàn bộ danh sách
-                    for (Contact contact : filteredContacts) {
-                        friendListPanel.add(createContactPanel(contact));
+                    // Show all friends
+                    for (endUserModel user : filteredUsers) {
+                        friendListPanel.add(createFriendListObject(user));
                     }
                     filterOnlineButton.setText("Show Online Only");
                 } else {
-                    // Lọc danh sách chỉ hiện online
-                    for (Contact contact : filteredContacts) {
-                        if (contact.isOnline()) {
-                            friendListPanel.add(createContactPanel(contact));
+                    // Show only online friends
+                    for (endUserModel user : filteredUsers) {
+                        if (user.getOnline()) {
+                            friendListPanel.add(createFriendListObject(user));
                         }
                     }
                     filterOnlineButton.setText("Show All");
                 }
-                isFilteringOnline = !isFilteringOnline; // Đổi trạng thái lọc
+                isFilteringOnline = !isFilteringOnline; // Toggle the filter
                 friendListPanel.revalidate();
                 friendListPanel.repaint();
             }
         });
 
-        // Thêm nút lọc ở dưới cùng
+        // Add filter button at the bottom
         mainPanel.add(filterOnlineButton, BorderLayout.SOUTH);
 
-        // Thêm ActionListener cho ô tìm kiếm để lọc theo tên
+        // Add search action to filter friends by name
         searchField.addActionListener(e -> {
             String searchText = searchField.getText().trim().toLowerCase();
-            friendListPanel.removeAll(); // Xóa tất cả các panel hiện tại
-            for (Contact contact : contacts) {
-                if (contact.getName().toLowerCase().contains(searchText)) {
-                    friendListPanel.add(createContactPanel(contact));
+            friendListPanel.removeAll();
+            for (endUserModel user : filteredUsers) {
+                if (user.getAccountName().toLowerCase().contains(searchText)) {
+                    friendListPanel.add(createFriendListObject(user));
                 }
             }
             friendListPanel.revalidate();
             friendListPanel.repaint();
         });
 
-        // Thêm panel chính vào frame
+        // Add the main panel to the frame
         friendListFrame.add(mainPanel);
         friendListFrame.setVisible(true);
     }

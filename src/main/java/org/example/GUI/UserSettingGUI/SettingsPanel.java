@@ -76,7 +76,27 @@ public class SettingsPanel extends JPanel {
         addressField = new JTextField();
 
         JLabel dobLabel = new JLabel("Date of Birth:");
-        dobField = new JTextField();
+        dobField = new JTextField("dd/MM/yyyy");
+        dobField.setForeground(Color.GRAY);
+
+        dobField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+                if (dobField.getText().equals("dd/MM/yyyy")) {
+                    dobField.setText("");
+                    dobField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (dobField.getText().isEmpty()) {
+                    dobField.setText("dd/MM/yyyy");
+                    dobField.setForeground(Color.GRAY);
+                }
+            }
+        });
+
 
         JLabel emailLabel = new JLabel("Email:");
         emailField = new JTextField();
