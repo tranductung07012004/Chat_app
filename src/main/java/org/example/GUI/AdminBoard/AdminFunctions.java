@@ -8,22 +8,19 @@ import org.example.GUI.MainFrameGUI;
 
 public class AdminFunctions extends JPanel {
     private final CardLayout cardLayout;
-    private MainFrameGUI mainFrame;
-
     public AdminFunctions(MainFrameGUI inputMainFrame) {
 
 
-        setSize(1150, 600);
+        setSize(1200, 600);
 
         cardLayout = new CardLayout();
         setLayout(cardLayout);
-        this.mainFrame = inputMainFrame;
 
 
         // Khởi tạo các panel cho từng chức năng
-        JPanel userManagementPanel = new UserManagementPanel();
-        JPanel loginHistoryPanel = new LoginHistoryPanel();
-        JPanel chatGroupPanel = new ChatGroupPanel();
+        JPanel userManagementPanel = new UserManagementPanel(inputMainFrame);
+        JPanel loginHistoryPanel = new LoginHistoryPanel(inputMainFrame);
+        JPanel chatGroupPanel = new ChatGroupPanel(inputMainFrame);
         JPanel spamReportPanel = new SpamReportPanel();
         JPanel newUserPanel = new NewUserStatistic();
         JPanel userFriendListPanel = new UserFriendListPanel();

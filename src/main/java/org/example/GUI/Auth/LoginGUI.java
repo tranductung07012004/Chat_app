@@ -5,8 +5,6 @@ import org.example.Handler.AuthHandler.LoginHandler;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 
 public class LoginGUI extends JPanel {
