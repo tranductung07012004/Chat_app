@@ -6,7 +6,6 @@ import org.example.Handler.AuthHandler.LoginHandler;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class LoginGUI extends JPanel {
     private final JTextField accountName;
     private final JPasswordField passField;
@@ -14,18 +13,13 @@ public class LoginGUI extends JPanel {
     private final JButton registerBtn;
     private final JButton adminBtn;
     private final JLabel forgotPasswordLink;
-    //private MainFrameGUI mainFrame;
-
 
     public LoginGUI(MainFrameGUI inputMainFrame) {
-
-        //this.mainFrame = inputMainFrame;
         // Define the label for login screen
         JLabel screenName = new JLabel("LOGIN");
         screenName.setBounds(315, 80, 95, 50);
         screenName.setFont(new Font("SANS_SERIF", Font.BOLD, 24));
         screenName.setForeground(Color.BLUE);
-
 
         // Define the account name input
         accountName = new JTextField();
@@ -51,13 +45,12 @@ public class LoginGUI extends JPanel {
         adminBtn = new JButton("Administrator ?");
         adminBtn.setBounds(247, 350, 95 * 2 + 5, 40);
 
-        // Tạo JLabel giống như một hyperlink cho "Quên mật khẩu"
+        // Define JLabel as a hyperlink for "Forgot Password"
         forgotPasswordLink = new JLabel("<html><a href='#'>Khởi tạo mật khẩu?</a></html>");
         forgotPasswordLink.setBounds(390, 240, 130, 40);
         forgotPasswordLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-
-        // Add the components above to the JFrame window
+        // Add the components to the JPanel
         add(registerBtn);
         add(loginBtn);
         add(passLabel);
@@ -68,17 +61,44 @@ public class LoginGUI extends JPanel {
         add(adminBtn);
         add(forgotPasswordLink);
 
+        // Initialize the login handler
         new LoginHandler(this, inputMainFrame);
 
         setSize(700, 500);
         setLayout(null);
     }
 
+    // Getters
+    public JButton getLoginBtn() {
+        return loginBtn;
+    }
 
-    public JButton getLoginBtn() { return loginBtn; }
-    public JButton getRegisterBtn() { return registerBtn; }
-    public JButton getAdminBtn() { return adminBtn; }
-    public JTextField getAccountName() { return accountName; }
-    public JPasswordField getPassField() { return passField; }
-    public JLabel getForgotPasswordLink() { return forgotPasswordLink; }
+    public JButton getRegisterBtn() {
+        return registerBtn;
+    }
+
+    public JButton getAdminBtn() {
+        return adminBtn;
+    }
+
+    public JTextField getAccountName() {
+        return accountName;
+    }
+
+    public JPasswordField getPassField() {
+        return passField;
+    }
+
+    public JLabel getForgotPasswordLink() {
+        return forgotPasswordLink;
+    }
+
+    // New Methods for Consistency
+    public JTextField getUsernameField() {
+        return getAccountName();
+    }
+
+    public JPasswordField getPasswordField() {
+        return getPassField();
+    }
 }

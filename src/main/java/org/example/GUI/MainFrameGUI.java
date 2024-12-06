@@ -8,11 +8,14 @@ import org.example.GUI.Auth.RegisterGUI;
 import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
 import org.example.GUI.UserFriendRequest.FriendRequestFrame;
 import org.example.GUI.UserSettingGUI.SettingsPanel;
+import org.example.Model.endUserModel;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrameGUI extends JFrame {
+    private int currentUserId=-1;
+    private ChatPanelFrame chatPanelFrame=new ChatPanelFrame(this);
     public MainFrameGUI() {
         setTitle("Main Frame");
         setSize(700, 550);
@@ -21,6 +24,23 @@ public class MainFrameGUI extends JFrame {
         setResizable(false);
         setVisible(true);
 
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                System.out.println("Window is closing...");
+
+                // Set user as offline when the window is closed
+                endUserModel user = endUserModel.getUserFromId(currentUserId);
+                if(user!=null)
+                    user.setOnline(false);  // Set user as offline
+
+                // Optional cleanup tasks
+                logOut(); // Optional, you can call logOut() if you want
+
+                // Exit the application
+                System.exit(0);
+            }
+        });
 
         showLoginPanel();
 
@@ -88,7 +108,7 @@ public class MainFrameGUI extends JFrame {
         removePanel(); // Remove the previous panel
 
         // Create and add the new chat panel
-        ChatPanelFrame chatPanelFrame = new ChatPanelFrame(this);
+
         JPanel chatPanel = chatPanelFrame.createChatPanel(); // Get chat panel from ChatPanelFrame
         add(chatPanel);
 
@@ -128,6 +148,17 @@ public class MainFrameGUI extends JFrame {
         revalidate();
         repaint();
     }
+    // Setter for currentUserId
+    public void setCurrentUserId(int userId) {
+        this.currentUserId = userId;
+    }
 
+    // Getter for currentUserId
+    public int getCurrentUserId() {
+        return currentUserId;
+    }
 
+    public ChatPanelFrame getChatPanelFrame() {
+        return chatPanelFrame;
+    }
 }

@@ -2,36 +2,39 @@ package org.example.GUI.AdminBoard;
 
 import org.example.GUI.MainFrameGUI;
 import org.example.Handler.AdminBoardHandler.verifyAdminHandler;
+
 import javax.swing.*;
 
 public class verifyAdminGUI extends JPanel {
     private JButton goBackToLogin;
     private JButton adminVerification;
     private MainFrameGUI mainFrame;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JPasswordField adminCodeField;
 
     public verifyAdminGUI(MainFrameGUI inputMainFrame) {
-
         this.mainFrame = inputMainFrame;
 
         // Username Label and Field
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setBounds(150, 150, 100, 40);
 
-        JTextField usernameField = new JTextField();
+        usernameField = new JTextField();
         usernameField.setBounds(250, 150, 200, 30);
 
         // Password Label and Field
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setBounds(150, 200, 100, 40);
 
-        JPasswordField passwordField = new JPasswordField();
+        passwordField = new JPasswordField();
         passwordField.setBounds(250, 200, 200, 30);
 
         // Admin Code Label and Field
         JLabel adminCodeLabel = new JLabel("Admin Code:");
         adminCodeLabel.setBounds(150, 250, 100, 40);
 
-        JPasswordField adminCodeField = new JPasswordField();
+        adminCodeField = new JPasswordField();
         adminCodeField.setBounds(250, 250, 200, 30);
 
         // Buttons
@@ -55,6 +58,19 @@ public class verifyAdminGUI extends JPanel {
         // Panel settings
         setSize(700, 500);
         setLayout(null);
+    }
+
+    // Getters for the fields
+    public JTextField getUsernameField() {
+        return usernameField;
+    }
+
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
+
+    public JPasswordField getAdminCodeField() {
+        return adminCodeField;
     }
 
     public JButton getGoBackToLoginBtn() {
