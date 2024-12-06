@@ -103,14 +103,15 @@ public class FriendRequestHandler {
             return;
         }
 
-        String sql = "SELECT * FROM end_user WHERE username ILIKE ? AND user_id != ?";
+        String sql = "SELECT * FROM end_user WHERE (username ILIKE ? OR account_name ILIKE ?) AND user_id != ?";
         List<endUserModel> results = new ArrayList<>();
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, "%" + query + "%");
-            stmt.setInt(2, frame.mainFrame.getCurrentUserId()); // Exclude current user
+            stmt.setString(2, "%" + query + "%");  // Search in both username and account_name
+            stmt.setInt(3, frame.mainFrame.getCurrentUserId()); // Exclude current user
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -174,7 +175,7 @@ public class FriendRequestHandler {
             //remove friend request before block
             if (friendRequestModel.isFriendRequestSent((currentUserId), targetUserId))
                 friendRequestModel.deleteFriendRequest(currentUserId, targetUserId);
-            //unfriend before blovk
+            //unfriend before block
             if (userFriendModel.isFriend(currentUserId, targetUserId))
                 userFriendModel.deleteFriend(currentUserId, targetUserId);
 
@@ -182,6 +183,11 @@ public class FriendRequestHandler {
         } else {
             JOptionPane.showMessageDialog(frame, "Error blocking user.");
         }
+    }
+    public void handleUnfriend(int targetUserId){
+        int currentUserId = frame.mainFrame.getCurrentUserId();
+        if (userFriendModel.isFriend(currentUserId, targetUserId))
+            userFriendModel.deleteFriend(currentUserId, targetUserId);
     }
 
     public List<friendRequestModel> loadFriendRequests() {

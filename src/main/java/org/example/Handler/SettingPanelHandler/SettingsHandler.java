@@ -2,6 +2,8 @@ package org.example.Handler.SettingPanelHandler;
 
 import org.example.GUI.MainFrameGUI;
 import org.example.GUI.UserSettingGUI.SettingsPanel;
+import org.example.Handler.ChatPanelHandler.Contact;
+import org.example.Handler.ChatPanelHandler.FriendListHandle;
 import org.example.Model.DBConn;
 import org.example.Model.endUserModel;
 
@@ -34,6 +36,9 @@ public class SettingsHandler {
             // Update user's online status to false before logging out
             endUserModel user = endUserModel.getUserFromId(mainFrame.getCurrentUserId());
             user.setOnline(false);  // Set user as offline
+            //remove newcontacts
+            List<Contact>contacts=FriendListHandle.getNewcontacts();
+            contacts.clear();
 
             // Now log the user out
             mainFrame.logOut();

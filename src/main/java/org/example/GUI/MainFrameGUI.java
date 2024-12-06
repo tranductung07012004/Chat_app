@@ -15,6 +15,7 @@ import java.awt.*;
 
 public class MainFrameGUI extends JFrame {
     private int currentUserId=-1;
+    private ChatPanelFrame chatPanelFrame=new ChatPanelFrame(this);
     public MainFrameGUI() {
         setTitle("Main Frame");
         setSize(700, 550);
@@ -107,7 +108,7 @@ public class MainFrameGUI extends JFrame {
         removePanel(); // Remove the previous panel
 
         // Create and add the new chat panel
-        ChatPanelFrame chatPanelFrame = new ChatPanelFrame(this);
+
         JPanel chatPanel = chatPanelFrame.createChatPanel(); // Get chat panel from ChatPanelFrame
         add(chatPanel);
 
@@ -157,4 +158,7 @@ public class MainFrameGUI extends JFrame {
         return currentUserId;
     }
 
+    public ChatPanelFrame getChatPanelFrame() {
+        return chatPanelFrame;
+    }
 }

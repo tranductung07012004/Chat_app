@@ -175,8 +175,12 @@ public class FriendRequestFrame extends JPanel {
 
             // Configure action button for friend requests
             if (isFriend) {
-                actionButton.setText("Already Friends");
-                actionButton.setEnabled(false); // Disable button if already friends
+                actionButton.setText("Unfriend");
+                actionButton.addActionListener(e -> {
+                    // Handle unfriend logic here
+                    friendRequestHandler.handleUnfriend(result.getUserId());
+                    updateSearchResults(results); // Refresh results after unfriending
+                });
             } else if (isBlocked) {
 
                 actionButton.setEnabled(false); // Disable button if the user is blocked

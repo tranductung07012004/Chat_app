@@ -1,9 +1,13 @@
 package org.example.GUI.ChatPanelGUI;
 
 import org.example.GUI.MainFrameGUI;
+import org.example.Handler.ChatPanelHandler.Contact;
+import org.example.Handler.ChatPanelHandler.FriendListHandle;
 import org.example.Handler.ChatPanelHandler.SidebarHandler;
 import org.example.Model.endUserModel;
 import org.example.Model.userFriendModel;
+
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,10 +17,15 @@ import java.util.List;
 import javax.swing.*;
 
 public class SidebarFrame extends JPanel {
-    private MainFrameGUI mainFrame;
+    private static MainFrameGUI mainFrame;
     private JComboBox<String> optionsComboBox;
-    private List<Contact> contacts;
-    public boolean contactIsGroup=true;
+    private static List<Contact> contacts;
+
+    private static JDialog friendListDialog;
+    private JPanel friendListPanel; // Declare as class field
+    private static JPanel contactsPanel; // Declare as class field
+    private List<endUserModel> filteredUsers;
+
 
     public SidebarFrame(MainFrameGUI mainFrame) {
         this.mainFrame = mainFrame;
@@ -52,19 +61,18 @@ public class SidebarFrame extends JPanel {
         JPanel topPanel = new JPanel(new BorderLayout());
 
         // Left side for contacts
-        JPanel contactsPanel = new JPanel();
+        contactsPanel = new JPanel();
         contactsPanel.setLayout(new BoxLayout(contactsPanel, BoxLayout.Y_AXIS));
         contactsPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding
 
-        // Simulated contact list
-        contacts = new ArrayList<>();
-        contacts.add(new Contact("Alice", true, false));
-        contacts.add(new Contact("Bob", false, false));
-        contacts.add(new Contact("Group chat", true, true));
+        // example data
+        contacts = SidebarHandler.loadAllContacts(mainFrame.getCurrentUserId());
+        contacts.addAll(FriendListHandle.getNewcontacts());
 
         for (Contact contact : contacts) {
             JPanel contactPanel = createContactPanel(contact);
             contactsPanel.add(contactPanel);
+
         }
 
         // Scrollable contact list
@@ -96,7 +104,26 @@ public class SidebarFrame extends JPanel {
         });
 
     }
-    private JPanel createContactPanel(Contact contact) {
+    public static void updateContactsPanel() {
+        // Assuming `contactsPanel` is the JPanel displaying contacts
+        contacts.addAll(FriendListHandle.getNewcontacts());
+
+
+        // Clear the panel
+        contactsPanel.removeAll();
+
+        // Recreate the contact panels
+        for (Contact contact : contacts) {
+            JPanel contactPanel = createContactPanel(contact); // A method to create contact panels
+            contactsPanel.add(contactPanel);
+        }
+
+        // Revalidate and repaint the panel
+        contactsPanel.revalidate();
+        contactsPanel.repaint();
+    }
+
+    private static JPanel createContactPanel(Contact contact) {
         JPanel contactPanel = new JPanel(new BorderLayout());
         contactPanel.setPreferredSize(new Dimension(0, 50)); // Fixed height
         contactPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Full width
@@ -124,8 +151,9 @@ public class SidebarFrame extends JPanel {
         contactPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // Handle the click event: open chat with the contact
-                contactIsGroup=contact.isGroup;
+                ChatPanelFrame chatPanel = mainFrame.getChatPanelFrame(); // Get reference to ChatPanel
+                chatPanel.openChat(contact); // Pass the selected contact to ChatPanel
+
             }
         });
 
@@ -144,17 +172,64 @@ public class SidebarFrame extends JPanel {
         JLabel statusLabel = new JLabel(user.getOnline() ? "Online" : "Offline");
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         statusLabel.setForeground(user.getOnline() ? Color.GREEN : Color.RED);
-        statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        contactPanel.add(nameLabel, BorderLayout.CENTER);
-        contactPanel.add(statusLabel, BorderLayout.EAST);
+        // Buttons panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        buttonsPanel.setOpaque(false); // Make the panel transparent
+
+        // Chat button
+        JButton chatButton = new JButton("Chat");
+        chatButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        FriendListHandle handler = new FriendListHandle();
+        // Chat button logic
+        chatButton.addActionListener(e -> {
+            handler.openChat(mainFrame.getCurrentUserId(), user); // Pass current user ID and target user
+        });
+
+        // Unfriend button
+        JButton unfriendButton = new JButton("Unfriend");
+        unfriendButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        unfriendButton.setForeground(Color.RED);
+
+        unfriendButton.addActionListener(e -> {
+            // Optionally remove from the database (if needed)
+            handler.unfriendUser(mainFrame.getCurrentUserId(), user.getUserId());
+
+            // Remove the user from the filteredUsers list
+            filteredUsers.remove(user); // This removes the user from the list
+
+            // Rebuild the friend list from the filteredUsers list
+            friendListPanel.removeAll(); // Clear the list
+
+            // Re-add remaining users
+            for (endUserModel remainingUser : filteredUsers) {
+                friendListPanel.add(createFriendListObject(remainingUser));
+            }
+
+            // Revalidate and repaint to refresh the UI
+            friendListPanel.revalidate();
+            friendListPanel.repaint();
+        });
+
+
+        // Add buttons to the panel
+        buttonsPanel.add(chatButton);
+        buttonsPanel.add(unfriendButton);
+
+        // Combine name and status with buttons
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setOpaque(false); // Transparent panel
+        infoPanel.add(nameLabel, BorderLayout.CENTER);
+        infoPanel.add(statusLabel, BorderLayout.EAST);
+
+        contactPanel.add(infoPanel, BorderLayout.CENTER);
+        contactPanel.add(buttonsPanel, BorderLayout.EAST);
 
         // Add padding and a bottom border for spacing
         contactPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY), // Bottom border
                 BorderFactory.createEmptyBorder(5, 5, 5, 5) // Padding
         ));
-
 
         return contactPanel;
     }
@@ -164,97 +239,75 @@ public class SidebarFrame extends JPanel {
         return optionsComboBox;
     }
 
-    public List<Contact> getContacts() {
+    public static List<Contact> getContacts() {
         return contacts;
     }
 
-    public static class Contact {
-        private String name;
-        private boolean online;
-        public boolean isGroup;
-    
-        public Contact(String name, boolean online, boolean isGroup) {
-            this.name = name;
-            this.online = online;
-            this.isGroup = isGroup; // Initialize the isGroup flag
-        }
-    
-        public String getName() {
-            return name;
-        }
-    
-        public boolean isOnline() {
-            return online;
-        }
+
+    public static JDialog getFriendListDialog() {
+        return friendListDialog; // Return the friend list dialog
     }
 
 
-    private void createFriendList() {
-        // Fetch user friends from the database
-        List<userFriendModel> friends = userFriendModel.loadUserFriends(mainFrame.getCurrentUserId());  // Assuming you have the userId available
-        List<endUserModel> filteredUsers = new ArrayList<>();
 
-        // Convert the userFriendModel list to endUserModel list
+
+
+
+    private void createFriendList() {
+        // Kiểm tra nếu dialog đã tồn tại và đang hiển thị
+        if (friendListDialog != null && friendListDialog.isShowing()) {
+            friendListDialog.toFront(); // Đưa dialog lên trước
+            return;
+        }
+
+        // Fetch user friends from database
+        List<userFriendModel> friends = userFriendModel.loadUserFriends(mainFrame.getCurrentUserId());
+         filteredUsers = new ArrayList<>();
+
+        // Convert userFriendModel to endUserModel
         for (userFriendModel friend : friends) {
             endUserModel person = endUserModel.getUserFromId(friend.getFriend_id());
-            filteredUsers.add(person); // Add the endUserModel directly
+            filteredUsers.add(person);
         }
 
-        // Create the frame for the Friend List
-        JFrame friendListFrame = new JFrame("Friend List");
-        friendListFrame.setSize(300, 550); // Fixed size
-        friendListFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        friendListFrame.setLayout(new BorderLayout());
-        friendListFrame.setLocationRelativeTo(null); // Center the frame
+        // Create dialog
+        friendListDialog = new JDialog(mainFrame, "Friend List", true);
+        friendListDialog.setSize(300, 550);
+        friendListDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        friendListDialog.setLayout(new BorderLayout());
+        friendListDialog.setLocationRelativeTo(null);
 
-        // Main panel for the friend list
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+        // Main panel
+        JPanel mainPanel = new JPanel(new BorderLayout());
 
-        // Search field to filter friends
+        // Search field
         JTextField searchField = new JTextField("Search...");
-        searchField.setPreferredSize(new Dimension(0, 30)); // Height 30px
-        searchField.setForeground(Color.GRAY); // Placeholder text color
-
-        // Remove placeholder on focus
-        searchField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (searchField.getText().equals("Search...")) {
-                    searchField.setText("");
-                    searchField.setForeground(Color.BLACK);
-                }
-            }
-
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (searchField.getText().isEmpty()) {
-                    searchField.setText("Search...");
-                    searchField.setForeground(Color.GRAY);
-                }
-            }
-        });
+        searchField.setPreferredSize(new Dimension(0, 30));
+        searchField.setForeground(Color.GRAY);
         mainPanel.add(searchField, BorderLayout.NORTH);
 
-        // Panel to hold friends list
-        JPanel friendListPanel = new JPanel();
+        // Friend list panel
+        friendListPanel = new JPanel();
         friendListPanel.setLayout(new BoxLayout(friendListPanel, BoxLayout.Y_AXIS));
 
-        // Add each friend to the panel directly using endUserModel
+        // Add friends to the list
         for (endUserModel user : filteredUsers) {
-            friendListPanel.add(createFriendListObject(user));
+            JPanel contactPanel = createFriendListObject(user);
+            friendListPanel.add(contactPanel);
         }
 
-        // Add a scroll pane for the list
+        // JScrollPane for the friend list
         JScrollPane friendScrollPane = new JScrollPane(friendListPanel);
         mainPanel.add(friendScrollPane, BorderLayout.CENTER);
 
-        // Button to filter online friends only
+        // Button to filter online friends
         JButton filterOnlineButton = new JButton("Show Online Only");
         filterOnlineButton.addActionListener(new ActionListener() {
             private boolean isFilteringOnline = false;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                friendListPanel.removeAll(); // Clear the current list
+                friendListPanel.removeAll(); // Clear the list
                 if (isFilteringOnline) {
                     // Show all friends
                     for (endUserModel user : filteredUsers) {
@@ -270,19 +323,33 @@ public class SidebarFrame extends JPanel {
                     }
                     filterOnlineButton.setText("Show All");
                 }
-                isFilteringOnline = !isFilteringOnline; // Toggle the filter
+                isFilteringOnline = !isFilteringOnline;
                 friendListPanel.revalidate();
                 friendListPanel.repaint();
             }
         });
-
-        // Add filter button at the bottom
         mainPanel.add(filterOnlineButton, BorderLayout.SOUTH);
 
-        // Add search action to filter friends by name
+        // Add search field functionality
+        searchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (searchField.getText().equals("Search...")) {
+                    searchField.setText("");
+                    searchField.setForeground(Color.BLACK);
+                }
+            }
+
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setText("Search...");
+                    searchField.setForeground(Color.GRAY);
+                }
+            }
+        });
+
         searchField.addActionListener(e -> {
             String searchText = searchField.getText().trim().toLowerCase();
-            friendListPanel.removeAll();
+            friendListPanel.removeAll(); // Clear the list
             for (endUserModel user : filteredUsers) {
                 if (user.getAccountName().toLowerCase().contains(searchText)) {
                     friendListPanel.add(createFriendListObject(user));
@@ -292,9 +359,9 @@ public class SidebarFrame extends JPanel {
             friendListPanel.repaint();
         });
 
-        // Add the main panel to the frame
-        friendListFrame.add(mainPanel);
-        friendListFrame.setVisible(true);
+        // Add the main panel to the dialog
+        friendListDialog.add(mainPanel);
+        friendListDialog.setVisible(true);
     }
 
 }
