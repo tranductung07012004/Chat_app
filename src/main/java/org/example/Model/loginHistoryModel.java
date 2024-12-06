@@ -46,15 +46,15 @@ public class loginHistoryModel {
     }
 
     public static Object[][] getLoginHistoryOfUsername(String username) {
-        String checkUserQuery = "SELECT user_id FROM end_user WHERE username = ?";
-        String loginHistoryQuery = "SELECT lh.login_time FROM login_history lh JOIN end_user eu ON lh.user_id = eu.user_id WHERE eu.username = ?";
+        String checkUserQuery = "SELECT user_id FROM end_user WHERE username LIKE ?";
+        String loginHistoryQuery = "SELECT eu.username, lh.login_time FROM login_history lh JOIN end_user eu ON lh.user_id = eu.user_id WHERE eu.username LIKE ?";
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement checkUserStmt = conn.prepareStatement(checkUserQuery);
              PreparedStatement loginHistoryStmt = conn.prepareStatement(loginHistoryQuery)) {
 
             // Kiểm tra sự tồn tại của username
-            checkUserStmt.setString(1, username);
+            checkUserStmt.setString(1, username + "%");
             try (ResultSet rs = checkUserStmt.executeQuery()) {
                 if (!rs.next()) {
                     // Username không tồn tại
@@ -63,12 +63,13 @@ public class loginHistoryModel {
             }
 
             // Nếu username tồn tại, kiểm tra login history
-            loginHistoryStmt.setString(1, username);
+            loginHistoryStmt.setString(1, username + "%");
             try (ResultSet rs = loginHistoryStmt.executeQuery()) {
                 List<Object[]> loginHistoryList = new ArrayList<>();
                 while (rs.next()) {
+                    String rsUsername = rs.getString("username");
                     Timestamp loginTime = rs.getTimestamp("login_time");
-                    loginHistoryList.add(new Object[]{username, loginTime.toString()});
+                    loginHistoryList.add(new Object[]{rsUsername, loginTime.toString()});
                 }
 
                 if (loginHistoryList.isEmpty()) {

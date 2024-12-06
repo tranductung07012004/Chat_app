@@ -22,13 +22,13 @@ public class userFriendModel {
                 "FROM user_friend uf " +
                 "JOIN end_user eu1 ON uf.user_id = eu1.user_id " +
                 "JOIN end_user eu2 ON uf.friend_id = eu2.user_id " +
-                "WHERE eu1.username = ?";
+                "WHERE eu1.username LIKE ?";
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán tham số cho câu truy vấn
-            stmt.setString(1, username);
+            stmt.setString(1, username + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> friendsList = new ArrayList<>();

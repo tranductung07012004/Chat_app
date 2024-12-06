@@ -148,20 +148,20 @@ public class endUserModel {
         return rowsAffected > 0 ? 1 : 0;
     }
 
-    public static Object[] searchUserByUsername(String username) {
-        String query = "SELECT username, account_name, address, dob, gender, email FROM end_user WHERE username = ?";
-        Object[] userData = null;
+    public static Object[][] searchUserByUsername(String username) {
+        String query = "SELECT username, account_name, address, dob, gender, email FROM end_user WHERE username LIKE ?";
+        List<Object[]> userDataList = new ArrayList<>();
 
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            // Gán giá trị tham số
-            stmt.setString(1, username);
+            // Gán giá trị tham số với ký tự đại diện
+            stmt.setString(1, username + "%");
 
             // Thực thi truy vấn
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     // Lấy dữ liệu từ kết quả truy vấn
                     String resultUsername = rs.getString("username");
                     String accountName = rs.getString("account_name");
@@ -170,8 +170,8 @@ public class endUserModel {
                     String gender = rs.getString("gender");
                     String email = rs.getString("email");
 
-                    // Gán dữ liệu vào mảng
-                    userData = new Object[]{resultUsername, accountName, address, dob.toString(), gender, email};
+                    // Gán dữ liệu vào danh sách
+                    userDataList.add(new Object[]{resultUsername, accountName, address, dob.toString(), gender, email});
                 }
             }
 
@@ -179,11 +179,13 @@ public class endUserModel {
             e.printStackTrace();
         }
 
-        return userData;
+        // Chuyển danh sách thành mảng 2 chiều
+        return userDataList.toArray(new Object[0][]);
     }
 
+
     public static Object[][] searchUserByAccountName(String accountname) {
-        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user WHERE account_name = ?";
+        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user WHERE account_name LIKE ?";
         List<Object[]> userData = new ArrayList<>();
 
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
@@ -191,7 +193,7 @@ public class endUserModel {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán giá trị tham số
-            stmt.setString(1, accountname);
+            stmt.setString(1, accountname + "%");
 
             // Thực thi truy vấn
             try (ResultSet rs = stmt.executeQuery()) {
@@ -228,7 +230,7 @@ public class endUserModel {
     }
 
     public static boolean checkIfUserExists(String username) {
-        String query = "SELECT 1 FROM end_user WHERE username = ?";
+        String query = "SELECT 1 FROM end_user WHERE username LIKE ?";
         boolean exists = false;
 
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
@@ -236,7 +238,7 @@ public class endUserModel {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán giá trị tham số
-            stmt.setString(1, username);
+            stmt.setString(1, username + "%");
 
             // Thực thi truy vấn
             try (ResultSet rs = stmt.executeQuery()) {

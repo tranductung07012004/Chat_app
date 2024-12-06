@@ -157,7 +157,7 @@ public class UserManagementHandler  {
 
     private void handleSubmitUsernameBtn() {
         // Lấy dữ liệu từ JTextField
-        String username = userManagement.searchComponents.usernameField.getText();
+        String username = userManagement.searchComponents.usernameField.getText().trim();
 
         // Kiểm tra nếu người dùng không nhập gì
         if (username.isEmpty()) {
@@ -166,29 +166,27 @@ public class UserManagementHandler  {
         }
 
         // Gọi hàm tìm kiếm trong cơ sở dữ liệu
-        Object[] userData = endUserModel.searchUserByUsername(username);
+        Object[][] userData = endUserModel.searchUserByUsername(username);
 
         // Kiểm tra kết quả trả về
         if (userData != null) {
             // Hiển thị thông tin người dùng (có thể cập nhật vào giao diện hoặc hiện thông báo)
-            JOptionPane.showMessageDialog(null,
-                    "User found successfully!!!\n" +
-                            "Username: " + userData[0] + "\n" +
-                            "Account Name: " + userData[1] + "\n" +
-                            "Address: " + userData[2] + "\n" +
-                            "Date of Birth: " + userData[3] + "\n" +
-                            "Gender: " + userData[4] + "\n" +
-                            "Email: " + userData[5],
-                    "User Details", JOptionPane.INFORMATION_MESSAGE);
+            if (userData.length > 0) {
+                JOptionPane.showMessageDialog(null, "Tìm thấy người dùng thành công", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+                userManagement.updateTableData(userManagement.components.tableModel, userData);
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            }
         } else {
             // Thông báo nếu không tìm thấy người dùng
-            JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Lỗi trong truy vấn database.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void handleSubmitAccountnameBtn() {
         // Lấy dữ liệu từ JTextField
-        String accountname = userManagement.searchComponents.accountnameField.getText();
+        String accountname = userManagement.searchComponents.accountnameField.getText().trim();
 
         // Kiểm tra nếu người dùng không nhập gì
         if (accountname.isEmpty()) {
@@ -319,7 +317,7 @@ public class UserManagementHandler  {
     }
 
     private void handleSubmitLoginHistoryBtn() {
-        String username = userManagement.loginHistoryComponents.usernameTextField.getText();
+        String username = userManagement.loginHistoryComponents.usernameTextField.getText().trim();
 
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -355,7 +353,7 @@ public class UserManagementHandler  {
 
     private void handleSubmitFriendBtn() {
         // Lấy tên đăng nhập từ giao diện
-        String username = userManagement.friendComponents.usernameTextField.getText();
+        String username = userManagement.friendComponents.usernameTextField.getText().trim();
 
         if (username.isEmpty()) {
             // Thông báo lỗi nếu tên đăng nhập bị để trống

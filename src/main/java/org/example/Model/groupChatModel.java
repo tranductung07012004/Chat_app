@@ -42,20 +42,21 @@ public class groupChatModel {
         return groupsList.toArray(new Object[0][]);
     }
     public static Object[][] getGroupByGroupName(String group_name) {
-        String query = "select g.time_created " +
+        String query = "select g.group_name, g.time_created " +
                        "from group_chat g " +
-                       "where group_name = ?";
+                       "where group_name like ?";
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán tham số cho câu truy vấn
-            stmt.setString(1, group_name);
+            stmt.setString(1, group_name + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> friendsList = new ArrayList<>();
                 while (rs.next()) {
+                    String name_of_group = rs.getString("group_name");
                     Timestamp timeRegistered = rs.getTimestamp("time_created");
-                    friendsList.add(new Object[]{group_name, timeRegistered.toString()});
+                    friendsList.add(new Object[]{name_of_group, timeRegistered.toString()});
                 }
 
                 // Kiểm tra danh sách bạn bè
@@ -74,22 +75,23 @@ public class groupChatModel {
     }
 
     public static Object[][] getGroupAdminGroupName(String group_name) {
-        String query =  "select eu.username" +
+        String query =  "select gc.group_name, eu.username" +
                         " from group_chat gc " +
                         " join group_chat_member gm on gc.group_id = gm.group_chat_id" +
                         " join end_user eu on eu.user_id = gm.group_member_id" +
-                        " where gm.isadminofgroup is true and gc.group_name = ?";
+                        " where gm.isadminofgroup is true and gc.group_name like ?";
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán tham số cho câu truy vấn
-            stmt.setString(1, group_name);
+            stmt.setString(1, group_name + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> groupAdmin = new ArrayList<>();
                 while (rs.next()) {
+                    String name_of_group = rs.getString("group_name");
                     String usernameofadmin = rs.getString("username");
-                    groupAdmin.add(new Object[]{group_name, usernameofadmin});
+                    groupAdmin.add(new Object[]{name_of_group, usernameofadmin});
                 }
 
                 // Kiểm tra danh sách bạn bè
@@ -108,22 +110,23 @@ public class groupChatModel {
     }
 
     public static Object[][] getMemberByGroupName(String group_name) {
-        String query =  " select eu.username" +
+        String query =  " select g.group_name, eu.username" +
                         " from group_chat g " +
                         " join group_chat_member gm on g.group_id = gm.group_chat_id" +
                         " join end_user eu on eu.user_id = gm.group_member_id" +
-                        " where g.group_name = ?";
+                        " where g.group_name like ?";
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán tham số cho câu truy vấn
-            stmt.setString(1, group_name);
+            stmt.setString(1, group_name + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> groupMember = new ArrayList<>();
                 while (rs.next()) {
+                    String name_of_group = rs.getString("group_name");
                     String usernameofmember = rs.getString("username");
-                    groupMember.add(new Object[]{group_name, usernameofmember});
+                    groupMember.add(new Object[]{name_of_group, usernameofmember});
                 }
 
                 // Kiểm tra danh sách bạn bè

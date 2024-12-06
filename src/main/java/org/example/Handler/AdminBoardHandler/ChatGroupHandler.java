@@ -50,7 +50,7 @@ public class ChatGroupHandler {
     }
 
     private void handleSubmitSearchBtn() {
-        String groupName = chatGroup.components.textFieldSearch.getText();
+        String groupName = chatGroup.components.textFieldSearch.getText().trim();
 
         if (groupName.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Hãy nhập tên của một nhóm muốn tìm kiếm.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -85,7 +85,7 @@ public class ChatGroupHandler {
         chatGroup.components.viewAdminDialog.setVisible(false);
     }
     private void handleSubmitViewAdminBtn() {
-        String group_name = chatGroup.components.textFieldViewAdmin.getText();
+        String group_name = chatGroup.components.textFieldViewAdmin.getText().trim();
 
         if (group_name.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Hãy nhập tên của một nhóm nào đó.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -114,7 +114,7 @@ public class ChatGroupHandler {
     }
 
     private void handleSubmitViewMemberBtn() {
-        String group_name = chatGroup.components.textFieldViewMember.getText();
+        String group_name = chatGroup.components.textFieldViewMember.getText().trim();
 
         if (group_name.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Hãy nhập tên của một nhóm nào đó.", "Error", JOptionPane.ERROR_MESSAGE);
