@@ -10,6 +10,19 @@ public class RegisterGUI extends JPanel {
     private final JButton registerBtn;
     private final JButton goBackToLoginBtn;
 
+    // Các trường nhập liệu
+    private final JTextField usernameField;
+    private final JTextField fullNameField;
+    private final JTextField addressField;
+    private final JTextField dobField;
+    private final JTextField emailField;
+    private final JPasswordField passwordField;
+    private final JPasswordField confirmPasswordField;
+    private final JTextField adminCodeInput;
+    private final JRadioButton maleOption;
+    private final JRadioButton femaleOption;
+    private final JRadioButton otherOption;
+
     public RegisterGUI(MainFrameGUI inputMainFrame) {
         setLayout(new BorderLayout(10, 10)); // Sử dụng BorderLayout cho bố cục chính
 
@@ -26,15 +39,19 @@ public class RegisterGUI extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5); // Padding giữa các thành phần
 
         // Add components to the form panel
-        addLabelAndField("Username:", new JTextField(), formPanel, gbc, 0);
-        addLabelAndField("Full Name:", new JTextField(), formPanel, gbc, 1);
-        addLabelAndField("Address:", new JTextField(), formPanel, gbc, 2);
+        usernameField = new JTextField();
+        addLabelAndField("Username:", usernameField, formPanel, gbc, 0);
+
+        fullNameField = new JTextField();
+        addLabelAndField("Full Name:", fullNameField, formPanel, gbc, 1);
+
+        addressField = new JTextField();
+        addLabelAndField("Address:", addressField, formPanel, gbc, 2);
 
         // Gender selection
-        JLabel genderLabel = new JLabel("Gender:");
-        JRadioButton maleOption = new JRadioButton("Male");
-        JRadioButton femaleOption = new JRadioButton("Female");
-        JRadioButton otherOption = new JRadioButton("Other");
+        maleOption = new JRadioButton("Male");
+        femaleOption = new JRadioButton("Female");
+        otherOption = new JRadioButton("Other");
         ButtonGroup genderGroup = new ButtonGroup();
         genderGroup.add(maleOption);
         genderGroup.add(femaleOption);
@@ -48,17 +65,22 @@ public class RegisterGUI extends JPanel {
         addLabelAndComponent("Gender:", genderPanel, formPanel, gbc, 3);
 
         // Date of Birth
-        JTextField DOB = new JTextField("dd/mm/yyyy");
-        DOB.setForeground(Color.GRAY);
-        DOB.addFocusListener(new PlaceholderFocusListener(DOB, "dd/mm/yyyy"));
-        addLabelAndField("Date of Birth:", DOB, formPanel, gbc, 4);
+        dobField = new JTextField("dd/mm/yyyy");
+        dobField.setForeground(Color.GRAY);
+        dobField.addFocusListener(new PlaceholderFocusListener(dobField, "dd/mm/yyyy"));
+        addLabelAndField("Date of Birth:", dobField, formPanel, gbc, 4);
 
-        addLabelAndField("Email:", new JTextField(), formPanel, gbc, 5);
-        addLabelAndField("Password:", new JPasswordField(), formPanel, gbc, 6);
-        addLabelAndField("Confirm Password:", new JPasswordField(), formPanel, gbc, 7);
+        emailField = new JTextField();
+        addLabelAndField("Email:", emailField, formPanel, gbc, 5);
+
+        passwordField = new JPasswordField();
+        addLabelAndField("Password:", passwordField, formPanel, gbc, 6);
+
+        confirmPasswordField = new JPasswordField();
+        addLabelAndField("Confirm Password:", confirmPasswordField, formPanel, gbc, 7);
 
         // Admin Checkbox
-        JTextField adminCodeInput = new JTextField();
+        adminCodeInput = new JTextField();
         addLabelAndComponent("Admin code:", adminCodeInput, formPanel, gbc, 8);
 
         add(formPanel, BorderLayout.CENTER);
@@ -94,6 +116,51 @@ public class RegisterGUI extends JPanel {
 
         gbc.gridx = 1;
         panel.add(component, gbc);
+    }
+
+    // Getter methods for form fields
+    public JTextField getUsernameField() {
+        return usernameField;
+    }
+
+    public JTextField getFullNameField() {
+        return fullNameField;
+    }
+
+    public JTextField getAddressField() {
+        return addressField;
+    }
+
+    public JRadioButton getMaleOption() {
+        return maleOption;
+    }
+
+    public JRadioButton getFemaleOption() {
+        return femaleOption;
+    }
+
+    public JRadioButton getOtherOption() {
+        return otherOption;
+    }
+
+    public JTextField getDobField() {
+        return dobField;
+    }
+
+    public JTextField getEmailField() {
+        return emailField;
+    }
+
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
+
+    public JPasswordField getConfirmPasswordField() {
+        return confirmPasswordField;
+    }
+
+    public JTextField getAdminCodeField() {
+        return adminCodeInput;
     }
 
     public JButton getRegisterBtn() {

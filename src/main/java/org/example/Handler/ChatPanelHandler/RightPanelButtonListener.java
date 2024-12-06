@@ -70,7 +70,7 @@ public class RightPanelButtonListener implements ActionListener {
 
         if (!searchQuery.isEmpty()) {
             // Call a method in ChatPanelFrame to search for the query in chat history
-            chatPanelFrame.searchMessages(searchQuery);
+           // chatPanelFrame.searchMessages(searchQuery);
         } else {
             JOptionPane.showMessageDialog(chatPanelFrame, "Please enter a search term.");
         }
@@ -83,13 +83,6 @@ public class RightPanelButtonListener implements ActionListener {
 
     private void handleDeleteChatHistory() {
         // Handle the logic for deleting the chat history
-        int confirmation = JOptionPane.showConfirmDialog(chatPanelFrame,
-                "Are you sure you want to delete chat history?",
-                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-
-        if (confirmation == JOptionPane.YES_OPTION) {
-            chatPanelFrame.appendMessage("Chat history deleted.");
-        }
     }
 
     private void handleBlockFriend() {

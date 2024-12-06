@@ -1,16 +1,29 @@
 package org.example.GUI.ChatPanelGUI;
 
 import org.example.GUI.MainFrameGUI;
+import org.example.Handler.ChatPanelHandler.ChatPanelHandler;
+import org.example.Handler.ChatPanelHandler.Contact;
 import org.example.Handler.ChatPanelHandler.RightPanelButtonListener;
+import org.example.Model.endUserModel;
+import org.example.Model.messageOfUserModel;
+
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import javax.swing.*;
 
 public class ChatPanelFrame extends JPanel {
     private final MainFrameGUI mainFrame;
-    private JTextArea activeChatArea;
+    private static JPanel activeChatArea;
     private JLabel friendNameLabel;
     private SidebarFrame sidebar;
     private boolean isGroup = false;  // Track the group status
+    private int TargetUserId=-1;
+
 
     public ChatPanelFrame(MainFrameGUI mainFrame) {
         this.mainFrame = mainFrame;
@@ -22,13 +35,13 @@ public class ChatPanelFrame extends JPanel {
         friendNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(friendNameLabel, BorderLayout.NORTH);
 
-        // Chat history display area
-        activeChatArea = new JTextArea();
-        activeChatArea.setEditable(false);
-        activeChatArea.setLineWrap(true);
-        activeChatArea.setWrapStyleWord(true);
+
+        // Message panel to hold individual messages
+        activeChatArea = new JPanel();
+        activeChatArea.setLayout(new BoxLayout(activeChatArea, BoxLayout.Y_AXIS)); // Vertical layout for messages
         JScrollPane chatScrollPane = new JScrollPane(activeChatArea);
         add(chatScrollPane, BorderLayout.CENTER);
+
     }
 
     // Method to set the friend's name at the top
@@ -36,19 +49,43 @@ public class ChatPanelFrame extends JPanel {
         friendNameLabel.setText("Chatting with " + friendName);
     }
 
-    // Method to append messages to the active chat area
-    public void appendMessage(String message) {
-        activeChatArea.append(message + "\n");
-    }
+    public void appendMessage(String message, long messageId, Timestamp timestamp) {
+        // Format the timestamp into "hh:mm dd/MM/yyyy"
+        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm dd/MM/yyyy");
+        String formattedTime = dateFormat.format(new Date(timestamp.getTime())); // Convert Timestamp to Date and format
 
-    // Method to search messages based on a query
-    public void searchMessages(String searchQuery) {
-        String chatText = activeChatArea.getText();
-        if (chatText.contains(searchQuery)) {
-            JOptionPane.showMessageDialog(this, "Found messages containing: " + searchQuery);
-        } else {
-            JOptionPane.showMessageDialog(this, "No messages found containing: " + searchQuery);
-        }
+        // Create the message content with message ID and formatted time
+        String fullMessage = "<html>" + message + "<br><font color='gray'>" + formattedTime + "</font></html>";
+
+        // Create a clickable label for the message
+        JLabel messageLabel = new JLabel(fullMessage);
+        messageLabel.setOpaque(true);
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set font and styling for the message
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Enable wrapping for the JLabel
+        messageLabel.setText("<html><body style='width: 250px;'>" + fullMessage + "</body></html>");
+
+        // Add the message label to the active chat area (JPanel)
+        activeChatArea.add(messageLabel);
+
+        // Add mouse listener to detect click on the message
+        messageLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Trigger deletion or other action based on messageId
+                int confirm = JOptionPane.showConfirmDialog(null, "Delete this message?");
+                if (confirm == JOptionPane.YES_OPTION) {
+                    // Call deleteMessage(messageId); // Implement deletion logic here
+                }
+            }
+        });
+
+        // Revalidate and repaint the chat area
+        activeChatArea.revalidate();
+        activeChatArea.repaint();
     }
 
     public JPanel createChatPanel() {
@@ -77,6 +114,29 @@ public class ChatPanelFrame extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(mainSplitPane, BorderLayout.CENTER);
         return panel;
+
+    }
+    public void openChat(Contact contact) {
+        int targetUserId = contact.getId();
+        // Set the friend's name label
+        friendNameLabel = new JLabel("Chatting with " + contact.getName());
+
+        // Load chat history (from database or server)
+        activeChatArea.removeAll(); // Clear existing messages
+        int currentUserId = mainFrame.getCurrentUserId();
+        List<messageOfUserModel> chatHistory = ChatPanelHandler.loadChatHistory(currentUserId, targetUserId);
+
+        System.out.println(friendNameLabel);
+        // Append messages to the chat area
+        for (messageOfUserModel message : chatHistory) {
+            String sender = (message.getFromUser() == currentUserId) ? "You: " : endUserModel.getUserFromId(targetUserId).getAccountName() + ": ";
+            appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime());
+            System.out.println(sender);
+            System.out.println(message.getChatContent());
+            System.out.println(message.getMessageUserId());
+
+        }
+
     }
 
     private JPanel createRightPanel() {

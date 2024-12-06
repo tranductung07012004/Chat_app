@@ -14,9 +14,6 @@ public class MessageInputHandler {
     }
 
     public void sendMessage(String message) {
-        if (!message.isEmpty()) {
-            chatPanel.appendMessage("You: " + message);  // Append the message to the chat panel
-            messageField.setText("");  // Reset the input text field after sending
-        }
+
     }
 }
