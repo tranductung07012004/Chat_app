@@ -59,6 +59,7 @@ public class messageOfUserModel {
                 "WHERE ((from_user = ? AND to_user = ?) " +
                 "OR (from_user = ? AND to_user = ?)) " +
                 "AND isDeleted = false " +
+                "AND isDeletedAll = false " +
                 "ORDER BY chat_time ASC";
 
         try (Connection conn = DBConn.getConnection();

@@ -1,138 +1,59 @@
 package org.example.Handler.ChatPanelHandler;
 
 import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
+import org.example.Model.blockModel;
+import org.example.Model.friendRequestModel;
+import org.example.Model.spamModel;
+import org.example.Model.userFriendModel;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import javax.swing.*;
 
-public class RightPanelButtonListener implements ActionListener {
+public class RightPanelButtonListener {
 
-    private final ChatPanelFrame chatPanelFrame;
-    private final JButton sourceButton;
-    private final JTextField searchTextField; // Text field for search
+    public static void handleReportSpam(int currentUserId, int targetUserId) {
 
-    // Constructor to pass the chat panel and button
-    public RightPanelButtonListener(ChatPanelFrame chatPanelFrame, JButton sourceButton, JTextField searchTextField) {
-        this.chatPanelFrame = chatPanelFrame;
-        this.sourceButton = sourceButton;
-        this.searchTextField = searchTextField; // Store the search text field
-    }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String buttonText = sourceButton.getText();
+        // Simulate saving the report to the database or performing other logic
+        boolean success = spamModel.saveSpamReport(currentUserId, targetUserId);
 
-        switch (buttonText) {
-            case "Search message":
-                handleSearchMessage();
-                break;
-            case "Report spam":
-                handleReportSpam();
-                break;
-            case "Delete chat history":
-                handleDeleteChatHistory();
-                break;
-            case "Block":
-                handleBlockFriend();
-                break;
-            case "Unfriend":
-                handleUnfriend();
-                break;
-            case "Create group chat":
-                handleCreateGroupChat();
-
-                break;
-            case "Add member":
-                handleAddMember();
-                break;
-            case "Change admin":
-                handleChangeAdmin();
-                break;
-            case "Remove member":
-                handleRemoveMember();
-                break;
-            case "Rename group":
-                handleRenameGroup();
-                break;
-            case "Delete group":
-                handleDeleteGroup();
-                break;
-            case "Out group":
-                handleOutGroup();
-                break;
-            default:
-                System.out.println("Unknown action: " + buttonText);
-        }
-    }
-
-    private void handleSearchMessage() {
-        String searchQuery = searchTextField.getText().trim();
-
-        if (!searchQuery.isEmpty()) {
-            // Call a method in ChatPanelFrame to search for the query in chat history
-           // chatPanelFrame.searchMessages(searchQuery);
+        // Show a message dialog to inform the user
+        if (success) {
+            JOptionPane.showMessageDialog(null, "Friend reported as spam successfully.");
         } else {
-            JOptionPane.showMessageDialog(chatPanelFrame, "Please enter a search term.");
+            JOptionPane.showMessageDialog(null, "Failed to report friend as spam. Please try again.");
         }
     }
 
-    private void handleReportSpam() {
-        // Handle reporting the friend as spam
-        JOptionPane.showMessageDialog(chatPanelFrame, "Friend reported as spam");
-    }
+    public static void handleBlock(int currentUserId, int targetUserId) {
 
-    private void handleDeleteChatHistory() {
-        // Handle the logic for deleting the chat history
-    }
 
-    private void handleBlockFriend() {
-        // Handle blocking the friend
-        JOptionPane.showMessageDialog(chatPanelFrame, "Friend blocked");
-    }
+        // Check if the user is already blocked
+        if (blockModel.isBlocked(currentUserId, targetUserId)) {
+            JOptionPane.showMessageDialog(null, "User is already blocked.");
+            return;
+        }
 
-    private void handleUnfriend() {
-        // Handle unfriending the friend
-        JOptionPane.showMessageDialog(chatPanelFrame, "Unfriended");
-    }
+        // Block the user
+        boolean isBlocked = blockModel.addBlock(currentUserId, targetUserId);
+        if (isBlocked) {
+            //remove friend request before block
+            if (friendRequestModel.isFriendRequestSent((currentUserId), targetUserId))
+                friendRequestModel.deleteFriendRequest(currentUserId, targetUserId);
+            //unfriend before block
+            if (userFriendModel.isFriend(currentUserId, targetUserId))
+                userFriendModel.deleteFriend(currentUserId, targetUserId);
 
-    private void handleCreateGroupChat() {
-        // Handle the logic to create a group chat
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "This button is only availaible in one-and-one chats. It would be hidden in group chat");
+//            JOptionPane.showMessageDialog(frame, "User blocked!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Error blocking user.");
+        }
     }
-
-    private void handleAddMember() {
-        // Handle logic for adding a new member to the group
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "Add member is only availaible in group chats. It would be hidden in 1-and-1 chats");
+    public static void handleUnfriend(int currentUserId, int targetUserId){
+        if (userFriendModel.isFriend(currentUserId, targetUserId))
+            userFriendModel.deleteFriend(currentUserId, targetUserId);
     }
-
-    private void handleChangeAdmin() {
-        // Handle logic for changing the admin of the group
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "Add member is only availaible in group chats. It would be hidden in 1-and-1 chats");
-    }
-
-    private void handleRemoveMember() {
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "Remove member is only availaible in group chats. It would be hidden in 1-and-1 chats");
-    }
-
-    private void handleRenameGroup() {
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "Rename is only availaible in group chats. It would be hidden in 1-and-1 chats");
-    }
-
-    private void handleDeleteGroup() {
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "delete is only availaible in group chats. It would be hidden in 1-and-1 chats");
-    }
-
-    private void handleOutGroup() {
-        JOptionPane.showMessageDialog(chatPanelFrame,
-                "out group is only availaible in group chats. It would be hidden in 1-and-1 chats");
-    }
-    
-
 }
 

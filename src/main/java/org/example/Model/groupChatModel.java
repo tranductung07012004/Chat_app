@@ -73,7 +73,6 @@ public class groupChatModel {
             return null; // Trả về null nếu xảy ra lỗi
         }
     }
-
     public static Object[][] getGroupAdminGroupName(String group_name) {
         String query =  "select gc.group_name, eu.username" +
                         " from group_chat gc " +
@@ -108,7 +107,6 @@ public class groupChatModel {
             return null; // Trả về null nếu xảy ra lỗi
         }
     }
-
     public static Object[][] getMemberByGroupName(String group_name) {
         String query =  " select g.group_name, eu.username" +
                         " from group_chat g " +

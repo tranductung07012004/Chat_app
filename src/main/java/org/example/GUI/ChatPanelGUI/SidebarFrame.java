@@ -65,7 +65,7 @@ public class SidebarFrame extends JPanel {
         contactsPanel.setLayout(new BoxLayout(contactsPanel, BoxLayout.Y_AXIS));
         contactsPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding
 
-        // example data
+
         contacts = SidebarHandler.loadAllContacts(mainFrame.getCurrentUserId());
         contacts.addAll(FriendListHandle.getNewcontacts());
 

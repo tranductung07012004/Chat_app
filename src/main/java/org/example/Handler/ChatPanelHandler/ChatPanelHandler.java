@@ -1,5 +1,6 @@
 package org.example.Handler.ChatPanelHandler;
 
+import org.example.Model.messageOfGroupModel;
 import org.example.Model.messageOfUserModel;
 
 import java.util.ArrayList;
@@ -10,6 +11,9 @@ public class ChatPanelHandler {
     // Fetch the chat history between two users
     public static List<messageOfUserModel> loadChatHistory(int currentUserId, int targetUserId) {
         return messageOfUserModel.loadChatHistory(currentUserId, targetUserId);
+    }
+    public static List<messageOfUserModel> loadGroupChatHistory( int targetUserId) {
+        return messageOfGroupModel.loadChatHistory( targetUserId);
     }
 
     // Search messages containing a specific query

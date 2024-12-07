@@ -40,14 +40,10 @@ public class SidebarHandler {
     }
     public static List<Contact> loadAllContacts(int currentUserId) {
         List<Contact> contacts = new ArrayList<>();
-        
-
         // Load individual chat contacts
         contacts.addAll(loadChatContacts(currentUserId));
-
         // Load group chat contacts
         contacts.addAll(loadGroupContacts(currentUserId));
-
         return contacts;
     }
     public static List<Contact> loadChatContacts(int currentUserId)
