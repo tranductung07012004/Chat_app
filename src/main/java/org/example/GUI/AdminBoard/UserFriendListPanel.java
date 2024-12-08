@@ -1,5 +1,9 @@
 package org.example.GUI.AdminBoard;
 
+import org.example.GUI.MainFrameGUI;
+import org.example.Handler.AdminBoardHandler.UserFriendListHandler;
+import org.example.Handler.AdminBoardHandler.UserManagementHandler;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -8,88 +12,40 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class UserFriendListPanel extends JPanel {
-    public UserFriendListPanel() {
 
+    public overallComponents components;
+    private MainFrameGUI mainFrame;
+    public UserFriendListPanel(MainFrameGUI inputMainFrame) {
+        this.components = new overallComponents();
+        this.mainFrame = inputMainFrame;
         setLayout(new BorderLayout());
 
+
+        JTable friendListTable = createfriendListTable();
+        JScrollPane scrollPane = new JScrollPane(friendListTable);
+
+        JPanel actionPanel = new JPanel();
+        actionPanel.add(this.components.reloadBtn);
+        actionPanel.add(this.components.filterByNameBtn);
+        actionPanel.add(this.components.filterByDirectFriendBtn);
+
+        add(scrollPane, BorderLayout.CENTER);
+        add(actionPanel, BorderLayout.SOUTH);
+
+        // Thêm các dialog cho các chức năng
+        showFilterByNameDialog();
+        showFilterByDirectFriendDialog();
+
+        new UserFriendListHandler(this);
+    }
+
+    private JTable createfriendListTable() {
         // Bảng hiển thị danh sách người dùng và số lượng bạn bè
         String[] columnNames = {"Tên đăng nhập", "Họ tên", "Thời gian tạo (đăng ký)", "Số bạn trực tiếp", "Số bạn của bạn"};
-        Object[][] data = {
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"},
-                {"user1", "Nguyễn Văn A", "2024-11-16 09:00:00",  "90", "2"},
-                {"user2", "Trần Thị B", "2022-11-10 11:00:01",  "101", "3"},
-                {"user3", "Trần Đức D", "2023-01-23 09:00:00",  "100", "5"},
-                {"user4", "Lò Văn E", "2024-10-26 09:00:00",  "60", "10"},
-                {"user5", "Nguyễn Được M", "2023-02-23 09:00:00",  "50", "40"}
-
-        }; // Dữ liệu người dùng và bạn bè
+        Object[][] data = {}; // Dữ liệu người dùng và bạn bè
 
 
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+        this.components.tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa bất kỳ ô nào
@@ -97,7 +53,7 @@ public class UserFriendListPanel extends JPanel {
         };
 
 
-        JTable friendListTable = new JTable(tableModel){
+        JTable friendListTable = new JTable(this.components.tableModel){
             public String getToolTipText( MouseEvent e )
             {
                 int row = rowAtPoint( e.getPoint() );
@@ -109,7 +65,7 @@ public class UserFriendListPanel extends JPanel {
         };
 
         // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>( this.components.tableModel);
         friendListTable.setRowSorter(sorter);
 
 
@@ -119,30 +75,80 @@ public class UserFriendListPanel extends JPanel {
         sorter.setSortable(3, false);
         sorter.setSortable(4, false);
 
+        return friendListTable;
+    }
 
-        JScrollPane scrollPane = new JScrollPane(friendListTable);
+    public void showFilterByNameDialog() {
 
-        JPanel actionPanel = new JPanel();
-        JButton filterByNameBtn = new JButton("Lọc theo tên");
-        JButton filterByDirectFriendBtn = new JButton("Lọc theo số lượng bạn trực tiếp");
+        this.components.filterByNameDialog.setSize(400, 130);
+        this.components.filterByNameDialog.setLayout(new BorderLayout());
 
-        filterByNameBtn.addActionListener(e -> filterByName());
-        filterByDirectFriendBtn.addActionListener(e -> filterByDirectFriend());
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Tên đăng nhập:"));
+        inputPanel.add(this.components.filterByNameField);
 
-        actionPanel.add(filterByNameBtn);
-        actionPanel.add(filterByDirectFriendBtn);
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.components.submitFilterByName);
+        buttonPanel.add(this.components.cancelFilterByName);
 
-        add(scrollPane, BorderLayout.CENTER);
-        add(actionPanel, BorderLayout.SOUTH);
+        this.components.filterByNameDialog.add(inputPanel, BorderLayout.CENTER);
+        this.components.filterByNameDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.components.filterByNameDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.filterByNameDialog.setVisible(false);
+    }
+
+    public void showFilterByDirectFriendDialog() {
+        // Tạo dialog
+        this.components.filterByDirectFriendDialog.setSize(400, 200);
+        this.components.filterByDirectFriendDialog.setLayout(new GridBagLayout());
+
+        // Tạo các thành phần
+        Component[][] components = {
+                {new JLabel("Nhập số:"), this.components.filterByDirectFriendField},
+                {new JLabel("Chọn toán tử:"), this.components.option },
+                {this.components.submitFilterByDirectFriend, this.components.cancelFilterByDirectFriend}
+        };
+
+        // Cấu hình layout
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Sử dụng vòng lặp để thêm các thành phần
+        for (int row = 0; row < components.length; row++) {
+            for (int col = 0; col < components[row].length; col++) {
+                gbc.gridx = col;
+                gbc.gridy = row;
+                this.components.filterByDirectFriendDialog.add(components[row][col], gbc);
+            }
+        }
+
+        this.components.filterByDirectFriendDialog.setLocationRelativeTo(mainFrame);
+        this.components.filterByDirectFriendDialog.setVisible(false);
+    }
+
+    public class overallComponents {
+        public DefaultTableModel tableModel;
+
+        public JButton filterByNameBtn = new JButton("Lọc theo tên");
+        public JDialog filterByNameDialog = new JDialog(mainFrame, "Lọc theo tên", true);
+        public JTextField filterByNameField = new JTextField(10);
+        public JButton submitFilterByName = new JButton("OK");
+        public JButton cancelFilterByName = new JButton("Hủy");
+
+
+        public JButton reloadBtn = new JButton("RELOAD");
+        public JButton filterByDirectFriendBtn = new JButton("Lọc theo số lượng bạn trực tiếp");
+        public JDialog filterByDirectFriendDialog = new JDialog((Frame) null, "Filter By Direct Friend", true);
+        public JTextField filterByDirectFriendField = new JTextField(10);
+        public JButton submitFilterByDirectFriend = new JButton("OK");
+        public JButton cancelFilterByDirectFriend = new JButton("Hủy");
+        public JComboBox<String> option = new JComboBox<>(new String[]{"=", ">", "<"});
+
     }
 
 
-    private void filterByName() {
 
 
-    }
-
-    private void filterByDirectFriend() {
-
-    }
 }

@@ -1,5 +1,4 @@
 package org.example.Model;
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +85,8 @@ public class loginHistoryModel {
             return null; // Trả về null nếu xảy ra lỗi
         }
     }
+
+
 
 
 }

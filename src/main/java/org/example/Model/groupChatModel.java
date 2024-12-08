@@ -131,6 +131,7 @@ public class groupChatModel {
 
                 // Kiểm tra danh sách bạn bè
                 if (groupMember.isEmpty()) {
+                    System.out.println("Không có bạn bè");
                     return new Object[0][0]; // Không có bạn bè
                 }
 

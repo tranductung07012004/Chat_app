@@ -1,5 +1,8 @@
 package org.example.GUI.AdminBoard;
 
+import org.example.GUI.MainFrameGUI;
+import org.example.Handler.AdminBoardHandler.NewUserStatisticHandler;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -8,87 +11,48 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class NewUserStatistic extends JPanel {
-    public  NewUserStatistic() {
 
+    public overallComponents components;
+    MainFrameGUI mainFrame;
+    public  NewUserStatistic(MainFrameGUI inputMainFrame) {
+        this.mainFrame = inputMainFrame;
+        this.components = new overallComponents();
         setLayout(new BorderLayout());
 
         // Panel chọn khoảng thời gian
         JPanel filterPanel = new JPanel();
         filterPanel.add(new JLabel("Từ ngày:"));
-        JTextField fromDateField = new JTextField(10);
-        filterPanel.add(fromDateField);
+        filterPanel.add(this.components.fromDateField);
         filterPanel.add(new JLabel("Đến ngày:"));
-        JTextField toDateField = new JTextField(10);
-        filterPanel.add(toDateField);
-        JButton filterButton = new JButton("Lọc");
-        filterPanel.add(filterButton);
+        filterPanel.add(this.components.toDateField);
+        filterPanel.add(this.components.filterByTimeButton);
 
+
+
+        JTable newUserTable = createNewUserTable();
+        JScrollPane scrollPane = new JScrollPane(newUserTable);
+
+        JPanel actionPanel = new JPanel();
+
+        actionPanel.add(this.components.filterByAccountNameBtn);
+        actionPanel.add(this.components.reloadBtn);
+
+        add(filterPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+        add(actionPanel, BorderLayout.SOUTH);
+
+        searchByAccountNameDialog();
+
+        new NewUserStatisticHandler(this);
+
+    }
+
+    private JTable createNewUserTable() {
         // Tạo bảng hiển thị danh sách người dùng đăng ký mới
         String[] columnNames = {"Tên đăng nhập", "Họ tên", "Thời gian tạo (đăng ký)"};
-        Object[][] data = {
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"},
-                {"manu", "marcus rashford", "2021-12-16 10:30:01"},
-                {"user1", "Nguyễn Văn A", "2022-11-16 10:00:01"},
-                {"user2", "Trần Thị B", "2022-11-17 08:51:02"},
-                {"user3", "Lê Văn C", "2022-11-16 10:25:34"},
-                {"user4", "Phạm Thị D", "2019-09-28 02:15:39"},
-                {"user5", "Hoàng Văn E", "2020-01-30 09:04:06"}
-        }; // Dữ liệu người dùng đăng ký mới
+        Object[][] data = {}; // Dữ liệu người dùng đăng ký mới
 
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+        components.tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa bất kỳ ô nào
@@ -96,7 +60,7 @@ public class NewUserStatistic extends JPanel {
         };
 
 
-        JTable newUserTable = new JTable(tableModel){
+        JTable newUserTable = new JTable(components.tableModel){
             public String getToolTipText( MouseEvent e )
             {
                 int row = rowAtPoint( e.getPoint() );
@@ -108,7 +72,7 @@ public class NewUserStatistic extends JPanel {
         };
 
         // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(components.tableModel);
         newUserTable.setRowSorter(sorter);
 
 
@@ -116,25 +80,43 @@ public class NewUserStatistic extends JPanel {
         sorter.setSortable(1, true);
         sorter.setSortable(2, true);
 
-
-        JScrollPane scrollPane = new JScrollPane(newUserTable);
-
-        JPanel actionPanel = new JPanel();
-        JButton filterByNameBtn = new JButton("Lọc theo tên");
-
-        filterByNameBtn.addActionListener(e -> filterByName());
-
-        actionPanel.add(filterByNameBtn);
-
-        add(filterPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(actionPanel, BorderLayout.SOUTH);
-
+        return newUserTable;
     }
 
+    private void searchByAccountNameDialog() {
+        this.components.filterByAccountNameDialog.setSize(400, 130);
+        this.components.filterByAccountNameDialog.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Tên đăng nhập:"));
+        inputPanel.add(this.components.accountNameField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.components.submitAccountNameButton);
+        buttonPanel.add(this.components.cancleAccountNameButton);
+
+        this.components.filterByAccountNameDialog.add(inputPanel, BorderLayout.CENTER);
+        this.components.filterByAccountNameDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.components.filterByAccountNameDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.filterByAccountNameDialog.setVisible(false);
+    }
+
+    public class overallComponents {
+        public JTextField fromDateField = new JTextField(10);
+        public JTextField toDateField = new JTextField(10);
+        public JButton filterByTimeButton = new JButton("Lọc theo thời gian");
 
 
-    private void filterByName() {
+        public JButton filterByAccountNameBtn = new JButton("Lọc theo tên");
+        public JDialog filterByAccountNameDialog = new JDialog(mainFrame, "Lọc theo họ tên", true);
+        public JTextField accountNameField = new JTextField(10);
+        public JButton submitAccountNameButton = new JButton("OK");
+        public JButton cancleAccountNameButton = new JButton("Hủy");
+
+
+        public DefaultTableModel tableModel;
+        public JButton reloadBtn = new JButton("RELOAD");
 
     }
 }

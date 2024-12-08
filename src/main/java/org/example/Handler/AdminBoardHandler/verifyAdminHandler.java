@@ -45,6 +45,7 @@ public class verifyAdminHandler implements ActionListener {
 
                 endUserModel user=endUserModel.getUserFromId(mainFrame.getCurrentUserId());
                 user.setOnline(true);
+                endUserModel.AdminSessionUsername = username;
                 mainFrame.showAdminPanel();
 
 

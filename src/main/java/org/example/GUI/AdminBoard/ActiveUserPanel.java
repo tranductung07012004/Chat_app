@@ -1,5 +1,8 @@
 package org.example.GUI.AdminBoard;
 
+import org.example.GUI.MainFrameGUI;
+import org.example.Handler.AdminBoardHandler.ActiveUserHandler;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -8,92 +11,54 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class ActiveUserPanel extends JPanel {
-    public ActiveUserPanel() {
+    public overallComponents components;
+    MainFrameGUI mainFrame;
+    public ActiveUserPanel(MainFrameGUI inputMainframe) {
+        this.components = new overallComponents();
+        this.mainFrame = inputMainframe;
 
         setLayout(new BorderLayout());
 
         // Panel chọn khoảng thời gian
         JPanel filterPanel = new JPanel();
         filterPanel.add(new JLabel("Từ ngày:"));
-        JTextField fromDateField = new JTextField(10);
-        filterPanel.add(fromDateField);
+        filterPanel.add(this.components.fromDateField);
         filterPanel.add(new JLabel("Đến ngày:"));
-        JTextField toDateField = new JTextField(10);
-        filterPanel.add(toDateField);
-        JButton filterButton = new JButton("Lọc");
-        filterPanel.add(filterButton);
+        filterPanel.add(this.components.toDateField);
+        filterPanel.add(this.components.filterTimeButton);
 
 
 
-        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Thời gian tạo (đăng ký)", "Mở ứng dụng", "Số người chat", "Số nhóm chat"};
-
-        Object[][] data = {
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"},
-                {"user2", "Trần Thị B", "2022-01-16 10:00:00", "186", "20", "11"},
-                {"user3", "Trần Thị C", "2024-10-16 03:00:00", "59", "41", "5"},
-                {"user2", "Nguyễn Đăng A", "2023-08-16 04:00:00", "451", "16", "25"},
-                {"user4", "Nguyễn Trần Trinh A", "2023-05-14 06:30:00", "300", "30", "25"},
-                {"user5", "Nguyễn Hoàng L", "2023-04-01 08:01:00", "289", "51", "25"}
 
 
+        JTable activeUserTable = createActiveUserTable();
+        JScrollPane scrollPane = new JScrollPane(activeUserTable);
 
-        };
+        JPanel actionPanel = new JPanel();
 
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+        actionPanel.add(this.components.reloadBtn);
+        actionPanel.add(this.components.filterByNameBtn);
+        actionPanel.add(this.components.filterByActivityBtn);
+
+        add(filterPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+        add(actionPanel, BorderLayout.SOUTH);
+
+        // Dialog của các chức năng
+        showFilterByNameDialog();
+        showFilterByActivityDialog();
+
+        new ActiveUserHandler(this);
+    }
+
+    private JTable createActiveUserTable() {
+        String[] columnNames = {"Tên đăng nhập", "Họ tên",
+                "Thời gian tạo (đăng ký)", "Mở ứng dụng", "Số người chat",
+                "Số nhóm chat", "Tổng số hoạt động"};
+
+        Object[][] data = {};
+
+        this.components.tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa bất kỳ ô nào
@@ -101,7 +66,7 @@ public class ActiveUserPanel extends JPanel {
         };
 
 
-        JTable activeUserTable = new JTable(tableModel){
+        JTable activeUserTable = new JTable(this.components.tableModel){
             public String getToolTipText( MouseEvent e )
             {
                 int row = rowAtPoint( e.getPoint() );
@@ -113,7 +78,7 @@ public class ActiveUserPanel extends JPanel {
         };
 
         // Tính năng sắp xếp
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModel);
         activeUserTable.setRowSorter(sorter);
 
 
@@ -124,30 +89,82 @@ public class ActiveUserPanel extends JPanel {
         sorter.setSortable(4, false);
         sorter.setSortable(5, false);
 
+        return activeUserTable;
+    }
 
-        JScrollPane scrollPane = new JScrollPane(activeUserTable);
+    public void showFilterByNameDialog() {
 
-        JPanel actionPanel = new JPanel();
-        JButton filterByNameBtn = new JButton("Lọc theo tên");
-        JButton filterByActivityBtn = new JButton("Lọc theo số lượng hoạt động");
+        this.components.filterByNameDialog.setSize(400, 130);
+        this.components.filterByNameDialog.setLayout(new BorderLayout());
 
-        filterByNameBtn.addActionListener(e -> filterByName());
-        filterByActivityBtn.addActionListener(e -> filterByActivity());
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Họ tên:"));
+        inputPanel.add(this.components.filterByNameField);
 
-        actionPanel.add(filterByNameBtn);
-        actionPanel.add(filterByActivityBtn);
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.components.submitFilterByName);
+        buttonPanel.add(this.components.cancelFilterByName);
 
-        add(filterPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(actionPanel, BorderLayout.SOUTH);
+        this.components.filterByNameDialog.add(inputPanel, BorderLayout.CENTER);
+        this.components.filterByNameDialog.add(buttonPanel, BorderLayout.SOUTH);
 
+        this.components.filterByNameDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.filterByNameDialog.setVisible(false);
+    }
+
+    public void showFilterByActivityDialog() {
+        // Tạo dialog
+        this.components.filterByActivityDialog.setSize(400, 200);
+        this.components.filterByActivityDialog.setLayout(new GridBagLayout());
+
+        // Tạo các thành phần
+        Component[][] components = {
+                {new JLabel("Nhập số:"), this.components.filterByActivityField},
+                {new JLabel("Chọn toán tử:"), this.components.option },
+                {this.components.submitFilterByActivity, this.components.cancelFilterByActivity}
+        };
+
+        // Cấu hình layout
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Sử dụng vòng lặp để thêm các thành phần
+        for (int row = 0; row < components.length; row++) {
+            for (int col = 0; col < components[row].length; col++) {
+                gbc.gridx = col;
+                gbc.gridy = row;
+                this.components.filterByActivityDialog.add(components[row][col], gbc);
+            }
+        }
+
+        this.components.filterByActivityDialog.setLocationRelativeTo(mainFrame);
+        this.components.filterByActivityDialog.setVisible(false);
     }
 
 
-    private void filterByName() {
+    public class overallComponents {
 
-    }
-    private void filterByActivity() {
+        public JButton filterByNameBtn = new JButton("Lọc theo tên");
+        public JDialog filterByNameDialog = new JDialog(mainFrame, "Lọc theo tên", true);
+        public JTextField filterByNameField = new JTextField(10);
+        public JButton submitFilterByName = new JButton("OK");
+        public JButton cancelFilterByName = new JButton("Hủy");
+
+        public JButton filterByActivityBtn = new JButton("Lọc theo số lượng hoạt động");
+        public JDialog filterByActivityDialog = new JDialog((Frame) null, "Lọc theo số lượng hoạt động", true);
+        public JTextField filterByActivityField = new JTextField(10);
+        public JButton submitFilterByActivity = new JButton("OK");
+        public JButton cancelFilterByActivity = new JButton("Hủy");
+        public JComboBox<String> option = new JComboBox<>(new String[]{"=", ">", "<"});
+
+        public JTextField fromDateField = new JTextField(10);
+        public JTextField toDateField = new JTextField(10);
+        public JButton filterTimeButton = new JButton("Lọc");
+
+        public JButton reloadBtn = new JButton("RELOAD");
+
+        public DefaultTableModel tableModel;
 
     }
 }

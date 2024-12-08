@@ -21,12 +21,12 @@ public class AdminFunctions extends JPanel {
         JPanel userManagementPanel = new UserManagementPanel(inputMainFrame);
         JPanel loginHistoryPanel = new LoginHistoryPanel(inputMainFrame);
         JPanel chatGroupPanel = new ChatGroupPanel(inputMainFrame);
-        JPanel spamReportPanel = new SpamReportPanel();
-        JPanel newUserPanel = new NewUserStatistic();
-        JPanel userFriendListPanel = new UserFriendListPanel();
-        JPanel activeUserPanel = new ActiveUserPanel();
+        JPanel spamReportPanel = new SpamReportPanel(inputMainFrame);
+        JPanel newUserPanel = new NewUserStatistic(inputMainFrame);
+        JPanel userFriendListPanel = new UserFriendListPanel(inputMainFrame);
+        JPanel activeUserPanel = new ActiveUserPanel(inputMainFrame);
         JPanel activityChartPanel = new ActivityChartPanel();
-        JPanel newRegistrationByYearPanel = new NewRegistrationByYear();
+        JPanel newRegistrationByYearPanel = new NewRegistrationByYear(inputMainFrame);
 
         // Thêm các panel vào
         add(userManagementPanel, "UserManagement");
