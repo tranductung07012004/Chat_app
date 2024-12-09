@@ -32,15 +32,15 @@ public class RegisterHandler implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == registerScreen.getRegisterBtn()) {
             // Lấy dữ liệu từ form
-            String username = registerScreen.getUsernameField().getText();
-            String fullName = registerScreen.getFullNameField().getText();
-            String address = registerScreen.getAddressField().getText();
-            String gender = getSelectedGender();
-            String email = registerScreen.getEmailField().getText();
-            String dobText = registerScreen.getDobField().getText();
-            String password = new String(registerScreen.getPasswordField().getPassword());
-            String confirmPassword = new String(registerScreen.getConfirmPasswordField().getPassword());
-            String adminCode = registerScreen.getAdminCodeField().getText();
+            String username = registerScreen.getUsernameField().getText().trim();
+            String fullName = registerScreen.getFullNameField().getText().trim();
+            String address = registerScreen.getAddressField().getText().trim();
+            String gender = getSelectedGender().trim();
+            String email = registerScreen.getEmailField().getText().trim();
+            String dobText = registerScreen.getDobField().getText().trim();
+            String password = new String(registerScreen.getPasswordField().getPassword()).trim();
+            String confirmPassword = new String(registerScreen.getConfirmPasswordField().getPassword()).trim();
+            String adminCode = registerScreen.getAdminCodeField().getText().trim();
 
             // Kiểm tra dữ liệu hợp lệ
             if (validateForm(username, fullName, address, gender, email, dobText, password, confirmPassword)) {
@@ -82,6 +82,11 @@ public class RegisterHandler implements ActionListener {
     }
 
     private boolean validateForm(String username, String fullName, String address, String gender, String email, String dobText, String password, String confirmPassword) {
+
+        if (!username.matches("[a-zA-Z0-9_]+")) {
+            JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         // Check if any required field is empty
         if (username.isEmpty() || fullName.isEmpty() || address.isEmpty() || gender.isEmpty() || email.isEmpty() || dobText.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             JOptionPane.showMessageDialog(registerScreen, "Please fill in all fields.", "Validation Error", JOptionPane.ERROR_MESSAGE);

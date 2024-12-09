@@ -213,7 +213,7 @@ public class userFriendModel {
                     int friendCount = rs.getInt("friend_count");
                     int commonFriends = rs.getInt("common_friends");
 
-                    resultList.add(new Object[]{username, accountName, timeRegistered, friendCount, commonFriends});
+                    resultList.add(new Object[]{username, accountName, timeRegistered.toString().split("\\.")[0], friendCount, commonFriends});
                 }
 
                 // Kiểm tra danh sách kết quả
@@ -301,8 +301,6 @@ public class userFriendModel {
                 while (rs.next()) {
                     String username = rs.getString("username");
                     if (username.equals(endUserModel.AdminSessionUsername)) {
-                        System.out.println(endUserModel.AdminSessionUsername);
-                        System.out.println(username);
                         continue;
                     }
                     String accountName = rs.getString("account_name"); // Lấy account_name
@@ -310,7 +308,7 @@ public class userFriendModel {
                     int friendCount = rs.getInt("friend_count");
                     int commonFriends = rs.getInt("common_friends");
 
-                    resultList.add(new Object[]{username, accountName, timeRegistered, friendCount, commonFriends});
+                    resultList.add(new Object[]{username, accountName, timeRegistered.toString().split("\\.")[0], friendCount, commonFriends});
                 }
 
                 // Kiểm tra danh sách kết quả

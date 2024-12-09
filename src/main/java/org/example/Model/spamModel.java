@@ -36,7 +36,7 @@ public class spamModel {
                 String blockedString = blocked ? "TRUE" : "FALSE";
 
                 // Thêm dữ liệu vào danh sách
-                resultList.add(new Object[]{resultUserName, timeCreated.toString(), blockedString});
+                resultList.add(new Object[]{resultUserName, timeCreated.toString().split("\\.")[0], blockedString});
             }
 
         } catch (SQLException e) {
@@ -68,7 +68,7 @@ public class spamModel {
                     String blockedString = blocked ? "TRUE" : "FALSE";
 
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{resultUsername, timeCreated.toString(), blockedString});
+                    resultList.add(new Object[]{resultUsername, timeCreated.toString().split("\\.")[0], blockedString});
                 }
             }
 
@@ -129,7 +129,7 @@ public class spamModel {
                     String blockedString = blocked ? "TRUE" : "FALSE";
 
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{userName, timeCreated.toString(), blockedString});
+                    resultList.add(new Object[]{userName, timeCreated.toString().split("\\.")[0], blockedString});
                 }
             }
 

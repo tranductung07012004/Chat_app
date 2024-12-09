@@ -26,56 +26,117 @@ public class activityHistoryModel {
         this.groupChatted = initGroupChatted;
     }
 
-    public static Object[][] getActiveUserInfo(java.sql.Date sqlStartDate, java.sql.Date sqlEndDate) {
-        // Xây dựng câu truy vấn SQL
-        String query = """ 
-                select eu.username, eu.time_registered, eu.account_name, ah.open_app, ah.peoplechatted, ah.groupchatted
-                from activity_history ah 
-                left join end_user eu on ah.user_id = eu.user_id
-                where ah.time_period between ? and ?;
-                """;
+    public static Object[][] getActiveUserInfo(java.sql.Date startDate, java.sql.Date endDate) {
+        String query = """
+            WITH LoginCount AS (
+                SELECT lh.user_id, COUNT(*) AS login_count
+                FROM login_history lh
+                WHERE lh.login_time BETWEEN ? AND ?
+                GROUP BY lh.user_id
+            ),
+            PeopleChatted AS (
+                SELECT mou.from_user AS user_id, COUNT(DISTINCT mou.to_user) AS people_chatted
+                FROM message_of_user mou
+                WHERE mou.chat_time BETWEEN ? AND ?
+                GROUP BY mou.from_user
+            ),
+            GroupChatted AS (
+                SELECT mog.from_user AS user_id, COUNT(DISTINCT mog.to_group) AS group_chatted
+                FROM message_of_group mog
+                WHERE mog.chat_time BETWEEN ? AND ?
+                GROUP BY mog.from_user
+            )
+            SELECT 
+                eu.username, 
+                eu.account_name, 
+                eu.time_registered, 
+                COALESCE(lc.login_count, 0) AS login_count, 
+                COALESCE(pc.people_chatted, 0) AS people_chatted, 
+                COALESCE(gc.group_chatted, 0) AS group_chatted
+            FROM end_user eu
+            LEFT JOIN LoginCount lc ON eu.user_id = lc.user_id
+            LEFT JOIN PeopleChatted pc ON eu.user_id = pc.user_id
+            LEFT JOIN GroupChatted gc ON eu.user_id = gc.user_id
+            WHERE COALESCE(lc.login_count, 0) > 0 
+                        OR COALESCE(pc.people_chatted, 0) > 0 
+                        OR COALESCE(gc.group_chatted, 0) > 0;
+            """;
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            // Gán giá trị cho các tham số truy vấn
-            stmt.setDate(1, sqlStartDate);
-            stmt.setDate(2, sqlEndDate);
+            // Gán giá trị cho các tham số
+            stmt.setDate(1, startDate);
+            stmt.setDate(2, endDate);
+            stmt.setDate(3, startDate);
+            stmt.setDate(4, endDate);
+            stmt.setDate(5, startDate);
+            stmt.setDate(6, endDate);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> resultList = new ArrayList<>();
 
                 while (rs.next()) {
                     String username = rs.getString("username");
-                    Timestamp time_registered = rs.getTimestamp("time_registered");
                     String accountName = rs.getString("account_name");
-                    int loginCount = rs.getInt("open_app");
-                    int userMessageCount = rs.getInt("peoplechatted");
-                    int groupMessageCount = rs.getInt("groupchatted");
-                    int sumActivityCount = loginCount + userMessageCount + groupMessageCount;
-
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+                    int loginCount = rs.getInt("login_count");
+                    int peopleChatted = rs.getInt("people_chatted");
+                    int groupChatted = rs.getInt("group_chatted");
+                    int totalActivity = loginCount + peopleChatted + groupChatted;
 
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{username, accountName, time_registered.toString(), loginCount, userMessageCount, groupMessageCount, sumActivityCount});
+                    resultList.add(new Object[]{
+                            username, accountName, timeRegistered.toString().split("\\.")[0], loginCount, peopleChatted, groupChatted, totalActivity
+                    });
                 }
 
-                // Chuyển đổi danh sách thành mảng 2 chiều Object
+                // Chuyển danh sách thành mảng 2 chiều
                 return resultList.toArray(new Object[0][]);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return new Object[0][0]; // Trả về mảng rỗng nếu xảy ra lỗi
+            return new Object[0][0];
         }
     }
+
 
     public static Object[][] getActiveUserByActivityNum(String selectedOption, int num) {
         // Xây dựng câu truy vấn SQL
         String query = """ 
-                select eu.username, eu.time_registered, eu.account_name, ah.open_app, ah.peoplechatted, ah.groupchatted
-                from activity_history ah 
-                left join end_user eu on ah.user_id = eu.user_id
-                where ah.time_period between ? and ?;
+                WITH LoginCount AS (
+                     SELECT lh.user_id, COUNT(*) AS login_count
+                     FROM login_history lh
+                     WHERE lh.login_time BETWEEN ? AND ?
+                     GROUP BY lh.user_id
+                    ),
+                PeopleChatted AS (
+                     SELECT mou.from_user AS user_id, COUNT(DISTINCT mou.to_user) AS people_chatted
+                     FROM message_of_user mou
+                     WHERE mou.chat_time BETWEEN ? AND ?
+                     GROUP BY mou.from_user
+                    ),
+                GroupChatted AS (
+                     SELECT mog.from_user AS user_id, COUNT(DISTINCT mog.to_group) AS group_chatted
+                     FROM message_of_group mog
+                     WHERE mog.chat_time BETWEEN ? AND ?
+                     GROUP BY mog.from_user
+                    )
+                 SELECT
+                     eu.username,
+                     eu.account_name,
+                     eu.time_registered,
+                     COALESCE(lc.login_count, 0) AS login_count,
+                     COALESCE(pc.people_chatted, 0) AS people_chatted,
+                     COALESCE(gc.group_chatted, 0) AS group_chatted
+                 FROM end_user eu
+                 LEFT JOIN LoginCount lc ON eu.user_id = lc.user_id
+                 LEFT JOIN PeopleChatted pc ON eu.user_id = pc.user_id
+                 LEFT JOIN GroupChatted gc ON eu.user_id = gc.user_id
+                 WHERE COALESCE(lc.login_count, 0) > 0 
+                        OR COALESCE(pc.people_chatted, 0) > 0 
+                        OR COALESCE(gc.group_chatted, 0) > 0;
                 """;
         java.sql.Date sqlStartDate = Date.valueOf("1970-01-01");
         java.sql.Date sqlEndDate = Date.valueOf("9999-12-31");
@@ -86,6 +147,10 @@ public class activityHistoryModel {
             // Gán giá trị cho các tham số truy vấn
             stmt.setDate(1, sqlStartDate);
             stmt.setDate(2, sqlEndDate);
+            stmt.setDate(3, sqlStartDate);
+            stmt.setDate(4, sqlEndDate);
+            stmt.setDate(5, sqlStartDate);
+            stmt.setDate(6, sqlEndDate);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> resultList = new ArrayList<>();
@@ -94,9 +159,9 @@ public class activityHistoryModel {
                     String username = rs.getString("username");
                     Timestamp time_registered = rs.getTimestamp("time_registered");
                     String accountName = rs.getString("account_name");
-                    int loginCount = rs.getInt("open_app");
-                    int userMessageCount = rs.getInt("peoplechatted");
-                    int groupMessageCount = rs.getInt("groupchatted");
+                    int loginCount = rs.getInt("login_count");
+                    int userMessageCount = rs.getInt("people_chatted");
+                    int groupMessageCount = rs.getInt("group_chatted");
                     int sumActivityCount = loginCount + userMessageCount + groupMessageCount;
 
                     if ((selectedOption.equals(">") && sumActivityCount <= num)
@@ -105,7 +170,7 @@ public class activityHistoryModel {
                         continue;
                     }
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{username, accountName, time_registered.toString(), loginCount, userMessageCount, groupMessageCount, sumActivityCount});
+                    resultList.add(new Object[]{username, accountName, time_registered.toString().split("\\.")[0], loginCount, userMessageCount, groupMessageCount, sumActivityCount});
                 }
 
                 // Chuyển đổi danh sách thành mảng 2 chiều Object
@@ -121,18 +186,52 @@ public class activityHistoryModel {
     public static Object[][] getActiveUserByAccountName(String accountName) {
         // Xây dựng câu truy vấn SQL
         String query = """ 
-                select eu.username, eu.time_registered, eu.account_name, ah.open_app, ah.peoplechatted, ah.groupchatted
-                from activity_history ah 
-                left join end_user eu on ah.user_id = eu.user_id
-                where eu.account_name LIKE ?;
+                WITH LoginCount AS (
+                     SELECT lh.user_id, COUNT(*) AS login_count
+                     FROM login_history lh
+                     WHERE lh.login_time BETWEEN ? AND ?
+                     GROUP BY lh.user_id
+                    ),
+                PeopleChatted AS (
+                     SELECT mou.from_user AS user_id, COUNT(DISTINCT mou.to_user) AS people_chatted
+                     FROM message_of_user mou
+                     WHERE mou.chat_time BETWEEN ? AND ?
+                     GROUP BY mou.from_user
+                    ),
+                GroupChatted AS (
+                     SELECT mog.from_user AS user_id, COUNT(DISTINCT mog.to_group) AS group_chatted
+                     FROM message_of_group mog
+                     WHERE mog.chat_time BETWEEN ? AND ?
+                     GROUP BY mog.from_user
+                    )
+                 SELECT
+                     eu.username,
+                     eu.account_name,
+                     eu.time_registered,
+                     COALESCE(lc.login_count, 0) AS login_count,
+                     COALESCE(pc.people_chatted, 0) AS people_chatted,
+                     COALESCE(gc.group_chatted, 0) AS group_chatted
+                 FROM end_user eu
+                 LEFT JOIN LoginCount lc ON eu.user_id = lc.user_id
+                 LEFT JOIN PeopleChatted pc ON eu.user_id = pc.user_id
+                 LEFT JOIN GroupChatted gc ON eu.user_id = gc.user_id
+                 WHERE eu.account_name LIKE ?;
                 """;
 
+        java.sql.Date sqlStartDate = Date.valueOf("1970-01-01");
+        java.sql.Date sqlEndDate = Date.valueOf("9999-12-31");
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán giá trị cho các tham số truy vấn
-            stmt.setString(1, accountName + "%");
+            stmt.setDate(1, sqlStartDate);
+            stmt.setDate(2, sqlEndDate);
+            stmt.setDate(3, sqlStartDate);
+            stmt.setDate(4, sqlEndDate);
+            stmt.setDate(5, sqlStartDate);
+            stmt.setDate(6, sqlEndDate);
+            stmt.setString(7, accountName + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> resultList = new ArrayList<>();
@@ -141,13 +240,13 @@ public class activityHistoryModel {
                     String username = rs.getString("username");
                     Timestamp time_registered = rs.getTimestamp("time_registered");
                     String accountname = rs.getString("account_name");
-                    int loginCount = rs.getInt("open_app");
-                    int userMessageCount = rs.getInt("peoplechatted");
-                    int groupMessageCount = rs.getInt("groupchatted");
-                    int sumActivityCount = loginCount + userMessageCount + groupMessageCount;
-
-                    // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{username, accountname, time_registered.toString(), loginCount, userMessageCount, groupMessageCount, sumActivityCount});
+                    int loginCount = rs.getInt("login_count");
+                    int userMessageCount = rs.getInt("people_chatted");
+                    int groupMessageCount = rs.getInt("group_chatted");
+                    if (loginCount > 0 || userMessageCount > 0 || groupMessageCount > 0) {
+                        int sumActivityCount = loginCount + userMessageCount + groupMessageCount;
+                        resultList.add(new Object[]{username, accountname, time_registered.toString().split("\\.")[0], loginCount, userMessageCount, groupMessageCount, sumActivityCount});
+                    }
                 }
 
                 // Chuyển đổi danh sách thành mảng 2 chiều Object
@@ -167,11 +266,11 @@ public class activityHistoryModel {
         // Truy vấn SQL lấy dữ liệu theo từng tháng
         String query = """
             SELECT 
-                EXTRACT(MONTH FROM time_period) AS month,
+                EXTRACT(MONTH FROM login_time) AS month,
                 COUNT(DISTINCT user_id) AS user_count
-            FROM activity_history
-            WHERE open_app > 0 AND EXTRACT(YEAR FROM time_period) = ?
-            GROUP BY EXTRACT(MONTH FROM time_period)
+            FROM login_history
+            WHERE EXTRACT(YEAR FROM login_time) = ?
+            GROUP BY EXTRACT(MONTH FROM login_time)
             ORDER BY month;
         """;
 
@@ -206,8 +305,8 @@ public class activityHistoryModel {
     public static String getNewestYear() {
         // Câu truy vấn SQL để lấy năm mới nhất
         String query = """
-            SELECT MAX(EXTRACT(YEAR FROM time_period)) AS newest_year
-            FROM activity_history;
+            SELECT MAX(EXTRACT(YEAR FROM login_time)) AS newest_year
+            FROM login_history;
         """;
 
         String newestYear = null; // Giá trị mặc định nếu không tìm thấy

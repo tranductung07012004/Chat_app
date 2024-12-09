@@ -90,7 +90,7 @@ public class UserManagementPanel extends JPanel {
     }
 
     private JTable createUserTable() {
-        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)", "Khóa"};
+        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)", "Khóa", "Online"};
         Object[][] data = {};
         this.components.tableModel = new DefaultTableModel(data, columnNames) {
             @Override
@@ -549,7 +549,7 @@ public class UserManagementPanel extends JPanel {
         public JDialog searchDialog = new JDialog(mainFrame, "Tìm kiếm người dùng", true);
         public JTextField usernameField = new JTextField(10);
         public JTextField accountnameField = new JTextField(10);
-        public JComboBox<String> option = new JComboBox<>(new String[]{"online", "blocked"});
+        public JComboBox<String> option = new JComboBox<>(new String[]{"online", "offline", "blocked", "unblocked"});
         public JButton submitUsernameBtn = new JButton("OK");
         public JButton submitAccountnameBtn = new JButton("OK");
         public JButton submitStateBtn = new JButton("OK");

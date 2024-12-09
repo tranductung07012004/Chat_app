@@ -74,7 +74,7 @@ public class endUserModel {
                     Timestamp timeCreated = rs.getTimestamp("time_registered");
 
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{userName, accountName, timeCreated.toString()});
+                    resultList.add(new Object[]{userName, accountName, timeCreated.toString().split("\\.")[0]});
                 }
             }
 
@@ -100,7 +100,7 @@ public class endUserModel {
                 String username = rs.getString("username");
                 String accountName = rs.getString("account_name");
                 Timestamp timeRegistered = rs.getTimestamp("time_registered");
-                userList.add(new Object[]{username, accountName, timeRegistered.toString()});
+                userList.add(new Object[]{username, accountName, timeRegistered.toString().split("\\.")[0]});
             }
 
         } catch (SQLException e) {
@@ -114,7 +114,7 @@ public class endUserModel {
 
     public static Object[][] getAllUser() {
         List<Object[]> userList = new ArrayList<>();
-        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user";
+        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin, online FROM end_user";
 
         // try-with-resources
         try (Connection conn = DBConn.getConnection();
@@ -130,7 +130,9 @@ public class endUserModel {
                 String email = rs.getString("email");
                 Timestamp timeRegistered = rs.getTimestamp("time_registered");
                 boolean blocked = rs.getBoolean("blockedaccountbyadmin");
+                boolean online = rs.getBoolean("online");
 
+                String onlineString = online ? "True" : "False";
                 String blockedString = blocked ? "True" : "False";
                 userList.add(new Object[]{
                         username,
@@ -139,8 +141,9 @@ public class endUserModel {
                         dob.toString(),
                         gender,
                         email,
-                        timeRegistered.toString(),
-                        blockedString
+                        timeRegistered.toString().split("\\.")[0],
+                        blockedString,
+                        onlineString
                 });
             }
 
@@ -350,10 +353,9 @@ public class endUserModel {
     }
 
     public static int addUser(String username, String password, String accountName, Date dob, String address, String gender, String email) {
-        String query = "INSERT INTO end_user (username, pass, account_name, dob, address, gender, email, time_registered) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO end_user (username, pass, account_name, dob, address, gender, email, online, blockedaccountbyadmin) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, false, false)";
         int rowsAffected = 0;
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -366,7 +368,6 @@ public class endUserModel {
             stmt.setString(5, address);
             stmt.setString(6, gender);
             stmt.setString(7, email);
-            stmt.setTimestamp(8, currentTime);
 
             // Thực thi câu lệnh thêm
             rowsAffected = stmt.executeUpdate();
@@ -440,7 +441,7 @@ public class endUserModel {
                     Timestamp timeRegistered = rs.getTimestamp("time_registered");
 
                     // Gán dữ liệu vào mảng
-                    userData.add(new Object[]{resultUsername, account_name, timeRegistered.toString()});
+                    userData.add(new Object[]{resultUsername, account_name, timeRegistered.toString().split("\\.")[0]});
                 }
             }
 
@@ -484,7 +485,7 @@ public class endUserModel {
                         dob,
                         gender,
                         email,
-                        timeRegistered.toString()
+                        timeRegistered.toString().split("\\.")[0]
                     });
                 }
             }
@@ -725,16 +726,16 @@ public class endUserModel {
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
         try (Connection conn = DBConn.getConnection();) {
 
-            if (state.equals("online")) {
+            if (state.equals("online") || state.equals("offline")) {
                 query.append(" WHERE online = ? ");
             }
-            else if (state.equals("blocked")) {
+            else if (state.equals("blocked") || state.equals("unblocked")) {
                 query.append(" WHERE blockedaccountbyadmin = ? ");
             }
 
             PreparedStatement stmt = conn.prepareStatement(String.valueOf(query));
             // Gán giá trị tham số với ký tự đại diện
-            stmt.setBoolean(1, true);
+            stmt.setBoolean(1, state.equals("online") || state.equals("blocked"));
 
             // Thực thi truy vấn
             try (ResultSet rs = stmt.executeQuery()) {

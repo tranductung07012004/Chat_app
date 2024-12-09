@@ -109,13 +109,19 @@ public class UserManagementHandler  {
 
     private void handleSubmitAddButton() {
         // Lấy dữ liệu từ các JTextField
-        String username = userManagement.addComponents.usernameFieldAddButton.getText();
-        String password = userManagement.addComponents.passFieldAddButton.getText();
-        String accountName = userManagement.addComponents.accountnameFieldAddButton.getText();
-        String dob = userManagement.addComponents.dobFieldAddButton.getText();
-        String address = userManagement.addComponents.addressFieldAddButton.getText();
-        String gender = userManagement.addComponents.genderFieldAddButton.getText();
-        String email = userManagement.addComponents.emailFieldAddButton.getText();
+        String username = userManagement.addComponents.usernameFieldAddButton.getText().trim();
+        String password = userManagement.addComponents.passFieldAddButton.getText().trim();
+        String accountName = userManagement.addComponents.accountnameFieldAddButton.getText().trim();
+        String dob = userManagement.addComponents.dobFieldAddButton.getText().trim();
+        String address = userManagement.addComponents.addressFieldAddButton.getText().trim();
+        String gender = userManagement.addComponents.genderFieldAddButton.getText().trim();
+        String email = userManagement.addComponents.emailFieldAddButton.getText().trim();
+
+
+        if (!username.matches("[a-zA-Z0-9_]+")) {
+            JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Kiểm tra nếu có trường nào để trống
         if (username.isEmpty() || password.isEmpty() || accountName.isEmpty() || dob.isEmpty() ||
@@ -258,12 +264,12 @@ public class UserManagementHandler  {
     }
 
     private void handleConfirmUpdateButton() {
-        String curUsername = userManagement.updateComponents.usernameFieldUpdateButton.getText();
-        String newAccountName = userManagement.updateComponents.accountNameUpdateField.getText();
-        String newDOB = userManagement.updateComponents.dobUpdateField.getText();
-        String newAddress = userManagement.updateComponents.addressUpdateField.getText();
-        String newGender = userManagement.updateComponents.genderUpdateField.getText();
-        String newEmail = userManagement.updateComponents.emailUpdateField.getText();
+        String curUsername = userManagement.updateComponents.usernameFieldUpdateButton.getText().trim();
+        String newAccountName = userManagement.updateComponents.accountNameUpdateField.getText().trim();
+        String newDOB = userManagement.updateComponents.dobUpdateField.getText().trim();
+        String newAddress = userManagement.updateComponents.addressUpdateField.getText().trim();
+        String newGender = userManagement.updateComponents.genderUpdateField.getText().trim();
+        String newEmail = userManagement.updateComponents.emailUpdateField.getText().trim();
 
         if (curUsername.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập hiện tại trước.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -412,13 +418,13 @@ public class UserManagementHandler  {
     }
 
     private void handleSubmitUpdatePassBtn() {
-        String username = userManagement.updatePassComponents.usernameTextField.getText();
+        String username = userManagement.updatePassComponents.usernameTextField.getText().trim();
         char[] oldPassArray = userManagement.updatePassComponents.oldPassTextField.getPassword();
         char[] newPassArray = userManagement.updatePassComponents.newPassTextField.getPassword();
 
         // Chuyển mảng char[] thành String để so sánh (nên xóa mảng sau khi sử dụng để bảo mật)
-        String oldPass = new String(oldPassArray);
-        String newPass = new String(newPassArray);
+        String oldPass = new String(oldPassArray).trim();
+        String newPass = new String(newPassArray).trim();
 
         // Kiểm tra nếu username rỗng
         if (username.isEmpty() || oldPass.isEmpty() || newPass.isEmpty()) {

@@ -28,7 +28,7 @@ public class loginHistoryModel {
                     java.sql.Timestamp login_time = rs.getTimestamp("login_time");
                     String username = rs.getString("username");
                     String account_name = rs.getString("account_name");
-                    loginHistoryList.add(new Object[]{login_time.toString(), username, account_name});
+                    loginHistoryList.add(new Object[]{login_time.toString().split("\\.")[0], username, account_name});
                 }
             }
 
@@ -68,7 +68,7 @@ public class loginHistoryModel {
                 while (rs.next()) {
                     String rsUsername = rs.getString("username");
                     Timestamp loginTime = rs.getTimestamp("login_time");
-                    loginHistoryList.add(new Object[]{rsUsername, loginTime.toString()});
+                    loginHistoryList.add(new Object[]{rsUsername, loginTime.toString().split("\\.")[0]});
                 }
 
                 if (loginHistoryList.isEmpty()) {
