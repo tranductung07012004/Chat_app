@@ -559,7 +559,7 @@ public class endUserModel {
     }
 
     public static int lockUser(String username) {
-        String query = "UPDATE end_user SET blockedaccountbyadmin = ? WHERE username = ?";
+        String query = "UPDATE end_user SET blockedaccountbyadmin = ?, online = ? WHERE username = ?";
 
         int rowsAffected = 0;
         try (Connection conn = DBConn.getConnection();
@@ -567,7 +567,8 @@ public class endUserModel {
 
             // Set các tham số cho PreparedStatement
             stmt.setBoolean(1, true);
-            stmt.setString(2, username);
+            stmt.setBoolean(2, false);
+            stmt.setString(3, username);
 
             // Thực thi câu lệnh cập nhật
             rowsAffected = stmt.executeUpdate();
@@ -715,6 +716,48 @@ public class endUserModel {
         }
 
         return newestYear;
+    }
+
+    public static Object[][] searchUserByState(String state) {
+        StringBuilder query = new StringBuilder("SELECT username, account_name, address, dob, gender, email FROM end_user ");
+        List<Object[]> userDataList = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();) {
+
+            if (state.equals("online")) {
+                query.append(" WHERE online = ? ");
+            }
+            else if (state.equals("blocked")) {
+                query.append(" WHERE blockedaccountbyadmin = ? ");
+            }
+
+            PreparedStatement stmt = conn.prepareStatement(String.valueOf(query));
+            // Gán giá trị tham số với ký tự đại diện
+            stmt.setBoolean(1, true);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ kết quả truy vấn
+                    String resultUsername = rs.getString("username");
+                    String accountName = rs.getString("account_name");
+                    String address = rs.getString("address");
+                    Date dob = rs.getDate("dob");
+                    String gender = rs.getString("gender");
+                    String email = rs.getString("email");
+
+                    // Gán dữ liệu vào danh sách
+                    userDataList.add(new Object[]{resultUsername, accountName, address, dob.toString(), gender, email});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2 chiều
+        return userDataList.toArray(new Object[0][]);
     }
 
 }

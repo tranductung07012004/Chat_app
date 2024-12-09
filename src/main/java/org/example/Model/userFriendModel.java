@@ -148,7 +148,7 @@ public class userFriendModel {
         }
     }
 
-    public static Object[][] getUserFriendListInfo(String filterByUsername) {
+    public static Object[][] getUserFriendListInfo(String filterByAccountname) {
         StringBuilder query = new StringBuilder("""
         WITH AdminFriends AS (
             SELECT uf.friend_id
@@ -180,8 +180,8 @@ public class userFriendModel {
     """);
 
         // Thêm điều kiện nếu filterByUsername không rỗng
-        if (!filterByUsername.isEmpty()) {
-            query.append(" AND ufc.username LIKE ? ");
+        if (!filterByAccountname.isEmpty()) {
+            query.append(" AND ufc.account_name LIKE ? ");
         }
 
         query.append("""
@@ -196,8 +196,8 @@ public class userFriendModel {
             stmt.setString(1, endUserModel.AdminSessionUsername);
 
             // Gán tham số cho filterByUsername nếu cần
-            if (!filterByUsername.isEmpty()) {
-                stmt.setString(2, filterByUsername + "%");
+            if (!filterByAccountname.isEmpty()) {
+                stmt.setString(2, filterByAccountname + "%");
             }
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -206,8 +206,6 @@ public class userFriendModel {
                 while (rs.next()) {
                     String username = rs.getString("username");
                     if (username.equals(endUserModel.AdminSessionUsername)) {
-                        System.out.println(endUserModel.AdminSessionUsername);
-                        System.out.println(username);
                         continue;
                     }
                     String accountName = rs.getString("account_name"); // Lấy account_name

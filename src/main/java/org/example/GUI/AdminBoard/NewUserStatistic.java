@@ -88,7 +88,7 @@ public class NewUserStatistic extends JPanel {
         this.components.filterByAccountNameDialog.setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Tên đăng nhập:"));
+        inputPanel.add(new JLabel("Họ tên:"));
         inputPanel.add(this.components.accountNameField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());

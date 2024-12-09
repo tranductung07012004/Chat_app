@@ -1,6 +1,7 @@
 package org.example.Model;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class activityHistoryModel {
@@ -157,5 +158,73 @@ public class activityHistoryModel {
             e.printStackTrace();
             return new Object[0][0]; // Trả về mảng rỗng nếu xảy ra lỗi
         }
+    }
+
+    public static Object[] countAppUsersByYear(String year) {
+        // Mảng lưu trữ số lượng đăng ký mới cho từng tháng
+        Object[] monthlyCounts = new Object[12];
+
+        // Truy vấn SQL lấy dữ liệu theo từng tháng
+        String query = """
+            SELECT 
+                EXTRACT(MONTH FROM time_period) AS month,
+                COUNT(DISTINCT user_id) AS user_count
+            FROM activity_history
+            WHERE open_app > 0 AND EXTRACT(YEAR FROM time_period) = ?
+            GROUP BY EXTRACT(MONTH FROM time_period)
+            ORDER BY month;
+        """;
+
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị cho tham số
+            int yearInt = Integer.parseInt(year); // Chuyển year từ String sang int
+            stmt.setInt(1, yearInt); // Sử dụng setInt thay cho setString
+
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                // Khởi tạo mảng với giá trị mặc định là 0
+                Arrays.fill(monthlyCounts, 0);
+
+                // Lấy dữ liệu từ kết quả truy vấn
+                while (rs.next()) {
+                    int month = rs.getInt("month") - 1; // Chuyển thành chỉ số mảng (0-based index)
+                    int count = rs.getInt("user_count");
+                    monthlyCounts[month] = count;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return monthlyCounts;
+    }
+
+    public static String getNewestYear() {
+        // Câu truy vấn SQL để lấy năm mới nhất
+        String query = """
+            SELECT MAX(EXTRACT(YEAR FROM time_period)) AS newest_year
+            FROM activity_history;
+        """;
+
+        String newestYear = null; // Giá trị mặc định nếu không tìm thấy
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                newestYear = rs.getString("newest_year");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi activityHistoryModel: getNewestYear");
+            e.printStackTrace();
+        }
+
+        return newestYear;
     }
 }

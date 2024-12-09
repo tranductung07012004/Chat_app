@@ -1,21 +1,14 @@
 package org.example.Handler.AdminBoardHandler;
-
-import org.example.GUI.AdminBoard.NewRegistrationByYear;
-import org.example.GUI.MainFrameGUI;
+import org.example.GUI.AdminBoard.ActivityChartPanel;
 import org.example.Model.activityHistoryModel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.CategoryDataset;
 import org.example.Model.endUserModel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.sql.Date;
 
-public class NewRegistrationByYearHandler {
+public class ActivityChartHandler {
 
-    private NewRegistrationByYear panel;
-
-    public NewRegistrationByYearHandler(NewRegistrationByYear inputPanel) {
+    private ActivityChartPanel panel;
+    public ActivityChartHandler(ActivityChartPanel inputPanel) {
         this.panel = inputPanel;
 
         panel.components.reloadBtn.addActionListener(e -> handleReloadBtn());
@@ -27,7 +20,7 @@ public class NewRegistrationByYearHandler {
         // Tạo đối tượng dataset
 
         // Lấy dữ liệu từ endUserModel
-        Object[] monthlyRegistrations = endUserModel.countNewRegistrationByYear(year);
+        Object[] monthlyRegistrations = activityHistoryModel.countAppUsersByYear(year);
 
         // Điền dữ liệu vào dataset
         String[] months = {
@@ -48,8 +41,8 @@ public class NewRegistrationByYearHandler {
     }
 
     private void handleReloadBtn() {
-        String newestYear = endUserModel.getNewestYear();
-        panel.components.barChart.setTitle("Số lượng người dùng đăng ký mới năm " + newestYear);
+        String newestYear = activityHistoryModel.getNewestYear();
+        panel.components.barChart.setTitle("Số lượng người dùng có mở app năm " + newestYear);
         updateChartDataset(newestYear);
     }
 
@@ -83,7 +76,7 @@ public class NewRegistrationByYearHandler {
             return;
         }
         if (isValidYear(year)) {
-            panel.components.barChart.setTitle("Số lượng người dùng đăng ký mới năm " + year);
+            panel.components.barChart.setTitle("Số lượng người dùng có mở app năm " + year);
             updateChartDataset(year);
         }
         else {

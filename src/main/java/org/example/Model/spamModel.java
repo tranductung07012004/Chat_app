@@ -82,7 +82,7 @@ public class spamModel {
     }
 
     public static int lockUser(String username) {
-        String query = "UPDATE end_user SET blockedaccountbyadmin = ? WHERE username = ?";
+        String query = "UPDATE end_user SET blockedaccountbyadmin = ?, online = ? WHERE username = ?";
 
         int rowsAffected = 0;
         try (Connection conn = DBConn.getConnection();
@@ -90,7 +90,8 @@ public class spamModel {
 
             // Set các tham số cho PreparedStatement
             stmt.setBoolean(1, true);
-            stmt.setString(2, username);
+            stmt.setBoolean(2, false);
+            stmt.setString(3, username);
 
             // Thực thi câu lệnh cập nhật
             rowsAffected = stmt.executeUpdate();

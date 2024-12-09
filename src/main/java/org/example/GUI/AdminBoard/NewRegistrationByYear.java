@@ -6,6 +6,8 @@ import org.example.Handler.AdminBoardHandler.NewUserStatisticHandler;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
@@ -57,11 +59,11 @@ public class NewRegistrationByYear extends JPanel {
                 "", // Tiêu đề được initilize ở NewRegistrationByYearHandler
                 "Tháng",                                  // Trục x
                 "Số lượng đăng ký mới",                    // Trục y
-                this.components.dataset,                                 // Dữ liệu
-                PlotOrientation.VERTICAL,                // Hướng biểu đồ
-                false,                                   // Hiển thị chú thích (legend)
-                true,                                    // Hiển thị tooltips
-                false                                    // URLs
+                this.components.dataset,                   // Dữ liệu
+                PlotOrientation.VERTICAL,                  // Hướng biểu đồ
+                false,                                     // Hiển thị chú thích (legend)
+                true,                                      // Hiển thị tooltips
+                false                                      // URLs
         );
 
         // Tùy chỉnh renderer cho biểu đồ
@@ -69,7 +71,22 @@ public class NewRegistrationByYear extends JPanel {
         renderer.setSeriesPaint(0, new Color(52, 28, 128));
         renderer.setBarPainter(new StandardBarPainter()); // Đảm bảo màu hiển thị đơn giản
 
+        // Lấy CategoryPlot từ biểu đồ
+        CategoryPlot plot = this.components.barChart.getCategoryPlot();
+
+        // Lấy trục tung (ValueAxis) và ép kiểu sang NumberAxis
+        NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
+
+        // Đặt giá trị tối thiểu cho trục tung là 0
+        yAxis.setLowerBound(0);
+
+        // Cho phép tự động tính toán giá trị tối đa
+        yAxis.setAutoRange(true);
+
+        // Đảm bảo các giá trị là số nguyên
+        yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
     }
+
 
 
     public class overallComponents {

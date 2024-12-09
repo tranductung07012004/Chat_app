@@ -25,7 +25,7 @@ public class AdminFunctions extends JPanel {
         JPanel newUserPanel = new NewUserStatistic(inputMainFrame);
         JPanel userFriendListPanel = new UserFriendListPanel(inputMainFrame);
         JPanel activeUserPanel = new ActiveUserPanel(inputMainFrame);
-        JPanel activityChartPanel = new ActivityChartPanel();
+        JPanel activityChartPanel = new ActivityChartPanel(inputMainFrame);
         JPanel newRegistrationByYearPanel = new NewRegistrationByYear(inputMainFrame);
 
         // Thêm các panel vào

@@ -84,7 +84,7 @@ public class UserFriendListPanel extends JPanel {
         this.components.filterByNameDialog.setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Tên đăng nhập:"));
+        inputPanel.add(new JLabel("Họ tên:"));
         inputPanel.add(this.components.filterByNameField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());

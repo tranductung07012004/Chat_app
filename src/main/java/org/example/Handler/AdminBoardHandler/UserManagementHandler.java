@@ -208,7 +208,27 @@ public class UserManagementHandler  {
         }
     }
     private void handleSubmitStateBtn() {
-        return;
+        String selectedOption = (String) userManagement.searchComponents.option.getSelectedItem();
+
+        if (selectedOption == null) {
+            JOptionPane.showMessageDialog(null, "Lỗi selectedOption, không được để trống.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (selectedOption.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Lỗi selectedOption, không được để trống.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Object[][] data = endUserModel.searchUserByState(selectedOption);
+
+        if (data.length > 0) {
+            JOptionPane.showMessageDialog(null, "Tìm thấy thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            userManagement.updateTableData(userManagement.components.tableModel, data);
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
     }
 
     private void handleUpdateButton() {

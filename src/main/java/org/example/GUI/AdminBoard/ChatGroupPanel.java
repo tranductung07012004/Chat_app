@@ -213,7 +213,7 @@ public class ChatGroupPanel extends JPanel {
         public DefaultTableModel adminModel;
 
         // Tìm kiếm nhóm
-        public JButton searchByNameBtn = new JButton("Tìm kiếm nhóm");
+        public JButton searchByNameBtn = new JButton("Lọc theo tên");
         public JDialog searchDialog = new JDialog(mainFrame, "Tra cứu theo tên nhóm", true);
         public JTextField textFieldSearch = new JTextField(10);
         public JButton submitSearchBtn = new JButton("OK");

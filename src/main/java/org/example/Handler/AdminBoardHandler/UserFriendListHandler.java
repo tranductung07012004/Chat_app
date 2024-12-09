@@ -45,13 +45,13 @@ public class UserFriendListHandler {
         panel.components.filterByNameDialog.setVisible(false);
     }
     private void handleSubmitFilterByName() {
-        String username = panel.components.filterByNameField.getText().trim();
+        String accountname = panel.components.filterByNameField.getText().trim();
 
-        if (username.isEmpty()) {
+        if (accountname.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Username không thể để trống.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Object[][] data = userFriendModel.getUserFriendListInfo(username);
+        Object[][] data = userFriendModel.getUserFriendListInfo(accountname);
         if (data == null) {
             JOptionPane.showMessageDialog(null, "Username không thể để trống.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
