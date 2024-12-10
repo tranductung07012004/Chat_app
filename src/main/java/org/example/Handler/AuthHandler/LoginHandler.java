@@ -166,7 +166,6 @@ public class LoginHandler implements ActionListener {
                     // Send the new password to the user's email
                     sendEmail(email, newPassword);
 
-                    JOptionPane.showMessageDialog(loginScreen, "Password reset successful. Please check your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(loginScreen, "No account found with that email address.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -209,8 +208,10 @@ public class LoginHandler implements ActionListener {
 
             // Send the email
             Transport.send(message);
-            System.out.println("Password reset email sent successfully.");
+            JOptionPane.showMessageDialog(loginScreen, "Password reset successful. Please check your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (MessagingException e) {
+            JOptionPane.showMessageDialog(loginScreen, "Failed to send mail. Please recheck the connection or your email.", "Failed", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
