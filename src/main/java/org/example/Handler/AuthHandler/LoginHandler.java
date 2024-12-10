@@ -61,9 +61,10 @@ public class LoginHandler implements ActionListener {
         JLabel emailLabel = new JLabel("Enter your email:");
         JTextField emailField = new JTextField(20);
 
+
         JButton okButton = new JButton("OK");
         okButton.addActionListener(event -> {
-            String email = emailField.getText();
+            String email = emailField.getText().trim();
             if (email.isEmpty()) {
                 JOptionPane.showMessageDialog(dialog, "Please enter your email!", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -177,20 +178,24 @@ public class LoginHandler implements ActionListener {
     }
 
     private void sendEmail(String toEmail, String newPassword) {
-        String fromEmail = "your-email@example.com"; // Your email address
-        String host = "smtp.example.com"; // SMTP server (e.g., Gmail SMTP: smtp.gmail.com)
+        String fromEmail = "tranductung07012004@gmail.com"; // Your email address
+        String host = "smtp.gmail.com"; // SMTP server (e.g., Gmail SMTP: smtp.gmail.com)
 
         // Set properties for email session
         Properties properties = System.getProperties();
         properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", "true"); // Bật xác thực
+        properties.put("mail.smtp.port", "587"); // Cổng dùng cho STARTTLS
+        properties.put("mail.smtp.starttls.enable", "true"); // Kích hoạt STARTTLS
+        properties.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Tin cậy máy chủ
+        properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2"); // Đảm bảo sử dụng TLS v1.2
+
+
 
         // Get the session
         Session session = Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("your-email@example.com", "your-email-password");
+                return new PasswordAuthentication("tranductung07012004@gmail.com", "pttz vfqe vhyb xdcw");
             }
         });
 
