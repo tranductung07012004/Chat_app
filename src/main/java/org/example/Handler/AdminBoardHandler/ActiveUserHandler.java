@@ -1,7 +1,6 @@
 package org.example.Handler.AdminBoardHandler;
 import org.example.GUI.AdminBoard.ActiveUserPanel;
 import org.example.Model.loginHistoryModel;
-import org.example.Model.activityHistoryModel;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Date;
@@ -44,7 +43,7 @@ public class ActiveUserHandler {
         java.sql.Date sqlStartDate = Date.valueOf("1970-01-01");
         java.sql.Date sqlEndDate = Date.valueOf("9999-12-31");
 
-        Object[][] data = activityHistoryModel.getActiveUserInfo(sqlStartDate, sqlEndDate);
+        Object[][] data = loginHistoryModel.getActiveUserInfo(sqlStartDate, sqlEndDate);
         updateTableData(panel.components.tableModel, data);
     }
     private void handleCancelFilterByName() {
@@ -57,7 +56,7 @@ public class ActiveUserHandler {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập thông tin vào.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Object[][] data = activityHistoryModel.getActiveUserByAccountName(accountName);
+        Object[][] data = loginHistoryModel.getActiveUserByAccountName(accountName);
 
         if (data.length > 0) {
             JOptionPane.showMessageDialog(null, "Tìm thấy!.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -95,7 +94,7 @@ public class ActiveUserHandler {
             e.printStackTrace();
         }
 
-        Object[][] data = activityHistoryModel.getActiveUserByActivityNum(selectedOption, num);
+        Object[][] data = loginHistoryModel.getActiveUserByActivityNum(selectedOption, num);
 
         if (data.length > 0){
             JOptionPane.showMessageDialog(null, "Tìm thấy thông tin.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
@@ -145,7 +144,7 @@ public class ActiveUserHandler {
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
         // Tiến hành nếu các điều kiện đều hợp lệ
-        Object[][] data = activityHistoryModel.getActiveUserInfo(sqlStartDate, sqlEndDate);
+        Object[][] data = loginHistoryModel.getActiveUserInfo(sqlStartDate, sqlEndDate);
         if (data.length > 0) {
             JOptionPane.showMessageDialog(null, "Truy vấn thành công.", "Error", JOptionPane.INFORMATION_MESSAGE);
             updateTableData(panel.components.tableModel, data);

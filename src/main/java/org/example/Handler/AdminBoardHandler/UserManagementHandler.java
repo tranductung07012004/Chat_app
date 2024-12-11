@@ -118,15 +118,27 @@ public class UserManagementHandler  {
         String email = userManagement.addComponents.emailFieldAddButton.getText().trim();
 
 
-        if (!username.matches("[a-zA-Z0-9_]+")) {
-            JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+
 
         // Kiểm tra nếu có trường nào để trống
         if (username.isEmpty() || password.isEmpty() || accountName.isEmpty() || dob.isEmpty() ||
                 address.isEmpty() || gender.isEmpty() || email.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải điền đầy đủ thông tin.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!username.matches("[a-zA-Z0-9_]+")) {
+            JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.checkIfUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "Username đã tồn tại, hãy sử dụng username khác.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.checkIfEmailExists(email)) {
+            JOptionPane.showMessageDialog(null, "Email này đã tồn tại, hãy sử dụng email khác.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -148,7 +160,7 @@ public class UserManagementHandler  {
         if (endUserModel.addUser(username, password, accountName, sqlDate, address, gender, email) > 0) {
             loadUserData(); // Tải lại dữ liệu người dùng nếu thêm thành công
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to add user. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Lỗi thêm người dùng, hãy thử lại.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -347,21 +359,23 @@ public class UserManagementHandler  {
 
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            Object[][] loginHistoryData = loginHistoryModel.getLoginHistoryOfUsername(username);
-
-            if (loginHistoryData == null) {
-                // Tên đăng nhập không tồn tại
-                JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong database.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (loginHistoryData.length == 0) {
-                // Tên đăng nhập không có lịch sử đăng nhập
-                JOptionPane.showMessageDialog(null, "Người dùng này không có lịch sử đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // Hiển thị dữ liệu
-                JOptionPane.showMessageDialog(null, "Tìm kiếm lịch sử đăng nhập thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                userManagement.updateTableData(userManagement.components.tableModelLogin, loginHistoryData);
-            }
+            return;
         }
+
+        Object[][] loginHistoryData = loginHistoryModel.getLoginHistoryOfUsername(username);
+
+        if (loginHistoryData == null) {
+            // Tên đăng nhập không tồn tại
+            JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong database.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (loginHistoryData.length == 0) {
+            // Tên đăng nhập không có lịch sử đăng nhập
+            JOptionPane.showMessageDialog(null, "Người dùng này không có lịch sử đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Hiển thị dữ liệu
+            JOptionPane.showMessageDialog(null, "Tìm kiếm lịch sử đăng nhập thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            userManagement.updateTableData(userManagement.components.tableModelLogin, loginHistoryData);
+        }
+
     }
 
 

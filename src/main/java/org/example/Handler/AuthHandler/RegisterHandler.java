@@ -83,25 +83,36 @@ public class RegisterHandler implements ActionListener {
 
     private boolean validateForm(String username, String fullName, String address, String gender, String email, String dobText, String password, String confirmPassword) {
 
+        if (endUserModel.checkIfUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "Username đã tồn tại, hãy chọn một username khác.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         if (!username.matches("[a-zA-Z0-9_]+")) {
             JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         // Check if any required field is empty
         if (username.isEmpty() || fullName.isEmpty() || address.isEmpty() || gender.isEmpty() || email.isEmpty() || dobText.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(registerScreen, "Please fill in all fields.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(registerScreen, "Hãy điền đầy đủ các thông tin.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
+
         // Check if passwords match
         if (!password.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(registerScreen, "Passwords do not match.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(registerScreen, "Xác nhận lại mật khẩu.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // check if email is not unique
+        if (endUserModel.checkIfEmailExists(email)) {
+            JOptionPane.showMessageDialog(registerScreen, "Email đã được sử dụng cho tài khoản khác, hãy sử dụng email khác.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // Validate email format
         if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            JOptionPane.showMessageDialog(registerScreen, "Invalid email format.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(registerScreen, "Format của email không đúng!.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -111,7 +122,7 @@ public class RegisterHandler implements ActionListener {
         try {
             java.util.Date parsedDate = dateFormatter.parse(dobText);
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(registerScreen, "Invalid date format! Use dd/MM/yyyy.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(registerScreen, "Format của Date không đúng! Hãy dùng dd/MM/yyyy.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 

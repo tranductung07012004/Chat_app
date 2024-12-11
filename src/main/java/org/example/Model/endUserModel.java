@@ -500,7 +500,7 @@ public class endUserModel {
     }
 
     public static boolean checkIfUserExists(String username) {
-        String query = "SELECT 1 FROM end_user WHERE username LIKE ?";
+        String query = "SELECT 1 FROM end_user WHERE username = ?";
         boolean exists = false;
 
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
@@ -508,7 +508,7 @@ public class endUserModel {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán giá trị tham số
-            stmt.setString(1, username + "%");
+            stmt.setString(1, username);
 
             // Thực thi truy vấn
             try (ResultSet rs = stmt.executeQuery()) {
@@ -760,5 +760,33 @@ public class endUserModel {
         // Chuyển danh sách thành mảng 2 chiều
         return userDataList.toArray(new Object[0][]);
     }
+
+    public static boolean checkIfEmailExists(String email) {
+        String query = "SELECT 1 FROM end_user WHERE email = ?";
+        boolean exists = false;
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, email);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Nếu có dữ liệu trả về thì người dùng tồn tại
+                    exists = true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return exists;
+    }
+
+
 
 }

@@ -2,7 +2,6 @@ package org.example.Handler.AdminBoardHandler;
 
 import org.example.GUI.AdminBoard.NewRegistrationByYear;
 import org.example.GUI.MainFrameGUI;
-import org.example.Model.activityHistoryModel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.CategoryDataset;
 import org.example.Model.endUserModel;

@@ -1,7 +1,7 @@
 package org.example.Handler.AdminBoardHandler;
 import org.example.GUI.AdminBoard.ActivityChartPanel;
-import org.example.Model.activityHistoryModel;
 import org.example.Model.endUserModel;
+import org.example.Model.loginHistoryModel;
 
 import javax.swing.*;
 
@@ -20,7 +20,7 @@ public class ActivityChartHandler {
         // Tạo đối tượng dataset
 
         // Lấy dữ liệu từ endUserModel
-        Object[] monthlyRegistrations = activityHistoryModel.countAppUsersByYear(year);
+        Object[] monthlyRegistrations = loginHistoryModel.countAppUsersByYear(year);
 
         // Điền dữ liệu vào dataset
         String[] months = {
@@ -41,7 +41,7 @@ public class ActivityChartHandler {
     }
 
     private void handleReloadBtn() {
-        String newestYear = activityHistoryModel.getNewestYear();
+        String newestYear = loginHistoryModel.getNewestYear();
         panel.components.barChart.setTitle("Số lượng người dùng có mở app năm " + newestYear);
         updateChartDataset(newestYear);
     }

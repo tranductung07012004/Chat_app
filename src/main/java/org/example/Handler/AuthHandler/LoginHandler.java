@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LoginHandler implements ActionListener {
     private final LoginGUI loginScreen;
@@ -189,8 +191,6 @@ public class LoginHandler implements ActionListener {
         properties.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Tin cậy máy chủ
         properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2"); // Đảm bảo sử dụng TLS v1.2
 
-
-
         // Get the session
         Session session = Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -198,21 +198,38 @@ public class LoginHandler implements ActionListener {
             }
         });
 
-        try {
-            // Create a new email message
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(fromEmail));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-            message.setSubject("Password Reset Request");
-            message.setText("Your new password is: " + newPassword);
+        // Create a new task to send the email in a background thread
+        Runnable emailTask = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Create a new email message
+                    MimeMessage message = new MimeMessage(session);
+                    message.setFrom(new InternetAddress(fromEmail));
+                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+                    message.setSubject("Password Reset Request");
+                    message.setText("Your new password is: " + newPassword);
 
-            // Send the email
-            Transport.send(message);
-            JOptionPane.showMessageDialog(loginScreen, "Password reset successful. Please check your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    // Send the email
+                    Transport.send(message);
+                    // Update the UI on the EDT (Event Dispatch Thread)
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(null, "Password reset successful. Please check your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    });
 
-        } catch (MessagingException e) {
-            JOptionPane.showMessageDialog(loginScreen, "Failed to send mail. Please recheck the connection or your email.", "Failed", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+                } catch (MessagingException e) {
+                    // Handle failure to send the email
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(null, "Failed to send mail. Please recheck the connection or your email.", "Failed", JOptionPane.ERROR_MESSAGE);
+                    });
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        // Use ExecutorService to manage the background thread
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(emailTask);
+        executor.shutdown();
     }
 }
