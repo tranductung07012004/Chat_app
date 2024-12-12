@@ -17,6 +17,10 @@ public class SpamReportHandler {
 
         spamPanel.components.reloadBtn.addActionListener(e -> handleReloadBtn());
 
+        spamPanel.components.filterEmailButton.addActionListener(e -> handleFilterEmailButton());
+        spamPanel.components.submitFilterEmail.addActionListener(e -> handleSubmitFilterEmail());
+        spamPanel.components.cancelFilterEmail.addActionListener(e -> handleCancelFilterEmail());
+
         spamPanel.components.filterUsernameButton.addActionListener(e -> handleFilterUsernameBtn());
         spamPanel.components.submitFilterUsername.addActionListener(e -> handleSubmitFilterUsername());
         spamPanel.components.cancelFilterUsername.addActionListener(e -> handleCancelFilterUsername());
@@ -49,6 +53,34 @@ public class SpamReportHandler {
     private void handleReloadBtn() {
         Object[][] data = spamModel.getAllInfo();
         updateTableData(spamPanel.components.tableModel, data);
+    }
+
+    private void handleFilterEmailButton() {
+        spamPanel.components.filterEmailDialog.setVisible(true);
+    }
+    private void handleSubmitFilterEmail() {
+        String email = spamPanel.components.filterEmailField.getText().trim();
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Không được để trống Email", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Object[][] data = spamModel.filterByEmail(email);
+
+        if (data == null) {
+            JOptionPane.showMessageDialog(null, "Có lỗi trong quá trình truy vấn.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (data.length > 0) {
+            JOptionPane.showMessageDialog(null, "Tìm thấy!.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            updateTableData(spamPanel.components.tableModel, data);
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    private void handleCancelFilterEmail() {
+        spamPanel.components.filterEmailDialog.setVisible(false);
     }
 
     private void handleFilterUsernameBtn() {

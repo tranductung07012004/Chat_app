@@ -33,15 +33,17 @@ public class NewUserStatistic extends JPanel {
         JScrollPane scrollPane = new JScrollPane(newUserTable);
 
         JPanel actionPanel = new JPanel();
-
-        actionPanel.add(this.components.filterByAccountNameBtn);
         actionPanel.add(this.components.reloadBtn);
+        actionPanel.add(this.components.filterByEmailBtn);
+        actionPanel.add(this.components.filterByAccountNameBtn);
 
         add(filterPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(actionPanel, BorderLayout.SOUTH);
 
+        // Thêm các dialog
         searchByAccountNameDialog();
+        searchByEmailDialog();
 
         new NewUserStatisticHandler(this);
 
@@ -49,7 +51,7 @@ public class NewUserStatistic extends JPanel {
 
     private JTable createNewUserTable() {
         // Tạo bảng hiển thị danh sách người dùng đăng ký mới
-        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Thời gian tạo (đăng ký)"};
+        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Email", "Thời gian tạo (đăng ký)"};
         Object[][] data = {}; // Dữ liệu người dùng đăng ký mới
 
         components.tableModel = new DefaultTableModel(data, columnNames) {
@@ -79,6 +81,7 @@ public class NewUserStatistic extends JPanel {
         sorter.setSortable(0, false);
         sorter.setSortable(1, true);
         sorter.setSortable(2, true);
+        sorter.setSortable(3, true);
 
         return newUserTable;
     }
@@ -93,13 +96,32 @@ public class NewUserStatistic extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(this.components.submitAccountNameButton);
-        buttonPanel.add(this.components.cancleAccountNameButton);
+        buttonPanel.add(this.components.cancelAccountNameButton);
 
         this.components.filterByAccountNameDialog.add(inputPanel, BorderLayout.CENTER);
         this.components.filterByAccountNameDialog.add(buttonPanel, BorderLayout.SOUTH);
 
         this.components.filterByAccountNameDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
         this.components.filterByAccountNameDialog.setVisible(false);
+    }
+
+    private void searchByEmailDialog() {
+        this.components.filterByEmailDialog.setSize(400, 130);
+        this.components.filterByEmailDialog.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Email:"));
+        inputPanel.add(this.components.emailField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.components.submitEmailButton);
+        buttonPanel.add(this.components.cancelEmailButton);
+
+        this.components.filterByEmailDialog.add(inputPanel, BorderLayout.CENTER);
+        this.components.filterByEmailDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.components.filterByEmailDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.filterByEmailDialog.setVisible(false);
     }
 
     public class overallComponents {
@@ -112,7 +134,13 @@ public class NewUserStatistic extends JPanel {
         public JDialog filterByAccountNameDialog = new JDialog(mainFrame, "Lọc theo họ tên", true);
         public JTextField accountNameField = new JTextField(10);
         public JButton submitAccountNameButton = new JButton("OK");
-        public JButton cancleAccountNameButton = new JButton("Hủy");
+        public JButton cancelAccountNameButton = new JButton("Hủy");
+
+        public JButton filterByEmailBtn = new JButton("Lọc theo Email");
+        public JDialog filterByEmailDialog = new JDialog(mainFrame, "Lọc theo Email", true);
+        public JTextField emailField = new JTextField(10);
+        public JButton submitEmailButton = new JButton("OK");
+        public JButton cancelEmailButton = new JButton("Hủy");
 
 
         public DefaultTableModel tableModel;

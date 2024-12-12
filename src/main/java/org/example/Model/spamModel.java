@@ -17,7 +17,7 @@ public class spamModel {
 
 
     public static Object[][] getAllInfo() {
-        String query = "SELECT eu.username, sp.time_created, eu.blockedaccountbyadmin " +
+        String query = "SELECT eu.username, sp.time_created, eu.email, eu.blockedaccountbyadmin " +
                 "FROM spam sp JOIN end_user eu ON sp.target_user = eu.user_id";
         List<Object[]> resultList = new ArrayList<>();
 
@@ -31,12 +31,13 @@ public class spamModel {
                 // Lấy dữ liệu từ các cột
                 boolean blocked = rs.getBoolean("blockedaccountbyadmin");
                 String resultUserName = rs.getString("username");
+                String resultEmail = rs.getString("email");
                 Timestamp timeCreated = rs.getTimestamp("time_created");
 
                 String blockedString = blocked ? "TRUE" : "FALSE";
 
                 // Thêm dữ liệu vào danh sách
-                resultList.add(new Object[]{resultUserName, timeCreated.toString().split("\\.")[0], blockedString});
+                resultList.add(new Object[]{resultUserName, timeCreated.toString().split("\\.")[0], resultEmail, blockedString});
             }
 
         } catch (SQLException e) {
@@ -48,7 +49,7 @@ public class spamModel {
     }
 
     public static Object[][] filterByUsername(String username) {
-        String query = "SELECT eu.username, sp.time_created, eu.blockedaccountbyadmin " +
+        String query = "SELECT eu.username, sp.time_created, eu.email, eu.blockedaccountbyadmin " +
                 "FROM spam sp JOIN end_user eu ON sp.target_user = eu.user_id" +
                 " WHERE eu.username LIKE ?";
         List<Object[]> resultList = new ArrayList<>();
@@ -69,6 +70,41 @@ public class spamModel {
 
                     // Thêm dữ liệu vào danh sách
                     resultList.add(new Object[]{resultUsername, timeCreated.toString().split("\\.")[0], blockedString});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        // Chuyển danh sách thành mảng 2 chiều
+        return resultList.toArray(new Object[0][]);
+    }
+
+    public static Object[][] filterByEmail(String email) {
+        String query = "SELECT eu.username, sp.time_created, eu.email, eu.blockedaccountbyadmin " +
+                "FROM spam sp JOIN end_user eu ON sp.target_user = eu.user_id" +
+                " WHERE eu.email LIKE ?";
+        List<Object[]> resultList = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);) {
+
+            stmt.setString(1, email + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                // Lặp qua các dòng của ResultSet
+                while (rs.next()) {
+                    // Lấy dữ liệu từ các cột
+                    boolean blocked = rs.getBoolean("blockedaccountbyadmin");
+                    String resultUsername = rs.getString("username");
+                    String resultEmail = rs.getString("email");
+                    Timestamp timeCreated = rs.getTimestamp("time_created");
+                    String blockedString = blocked ? "TRUE" : "FALSE";
+
+                    // Thêm dữ liệu vào danh sách
+                    resultList.add(new Object[]{resultUsername, timeCreated.toString().split("\\.")[0], resultEmail, blockedString});
                 }
             }
 
@@ -106,7 +142,7 @@ public class spamModel {
     }
 
     public static Object[][] filterByDate(java.sql.Date sqlStartDate, java.sql.Date sqlEndDate) {
-        String query = " SELECT eu.username, sp.time_created, eu.blockedaccountbyadmin " +
+        String query = " SELECT eu.username, sp.time_created, eu.email, eu.blockedaccountbyadmin " +
                 " FROM spam sp JOIN end_user eu on sp.target_user = eu.user_id" +
                 " WHERE sp.time_created >= ? AND sp.time_created <= ?";
         List<Object[]> resultList = new ArrayList<>();
@@ -125,11 +161,12 @@ public class spamModel {
                     // Lấy dữ liệu từ các cột
                     String userName = rs.getString("username");
                     Timestamp timeCreated = rs.getTimestamp("time_created");
+                    String resultEmail = rs.getString("email");
                     boolean blocked = rs.getBoolean("blockedaccountbyadmin");
                     String blockedString = blocked ? "TRUE" : "FALSE";
 
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{userName, timeCreated.toString().split("\\.")[0], blockedString});
+                    resultList.add(new Object[]{userName, timeCreated.toString().split("\\.")[0], resultEmail, blockedString});
                 }
             }
 

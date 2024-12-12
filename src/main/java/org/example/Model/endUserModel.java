@@ -52,7 +52,7 @@ public class endUserModel {
     }
 
     public static Object[][] filterRegisteredByDate(java.sql.Date sqlStartDate, java.sql.Date sqlEndDate) {
-        String query = " SELECT eu.username, eu.account_name, eu.time_registered " +
+        String query = " SELECT eu.username, eu.account_name, eu.email, eu.time_registered " +
                 " FROM  end_user eu " +
                 " WHERE eu.time_registered >= ? AND eu.time_registered <= ?";
         List<Object[]> resultList = new ArrayList<>();
@@ -71,10 +71,11 @@ public class endUserModel {
                     // Lấy dữ liệu từ các cột
                     String userName = rs.getString("username");
                     String accountName = rs.getString("account_name");
+                    String email = rs.getString("email");
                     Timestamp timeCreated = rs.getTimestamp("time_registered");
 
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{userName, accountName, timeCreated.toString().split("\\.")[0]});
+                    resultList.add(new Object[]{userName, accountName, email, timeCreated.toString().split("\\.")[0]});
                 }
             }
 
@@ -89,7 +90,7 @@ public class endUserModel {
 
     public static Object[][] getAllNewUserStatisticInfo() {
         List<Object[]> userList = new ArrayList<>();
-        String query = "SELECT username, account_name, time_registered FROM end_user";
+        String query = "SELECT username, account_name, email, time_registered FROM end_user";
 
         // try-with-resources
         try (Connection conn = DBConn.getConnection();
@@ -99,8 +100,9 @@ public class endUserModel {
             while (rs.next()) {
                 String username = rs.getString("username");
                 String accountName = rs.getString("account_name");
+                String email = rs.getString("email");
                 Timestamp timeRegistered = rs.getTimestamp("time_registered");
-                userList.add(new Object[]{username, accountName, timeRegistered.toString().split("\\.")[0]});
+                userList.add(new Object[]{username, accountName, email, timeRegistered.toString().split("\\.")[0]});
             }
 
         } catch (SQLException e) {
@@ -422,7 +424,7 @@ public class endUserModel {
     }
 
     public static Object[][] getNewUserStatisticByAccountname(String accountName) {
-        String query = "SELECT username, account_name, time_registered FROM end_user WHERE account_name LIKE ?";
+        String query = "SELECT username, account_name, email, time_registered FROM end_user WHERE account_name LIKE ?";
         List<Object[]> userData = new ArrayList<>();
 
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
@@ -438,10 +440,45 @@ public class endUserModel {
                     // Lấy dữ liệu từ kết quả truy vấn
                     String resultUsername = rs.getString("username");
                     String account_name = rs.getString("account_name");
+                    String email = rs.getString("email");
                     Timestamp timeRegistered = rs.getTimestamp("time_registered");
 
                     // Gán dữ liệu vào mảng
-                    userData.add(new Object[]{resultUsername, account_name, timeRegistered.toString().split("\\.")[0]});
+                    userData.add(new Object[]{resultUsername, account_name, email, timeRegistered.toString().split("\\.")[0]});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2D
+        Object[][] userArray = new Object[userData.size()][];
+        return userData.toArray(userArray);
+    }
+
+    public static Object[][] getNewUserStatisticByEmail(String email) {
+        String query = "SELECT username, account_name, email, time_registered FROM end_user WHERE email LIKE ?";
+        List<Object[]> userData = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, email + "%");
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ kết quả truy vấn
+                    String resultUsername = rs.getString("username");
+                    String account_name = rs.getString("account_name");
+                    String resultEmail = rs.getString("email");
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+
+                    // Gán dữ liệu vào mảng
+                    userData.add(new Object[]{resultUsername, account_name, resultEmail, timeRegistered.toString().split("\\.")[0]});
                 }
             }
 

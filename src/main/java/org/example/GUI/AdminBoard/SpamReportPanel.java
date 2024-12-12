@@ -33,6 +33,7 @@ public class SpamReportPanel extends JPanel {
         actionPanel.add(components.filterUsernameButton);
         actionPanel.add(components.filterTimeButton);
         actionPanel.add(components.lockUserButton);
+        actionPanel.add(components.filterEmailButton);
 
 
         add(scrollPane, BorderLayout.CENTER);
@@ -42,6 +43,7 @@ public class SpamReportPanel extends JPanel {
         createFilterByUsernameDialog();
         createLockUsernameDialog();
         createFilterByDate();
+        createFilterByEmailDialog();
 
         // Xử lý sự kiện khóa tài khoản
         new SpamReportHandler(this);
@@ -49,7 +51,7 @@ public class SpamReportPanel extends JPanel {
 
     private JTable createSpamTable() {
         // Tạo bảng hiển thị báo cáo spam
-        String[] columnNames = {"Tên đăng nhập", "Thời gian", "Khóa"};
+        String[] columnNames = {"Tên đăng nhập", "Thời gian", "Email", "Khóa"};
         Object[][] data = {}; // Dữ liệu báo cáo spam
 
         components.tableModel = new DefaultTableModel(data, columnNames) {
@@ -100,6 +102,26 @@ public class SpamReportPanel extends JPanel {
 
         this.components.filterUsernameDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
         this.components.filterUsernameDialog.setVisible(false);
+    }
+
+    public void createFilterByEmailDialog() {
+
+        this.components.filterEmailDialog.setSize(400, 130);
+        this.components.filterEmailDialog.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Email:"));
+        inputPanel.add(this.components.filterEmailField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.components.submitFilterEmail);
+        buttonPanel.add(this.components.cancelFilterEmail);
+
+        this.components.filterEmailDialog.add(inputPanel, BorderLayout.CENTER);
+        this.components.filterEmailDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.components.filterEmailDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.filterEmailDialog.setVisible(false);
     }
 
     public void createLockUsernameDialog() {
@@ -184,12 +206,19 @@ public class SpamReportPanel extends JPanel {
         public DefaultTableModel tableModel;
         public JButton reloadBtn = new JButton("RELOAD");
 
-        // Chức năng tìm kiếm theo tên đăng nhập
+        // Chức năng lọc theo tên đăng nhập
         public JButton filterUsernameButton = new JButton("Lọc theo tên đăng nhập");
         public JDialog filterUsernameDialog = new JDialog(mainFrame, "Lọc theo tên đăng nhập", true);
         public JTextField filterUsernameField = new JTextField(10);
         public JButton submitFilterUsername = new JButton("OK");
         public JButton cancelFilterUsername = new JButton("Hủy");
+
+        // Chức năng lọc theo email
+        public JButton filterEmailButton = new JButton("Lọc theo Email");
+        public JDialog filterEmailDialog = new JDialog(mainFrame, "Lọc theo Email", true);
+        public JTextField filterEmailField = new JTextField(10);
+        public JButton submitFilterEmail = new JButton("OK");
+        public JButton cancelFilterEmail = new JButton("Hủy");
 
         // Chức năng khóa tài khoản dựa trên tên đăng nhập
         public JButton lockUserButton = new JButton("Khóa tài khoản");

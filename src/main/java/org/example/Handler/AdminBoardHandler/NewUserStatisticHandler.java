@@ -19,8 +19,11 @@ public class NewUserStatisticHandler {
         panel.components.filterByTimeButton.addActionListener(e -> handleFilterByTimeBtn());
         panel.components.filterByAccountNameBtn.addActionListener(e -> handleFilterByAccountNameBtn());
         panel.components.submitAccountNameButton.addActionListener(e -> handleSubmitAccountNameBtn());
-        panel.components.cancleAccountNameButton.addActionListener(e -> handleCancelAccountNameBtn());
+        panel.components.cancelAccountNameButton.addActionListener(e -> handleCancelAccountNameBtn());
 
+        panel.components.filterByEmailBtn.addActionListener(e -> handleFilterByEmailBtn());
+        panel.components.submitEmailButton.addActionListener(e -> handleSubmitEmailBtn());
+        panel.components.cancelEmailButton.addActionListener(e -> handleCancelEmailButton());
         handleReloadBtn();
     }
 
@@ -70,7 +73,7 @@ public class NewUserStatisticHandler {
         java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
         java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
 
-        // Tiến hành thêm người dùng nếu tất cả điều kiện đều hợp lệ
+        // Tiến hành lọc nếu tất cả điều kiện đều hợp lệ
         Object[][] data = endUserModel.filterRegisteredByDate(sqlStartDate, sqlEndDate);
         if (data == null) {
             JOptionPane.showMessageDialog(null, "Có lỗi trong quá trình truy vấn.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -111,5 +114,33 @@ public class NewUserStatisticHandler {
     }
     private void handleCancelAccountNameBtn() {
         panel.components.filterByAccountNameDialog.setVisible(false);
+    }
+
+    private void handleFilterByEmailBtn() {
+        panel.components.filterByEmailDialog.setVisible(true);
+    }
+    private void handleSubmitEmailBtn() {
+        String email = panel.components.emailField.getText().trim();
+        // Kiểm tra nếu người dùng không nhập gì
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Hãy nhập một họ tên.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Gọi hàm tìm kiếm trong cơ sở dữ liệu
+        Object[][] userData = endUserModel.getNewUserStatisticByEmail(email);
+
+        // Kiểm tra kết quả trả về
+        if (userData.length > 0) {
+            JOptionPane.showMessageDialog(null, "Tìm kiếm thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            updateTableData(panel.components.tableModel, userData);
+        }
+        else {
+            // Thông báo nếu không tìm thấy người dùng
+            JOptionPane.showMessageDialog(null, "Không tìm thấy người dùng.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void handleCancelEmailButton() {
+        panel.components.filterByEmailDialog.setVisible(false);
     }
 }
