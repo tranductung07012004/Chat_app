@@ -223,15 +223,15 @@ public class loginHistoryModel {
                     int loginCount = rs.getInt("login_count");
                     int userMessageCount = rs.getInt("people_chatted");
                     int groupMessageCount = rs.getInt("group_chatted");
-                    int sumActivityCount = loginCount + userMessageCount + groupMessageCount;
+                    int sumCount = loginCount + userMessageCount + groupMessageCount;
 
-                    if ((selectedOption.equals(">") && sumActivityCount <= num)
-                            || (selectedOption.equals("<") && sumActivityCount >= num)
-                            || (selectedOption.equals("=") && sumActivityCount != num)) {
+                    if ((selectedOption.equals(">") && loginCount <= num)
+                            || (selectedOption.equals("<") && loginCount >= num)
+                            || (selectedOption.equals("=") && loginCount != num)) {
                         continue;
                     }
                     // Thêm dữ liệu vào danh sách
-                    resultList.add(new Object[]{username, accountName, time_registered.toString().split("\\.")[0], loginCount, userMessageCount, groupMessageCount, sumActivityCount});
+                    resultList.add(new Object[]{username, accountName, time_registered.toString().split("\\.")[0], loginCount, userMessageCount, groupMessageCount, sumCount});
                 }
 
                 // Chuyển đổi danh sách thành mảng 2 chiều Object
