@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LoginHandler implements ActionListener {
     private final LoginGUI loginScreen;
@@ -61,9 +63,10 @@ public class LoginHandler implements ActionListener {
         JLabel emailLabel = new JLabel("Enter your email:");
         JTextField emailField = new JTextField(20);
 
+
         JButton okButton = new JButton("OK");
         okButton.addActionListener(event -> {
-            String email = emailField.getText();
+            String email = emailField.getText().trim();
             if (email.isEmpty()) {
                 JOptionPane.showMessageDialog(dialog, "Please enter your email!", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -165,7 +168,6 @@ public class LoginHandler implements ActionListener {
                     // Send the new password to the user's email
                     sendEmail(email, newPassword);
 
-                    JOptionPane.showMessageDialog(loginScreen, "Password reset successful. Please check your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(loginScreen, "No account found with that email address.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -177,36 +179,57 @@ public class LoginHandler implements ActionListener {
     }
 
     private void sendEmail(String toEmail, String newPassword) {
-        String fromEmail = "your-email@example.com"; // Your email address
-        String host = "smtp.example.com"; // SMTP server (e.g., Gmail SMTP: smtp.gmail.com)
+        String fromEmail = "tranductung07012004@gmail.com"; // Your email address
+        String host = "smtp.gmail.com"; // SMTP server (e.g., Gmail SMTP: smtp.gmail.com)
 
         // Set properties for email session
         Properties properties = System.getProperties();
         properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", "true"); // Bật xác thực
+        properties.put("mail.smtp.port", "587"); // Cổng dùng cho STARTTLS
+        properties.put("mail.smtp.starttls.enable", "true"); // Kích hoạt STARTTLS
+        properties.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Tin cậy máy chủ
+        properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2"); // Đảm bảo sử dụng TLS v1.2
 
         // Get the session
         Session session = Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("your-email@example.com", "your-email-password");
+                return new PasswordAuthentication("tranductung07012004@gmail.com", "pttz vfqe vhyb xdcw");
             }
         });
 
-        try {
-            // Create a new email message
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(fromEmail));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-            message.setSubject("Password Reset Request");
-            message.setText("Your new password is: " + newPassword);
+        // Create a new task to send the email in a background thread
+        Runnable emailTask = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Create a new email message
+                    MimeMessage message = new MimeMessage(session);
+                    message.setFrom(new InternetAddress(fromEmail));
+                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+                    message.setSubject("Password Reset Request");
+                    message.setText("Your new password is: " + newPassword);
 
-            // Send the email
-            Transport.send(message);
-            System.out.println("Password reset email sent successfully.");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+                    // Send the email
+                    Transport.send(message);
+                    // Update the UI on the EDT (Event Dispatch Thread)
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(null, "Password reset successful. Please check your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    });
+
+                } catch (MessagingException e) {
+                    // Handle failure to send the email
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(null, "Failed to send mail. Please recheck the connection or your email.", "Failed", JOptionPane.ERROR_MESSAGE);
+                    });
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        // Use ExecutorService to manage the background thread
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(emailTask);
+        executor.shutdown();
     }
 }

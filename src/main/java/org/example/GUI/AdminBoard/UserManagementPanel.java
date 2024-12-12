@@ -90,7 +90,7 @@ public class UserManagementPanel extends JPanel {
     }
 
     private JTable createUserTable() {
-        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)", "Khóa"};
+        String[] columnNames = {"Tên đăng nhập", "Họ tên", "Địa chỉ", "Ngày sinh", "Giới tính", "Email", "Ngày tạo (đăng ký)", "Khóa", "Online"};
         Object[][] data = {};
         this.components.tableModel = new DefaultTableModel(data, columnNames) {
             @Override
@@ -290,14 +290,14 @@ public class UserManagementPanel extends JPanel {
         String[] labels = {"Tên đăng nhập", "Họ tên", "Trạng thái"};
         JTextField[] textFields = {
                 this.searchComponents.usernameField,
-                this.searchComponents.accountnameField,
-                this.searchComponents.stateField
+                this.searchComponents.accountnameField
         };
         JButton[] buttons = {
                 this.searchComponents.submitUsernameBtn,
                 this.searchComponents.submitAccountnameBtn,
                 this.searchComponents.submitStateBtn
         };
+
 
         // Thêm các thành phần vào mainPanel
         for (int i = 0; i < labels.length; i++) {
@@ -310,7 +310,13 @@ public class UserManagementPanel extends JPanel {
             gbc.gridx = 1;
             gbc.weightx = 1;
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            mainPanel.add(textFields[i], gbc);
+
+            // Sử dụng JTextField hoặc JComboBox tùy theo i
+            if (i < textFields.length) {
+                mainPanel.add(textFields[i], gbc);
+            } else {
+                mainPanel.add(this.searchComponents.option, gbc); // Thay thế stateField bằng JComboBox
+            }
 
             gbc.gridx = 2;
             gbc.weightx = 0;
@@ -330,6 +336,7 @@ public class UserManagementPanel extends JPanel {
         this.searchComponents.searchDialog.setLocationRelativeTo(mainFrame);
         this.searchComponents.searchDialog.setVisible(false);
     }
+
 
 
 
@@ -542,7 +549,7 @@ public class UserManagementPanel extends JPanel {
         public JDialog searchDialog = new JDialog(mainFrame, "Tìm kiếm người dùng", true);
         public JTextField usernameField = new JTextField(10);
         public JTextField accountnameField = new JTextField(10);
-        public JTextField stateField = new JTextField(10);
+        public JComboBox<String> option = new JComboBox<>(new String[]{"online", "offline", "blocked", "unblocked"});
         public JButton submitUsernameBtn = new JButton("OK");
         public JButton submitAccountnameBtn = new JButton("OK");
         public JButton submitStateBtn = new JButton("OK");

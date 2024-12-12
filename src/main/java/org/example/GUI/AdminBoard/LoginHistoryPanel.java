@@ -31,7 +31,7 @@ public class LoginHistoryPanel extends JPanel {
 
     private JTable createLoginHistoryTable() {
         // Bảng danh sách nhóm chat
-        String[] columnNames = {"Thời gian tạo", "Tên đăng nhập", "Họ tên"};
+        String[] columnNames = {"Thời gian", "Tên đăng nhập", "Họ tên"};
         Object[][] data = {}; // Dữ liệu nhóm chat
 
         this.components.tableModel = new DefaultTableModel(data, columnNames) {

@@ -109,18 +109,36 @@ public class UserManagementHandler  {
 
     private void handleSubmitAddButton() {
         // Lấy dữ liệu từ các JTextField
-        String username = userManagement.addComponents.usernameFieldAddButton.getText();
-        String password = userManagement.addComponents.passFieldAddButton.getText();
-        String accountName = userManagement.addComponents.accountnameFieldAddButton.getText();
-        String dob = userManagement.addComponents.dobFieldAddButton.getText();
-        String address = userManagement.addComponents.addressFieldAddButton.getText();
-        String gender = userManagement.addComponents.genderFieldAddButton.getText();
-        String email = userManagement.addComponents.emailFieldAddButton.getText();
+        String username = userManagement.addComponents.usernameFieldAddButton.getText().trim();
+        String password = userManagement.addComponents.passFieldAddButton.getText().trim();
+        String accountName = userManagement.addComponents.accountnameFieldAddButton.getText().trim();
+        String dob = userManagement.addComponents.dobFieldAddButton.getText().trim();
+        String address = userManagement.addComponents.addressFieldAddButton.getText().trim();
+        String gender = userManagement.addComponents.genderFieldAddButton.getText().trim();
+        String email = userManagement.addComponents.emailFieldAddButton.getText().trim();
+
+
+
 
         // Kiểm tra nếu có trường nào để trống
         if (username.isEmpty() || password.isEmpty() || accountName.isEmpty() || dob.isEmpty() ||
                 address.isEmpty() || gender.isEmpty() || email.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải điền đầy đủ thông tin.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!username.matches("[a-zA-Z0-9_]+")) {
+            JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.checkIfUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "Username đã tồn tại, hãy sử dụng username khác.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.checkIfEmailExists(email)) {
+            JOptionPane.showMessageDialog(null, "Email này đã tồn tại, hãy sử dụng email khác.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -142,7 +160,7 @@ public class UserManagementHandler  {
         if (endUserModel.addUser(username, password, accountName, sqlDate, address, gender, email) > 0) {
             loadUserData(); // Tải lại dữ liệu người dùng nếu thêm thành công
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to add user. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Lỗi thêm người dùng, hãy thử lại.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -208,7 +226,27 @@ public class UserManagementHandler  {
         }
     }
     private void handleSubmitStateBtn() {
-        return;
+        String selectedOption = (String) userManagement.searchComponents.option.getSelectedItem();
+
+        if (selectedOption == null) {
+            JOptionPane.showMessageDialog(null, "Lỗi selectedOption, không được để trống.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (selectedOption.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Lỗi selectedOption, không được để trống.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Object[][] data = endUserModel.searchUserByState(selectedOption);
+
+        if (data.length > 0) {
+            JOptionPane.showMessageDialog(null, "Tìm thấy thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            userManagement.updateTableData(userManagement.components.tableModel, data);
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
     }
 
     private void handleUpdateButton() {
@@ -238,12 +276,12 @@ public class UserManagementHandler  {
     }
 
     private void handleConfirmUpdateButton() {
-        String curUsername = userManagement.updateComponents.usernameFieldUpdateButton.getText();
-        String newAccountName = userManagement.updateComponents.accountNameUpdateField.getText();
-        String newDOB = userManagement.updateComponents.dobUpdateField.getText();
-        String newAddress = userManagement.updateComponents.addressUpdateField.getText();
-        String newGender = userManagement.updateComponents.genderUpdateField.getText();
-        String newEmail = userManagement.updateComponents.emailUpdateField.getText();
+        String curUsername = userManagement.updateComponents.usernameFieldUpdateButton.getText().trim();
+        String newAccountName = userManagement.updateComponents.accountNameUpdateField.getText().trim();
+        String newDOB = userManagement.updateComponents.dobUpdateField.getText().trim();
+        String newAddress = userManagement.updateComponents.addressUpdateField.getText().trim();
+        String newGender = userManagement.updateComponents.genderUpdateField.getText().trim();
+        String newEmail = userManagement.updateComponents.emailUpdateField.getText().trim();
 
         if (curUsername.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập hiện tại trước.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -321,21 +359,23 @@ public class UserManagementHandler  {
 
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            Object[][] loginHistoryData = loginHistoryModel.getLoginHistoryOfUsername(username);
-
-            if (loginHistoryData == null) {
-                // Tên đăng nhập không tồn tại
-                JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong database.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (loginHistoryData.length == 0) {
-                // Tên đăng nhập không có lịch sử đăng nhập
-                JOptionPane.showMessageDialog(null, "Người dùng này không có lịch sử đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // Hiển thị dữ liệu
-                JOptionPane.showMessageDialog(null, "Tìm kiếm lịch sử đăng nhập thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                userManagement.updateTableData(userManagement.components.tableModelLogin, loginHistoryData);
-            }
+            return;
         }
+
+        Object[][] loginHistoryData = loginHistoryModel.getLoginHistoryOfUsername(username);
+
+        if (loginHistoryData == null) {
+            // Tên đăng nhập không tồn tại
+            JOptionPane.showMessageDialog(null, "Tên đăng nhập không tồn tại trong database.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (loginHistoryData.length == 0) {
+            // Tên đăng nhập không có lịch sử đăng nhập
+            JOptionPane.showMessageDialog(null, "Người dùng này không có lịch sử đăng nhập.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Hiển thị dữ liệu
+            JOptionPane.showMessageDialog(null, "Tìm kiếm lịch sử đăng nhập thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            userManagement.updateTableData(userManagement.components.tableModelLogin, loginHistoryData);
+        }
+
     }
 
 
@@ -392,13 +432,13 @@ public class UserManagementHandler  {
     }
 
     private void handleSubmitUpdatePassBtn() {
-        String username = userManagement.updatePassComponents.usernameTextField.getText();
+        String username = userManagement.updatePassComponents.usernameTextField.getText().trim();
         char[] oldPassArray = userManagement.updatePassComponents.oldPassTextField.getPassword();
         char[] newPassArray = userManagement.updatePassComponents.newPassTextField.getPassword();
 
         // Chuyển mảng char[] thành String để so sánh (nên xóa mảng sau khi sử dụng để bảo mật)
-        String oldPass = new String(oldPassArray);
-        String newPass = new String(newPassArray);
+        String oldPass = new String(oldPassArray).trim();
+        String newPass = new String(newPassArray).trim();
 
         // Kiểm tra nếu username rỗng
         if (username.isEmpty() || oldPass.isEmpty() || newPass.isEmpty()) {

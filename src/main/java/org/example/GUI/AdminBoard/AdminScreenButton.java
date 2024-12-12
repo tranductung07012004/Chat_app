@@ -17,7 +17,7 @@ public class AdminScreenButton extends JPanel {
         JButton btnChatGroup = new JButton("Quản lý nhóm chat");
         JButton btnSpamReport = new JButton("Báo cáo spam");
         JButton btnNewUser = new JButton("Người dùng mới");
-        JButton btnUserFriendList = new JButton("Danh sách bạn bè");
+        JButton btnUserFriendList = new JButton("Số lượng bạn bè");
         JButton btnActiveUser = new JButton("Người dùng hoạt động");
         JButton btnActivityChart = new JButton("Biểu đồ hoạt động");
         JButton btnNewRegistrationByYear = new JButton("Biểu đồ đăng ký mới");

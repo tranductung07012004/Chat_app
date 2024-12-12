@@ -45,12 +45,10 @@ public class verifyAdminHandler implements ActionListener {
 
                 endUserModel user=endUserModel.getUserFromId(mainFrame.getCurrentUserId());
                 user.setOnline(true);
+                endUserModel.AdminSessionUsername = username;
                 mainFrame.showAdminPanel();
 
 
-            } else {
-                // Show an error message for invalid credentials
-                JOptionPane.showMessageDialog(verifyAdminScreen, "Invalid credentials. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -62,12 +60,9 @@ public class verifyAdminHandler implements ActionListener {
             return false;
         }
 
-        // Check if the admin code matches
-        final String ADMIN_CODE = "12345"; // The correct admin code
-        if (!adminCode.equals(ADMIN_CODE)) {
-//            JOptionPane.showMessageDialog(null, "Invalid admin code.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
+
+
+        boolean success = false;
 
         // SQL query to validate user credentials
         String query = "SELECT user_id FROM end_user WHERE username = ? AND pass = ? AND isadmin = true";
@@ -85,15 +80,25 @@ public class verifyAdminHandler implements ActionListener {
                     // User is a valid admin
                     mainFrame.setCurrentUserId(rs.getInt("user_id")); // Store the logged-in user's ID
 
-                    return true;
+                    success = true;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         // If no valid admin is found
-        JOptionPane.showMessageDialog(null, "Invalid username or password.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-        return false;
+        if (!success) {
+            JOptionPane.showMessageDialog(null, "Invalid username or password.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Check if the admin code matches
+        final String ADMIN_CODE = "12345"; // The correct admin code
+        if (!adminCode.equals(ADMIN_CODE)) {
+            JOptionPane.showMessageDialog(null, "Admin code không đúng.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            success = false;
+        }
+
+        return success;
     }
 
 }

@@ -5,6 +5,7 @@ import java.sql.*;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class endUserModel {
@@ -20,6 +21,8 @@ public class endUserModel {
     private boolean online;
     private boolean blockedAccountByAdmin;
     private Timestamp time_registered;
+
+    public static String AdminSessionUsername;
 
     public endUserModel(int initID,
                         String initUsername,
@@ -48,9 +51,72 @@ public class endUserModel {
         this.isAdmin=initAdmin;
     }
 
+    public static Object[][] filterRegisteredByDate(java.sql.Date sqlStartDate, java.sql.Date sqlEndDate) {
+        String query = " SELECT eu.username, eu.account_name, eu.email, eu.time_registered " +
+                " FROM  end_user eu " +
+                " WHERE eu.time_registered >= ? AND eu.time_registered <= ?";
+        List<Object[]> resultList = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán tham số cho câu lệnh SQL
+            stmt.setDate(1, sqlStartDate);
+            stmt.setDate(2, sqlEndDate);
+
+            // Thực thi truy vấn và xử lý kết quả
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ các cột
+                    String userName = rs.getString("username");
+                    String accountName = rs.getString("account_name");
+                    String email = rs.getString("email");
+                    Timestamp timeCreated = rs.getTimestamp("time_registered");
+
+                    // Thêm dữ liệu vào danh sách
+                    resultList.add(new Object[]{userName, accountName, email, timeCreated.toString().split("\\.")[0]});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Trả về null nếu xảy ra lỗi
+        }
+
+        // Chuyển danh sách thành mảng 2 chiều
+        return resultList.toArray(new Object[0][]);
+    }
+
+    public static Object[][] getAllNewUserStatisticInfo() {
+        List<Object[]> userList = new ArrayList<>();
+        String query = "SELECT username, account_name, email, time_registered FROM end_user";
+
+        // try-with-resources
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String username = rs.getString("username");
+                String accountName = rs.getString("account_name");
+                String email = rs.getString("email");
+                Timestamp timeRegistered = rs.getTimestamp("time_registered");
+                userList.add(new Object[]{username, accountName, email, timeRegistered.toString().split("\\.")[0]});
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2D
+        Object[][] userArray = new Object[userList.size()][];
+        return userList.toArray(userArray);
+    }
+
     public static Object[][] getAllUser() {
         List<Object[]> userList = new ArrayList<>();
-        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user";
+        String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin, online FROM end_user";
 
         // try-with-resources
         try (Connection conn = DBConn.getConnection();
@@ -66,7 +132,9 @@ public class endUserModel {
                 String email = rs.getString("email");
                 Timestamp timeRegistered = rs.getTimestamp("time_registered");
                 boolean blocked = rs.getBoolean("blockedaccountbyadmin");
+                boolean online = rs.getBoolean("online");
 
+                String onlineString = online ? "True" : "False";
                 String blockedString = blocked ? "True" : "False";
                 userList.add(new Object[]{
                         username,
@@ -75,8 +143,9 @@ public class endUserModel {
                         dob.toString(),
                         gender,
                         email,
-                        timeRegistered.toString(),
-                        blockedString
+                        timeRegistered.toString().split("\\.")[0],
+                        blockedString,
+                        onlineString
                 });
             }
 
@@ -286,10 +355,9 @@ public class endUserModel {
     }
 
     public static int addUser(String username, String password, String accountName, Date dob, String address, String gender, String email) {
-        String query = "INSERT INTO end_user (username, pass, account_name, dob, address, gender, email, time_registered) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO end_user (username, pass, account_name, dob, address, gender, email, online, blockedaccountbyadmin) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, false, false)";
         int rowsAffected = 0;
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -302,7 +370,6 @@ public class endUserModel {
             stmt.setString(5, address);
             stmt.setString(6, gender);
             stmt.setString(7, email);
-            stmt.setTimestamp(8, currentTime);
 
             // Thực thi câu lệnh thêm
             rowsAffected = stmt.executeUpdate();
@@ -356,6 +423,73 @@ public class endUserModel {
         return userDataList.toArray(new Object[0][]);
     }
 
+    public static Object[][] getNewUserStatisticByAccountname(String accountName) {
+        String query = "SELECT username, account_name, email, time_registered FROM end_user WHERE account_name LIKE ?";
+        List<Object[]> userData = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, accountName + "%");
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ kết quả truy vấn
+                    String resultUsername = rs.getString("username");
+                    String account_name = rs.getString("account_name");
+                    String email = rs.getString("email");
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+
+                    // Gán dữ liệu vào mảng
+                    userData.add(new Object[]{resultUsername, account_name, email, timeRegistered.toString().split("\\.")[0]});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2D
+        Object[][] userArray = new Object[userData.size()][];
+        return userData.toArray(userArray);
+    }
+
+    public static Object[][] getNewUserStatisticByEmail(String email) {
+        String query = "SELECT username, account_name, email, time_registered FROM end_user WHERE email LIKE ?";
+        List<Object[]> userData = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, email + "%");
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ kết quả truy vấn
+                    String resultUsername = rs.getString("username");
+                    String account_name = rs.getString("account_name");
+                    String resultEmail = rs.getString("email");
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+
+                    // Gán dữ liệu vào mảng
+                    userData.add(new Object[]{resultUsername, account_name, resultEmail, timeRegistered.toString().split("\\.")[0]});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2D
+        Object[][] userArray = new Object[userData.size()][];
+        return userData.toArray(userArray);
+    }
 
     public static Object[][] searchUserByAccountName(String accountname) {
         String query = "SELECT username, account_name, address, dob, gender, email, time_registered, blockedaccountbyadmin FROM end_user WHERE account_name LIKE ?";
@@ -388,7 +522,7 @@ public class endUserModel {
                         dob,
                         gender,
                         email,
-                        timeRegistered.toString()
+                        timeRegistered.toString().split("\\.")[0]
                     });
                 }
             }
@@ -403,7 +537,7 @@ public class endUserModel {
     }
 
     public static boolean checkIfUserExists(String username) {
-        String query = "SELECT 1 FROM end_user WHERE username LIKE ?";
+        String query = "SELECT 1 FROM end_user WHERE username = ?";
         boolean exists = false;
 
         // Sử dụng try-with-resources để đảm bảo đóng kết nối
@@ -411,7 +545,7 @@ public class endUserModel {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Gán giá trị tham số
-            stmt.setString(1, username + "%");
+            stmt.setString(1, username);
 
             // Thực thi truy vấn
             try (ResultSet rs = stmt.executeQuery()) {
@@ -463,7 +597,7 @@ public class endUserModel {
     }
 
     public static int lockUser(String username) {
-        String query = "UPDATE end_user SET blockedaccountbyadmin = ? WHERE username = ?";
+        String query = "UPDATE end_user SET blockedaccountbyadmin = ?, online = ? WHERE username = ?";
 
         int rowsAffected = 0;
         try (Connection conn = DBConn.getConnection();
@@ -471,7 +605,8 @@ public class endUserModel {
 
             // Set các tham số cho PreparedStatement
             stmt.setBoolean(1, true);
-            stmt.setString(2, username);
+            stmt.setBoolean(2, false);
+            stmt.setString(3, username);
 
             // Thực thi câu lệnh cập nhật
             rowsAffected = stmt.executeUpdate();
@@ -554,6 +689,140 @@ public class endUserModel {
         return false;
     }
 
+    public static Object[] countNewRegistrationByYear(String year) {
+        // Mảng lưu trữ số lượng đăng ký mới cho từng tháng
+        Object[] monthlyCounts = new Object[12];
+
+        // Truy vấn SQL lấy dữ liệu theo từng tháng
+        String query = """
+            SELECT 
+                EXTRACT(MONTH FROM time_registered) AS month,
+                COUNT(*) AS registration_count
+            FROM end_user
+            WHERE EXTRACT(YEAR FROM time_registered) = ?
+            GROUP BY EXTRACT(MONTH FROM time_registered)
+            ORDER BY month;
+        """;
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị cho tham số
+            int yearInt = Integer.parseInt(year); // Chuyển year từ String sang int
+            stmt.setInt(1, yearInt); // Sử dụng setInt thay cho setString
+
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                // Khởi tạo mảng với giá trị mặc định là 0
+                Arrays.fill(monthlyCounts, 0);
+
+                // Lấy dữ liệu từ kết quả truy vấn
+                while (rs.next()) {
+                    int month = rs.getInt("month") - 1; // Chuyển thành chỉ số mảng (0-based index)
+                    int count = rs.getInt("registration_count");
+                    monthlyCounts[month] = count;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return monthlyCounts;
+    }
+
+    public static String getNewestYear() {
+        // Câu truy vấn SQL để lấy năm mới nhất
+        String query = """
+            SELECT MAX(EXTRACT(YEAR FROM time_registered)) AS newest_year
+            FROM end_user;
+        """;
+
+        String newestYear = null; // Giá trị mặc định nếu không tìm thấy
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                newestYear = rs.getString("newest_year");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi endUserModel: getNewestYear");
+            e.printStackTrace();
+        }
+
+        return newestYear;
+    }
+
+    public static Object[][] searchUserByState(String state) {
+        StringBuilder query = new StringBuilder("SELECT username, account_name, address, dob, gender, email FROM end_user ");
+        List<Object[]> userDataList = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();) {
+
+            if (state.equals("online") || state.equals("offline")) {
+                query.append(" WHERE online = ? ");
+            }
+            else if (state.equals("blocked") || state.equals("unblocked")) {
+                query.append(" WHERE blockedaccountbyadmin = ? ");
+            }
+
+            PreparedStatement stmt = conn.prepareStatement(String.valueOf(query));
+            // Gán giá trị tham số với ký tự đại diện
+            stmt.setBoolean(1, state.equals("online") || state.equals("blocked"));
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ kết quả truy vấn
+                    String resultUsername = rs.getString("username");
+                    String accountName = rs.getString("account_name");
+                    String address = rs.getString("address");
+                    Date dob = rs.getDate("dob");
+                    String gender = rs.getString("gender");
+                    String email = rs.getString("email");
+
+                    // Gán dữ liệu vào danh sách
+                    userDataList.add(new Object[]{resultUsername, accountName, address, dob.toString(), gender, email});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển danh sách thành mảng 2 chiều
+        return userDataList.toArray(new Object[0][]);
+    }
+
+    public static boolean checkIfEmailExists(String email) {
+        String query = "SELECT 1 FROM end_user WHERE email = ?";
+        boolean exists = false;
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, email);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Nếu có dữ liệu trả về thì người dùng tồn tại
+                    exists = true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return exists;
+    }
 
 
 

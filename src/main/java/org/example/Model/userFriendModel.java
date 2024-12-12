@@ -147,4 +147,188 @@ public class userFriendModel {
             return null; // Trả về null nếu xảy ra lỗi
         }
     }
+
+    public static Object[][] getUserFriendListInfo(String filterByAccountname) {
+        StringBuilder query = new StringBuilder("""
+        WITH AdminFriends AS (
+            SELECT uf.friend_id
+            FROM user_friend uf
+            JOIN end_user eu ON uf.user_id = eu.user_id
+            WHERE eu.username = ?
+        ),
+        UserFriendCounts AS (
+            SELECT 
+                eu.user_id, 
+                eu.username, 
+                eu.account_name,  -- Thêm cột account_name
+                eu.time_registered, 
+                COUNT(uf.friend_id) AS friend_count
+            FROM end_user eu
+            LEFT JOIN user_friend uf ON eu.user_id = uf.user_id
+            GROUP BY eu.user_id, eu.username, eu.account_name, eu.time_registered
+        )
+        SELECT 
+            ufc.username AS username,
+            ufc.account_name AS account_name,  -- Lấy account_name từ UserFriendCounts
+            ufc.time_registered AS time_registered,
+            ufc.friend_count AS friend_count,
+            COUNT(DISTINCT af.friend_id) AS common_friends
+        FROM UserFriendCounts ufc
+        LEFT JOIN user_friend uf ON ufc.user_id = uf.user_id
+        LEFT JOIN AdminFriends af ON uf.friend_id = af.friend_id
+        WHERE 1 = 1
+    """);
+
+        // Thêm điều kiện nếu filterByUsername không rỗng
+        if (!filterByAccountname.isEmpty()) {
+            query.append(" AND ufc.account_name LIKE ? ");
+        }
+
+        query.append("""
+        GROUP BY ufc.username, ufc.account_name, ufc.time_registered, ufc.friend_count
+        ORDER BY ufc.username
+    """);
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            // Gán tham số cho câu truy vấn
+            stmt.setString(1, endUserModel.AdminSessionUsername);
+
+            // Gán tham số cho filterByUsername nếu cần
+            if (!filterByAccountname.isEmpty()) {
+                stmt.setString(2, filterByAccountname + "%");
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> resultList = new ArrayList<>();
+
+                while (rs.next()) {
+                    String username = rs.getString("username");
+                    if (username.equals(endUserModel.AdminSessionUsername)) {
+                        continue;
+                    }
+                    String accountName = rs.getString("account_name"); // Lấy account_name
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+                    int friendCount = rs.getInt("friend_count");
+                    int commonFriends = rs.getInt("common_friends");
+
+                    resultList.add(new Object[]{username, accountName, timeRegistered.toString().split("\\.")[0], friendCount, commonFriends});
+                }
+
+                // Kiểm tra danh sách kết quả
+                if (resultList.isEmpty()) {
+                    return new Object[0][0]; // Không có kết quả
+                }
+
+                // Chuyển danh sách thành mảng 2 chiều
+                return resultList.toArray(new Object[0][]);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Trả về null nếu xảy ra lỗi
+        }
+    }
+
+    public static Object[][] getUserFriendListInfo(String selectedOption, int num) {
+        StringBuilder query = new StringBuilder("""
+    WITH AdminFriends AS (
+        SELECT uf.friend_id
+        FROM user_friend uf
+        JOIN end_user eu ON uf.user_id = eu.user_id
+        WHERE eu.username = ?
+    ),
+    UserFriendCounts AS (
+        SELECT 
+            eu.user_id, 
+            eu.username, 
+            eu.account_name,  -- Thêm cột account_name
+            eu.time_registered, 
+            COUNT(uf.friend_id) AS friend_count
+        FROM end_user eu
+        LEFT JOIN user_friend uf ON eu.user_id = uf.user_id
+        GROUP BY eu.user_id, eu.username, eu.account_name, eu.time_registered
+    )
+    SELECT 
+        ufc.username AS username,
+        ufc.account_name AS account_name,  -- Lấy account_name từ UserFriendCounts
+        ufc.time_registered AS time_registered,
+        ufc.friend_count AS friend_count,
+        COUNT(DISTINCT af.friend_id) AS common_friends
+    FROM UserFriendCounts ufc
+    LEFT JOIN user_friend uf ON ufc.user_id = uf.user_id
+    LEFT JOIN AdminFriends af ON uf.friend_id = af.friend_id
+    GROUP BY ufc.username, ufc.account_name, ufc.time_registered, ufc.friend_count
+    HAVING 1=1
+    """);
+
+        // Thêm điều kiện so với selectedOption và num
+        if (selectedOption != null && !selectedOption.isEmpty()) {
+            switch (selectedOption) {
+                case "<":
+                    query.append(" AND ufc.friend_count < ? ");
+                    break;
+                case ">":
+                    query.append(" AND ufc.friend_count > ? ");
+                    break;
+                case "=":
+                    query.append(" AND ufc.friend_count = ? ");
+                    break;
+                default:
+                    throw new IllegalArgumentException("Selected option is invalid.");
+            }
+        }
+
+        query.append("""
+    ORDER BY ufc.username
+    """);
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            // Gán tham số cho câu truy vấn
+            stmt.setString(1, endUserModel.AdminSessionUsername);
+
+            // Gán tham số cho num nếu có điều kiện so với friend_count
+            if (selectedOption != null && !selectedOption.isEmpty()) {
+                stmt.setInt(2, num);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> resultList = new ArrayList<>();
+
+                while (rs.next()) {
+                    String username = rs.getString("username");
+                    if (username.equals(endUserModel.AdminSessionUsername)) {
+                        continue;
+                    }
+                    String accountName = rs.getString("account_name"); // Lấy account_name
+                    Timestamp timeRegistered = rs.getTimestamp("time_registered");
+                    int friendCount = rs.getInt("friend_count");
+                    int commonFriends = rs.getInt("common_friends");
+
+                    resultList.add(new Object[]{username, accountName, timeRegistered.toString().split("\\.")[0], friendCount, commonFriends});
+                }
+
+                // Kiểm tra danh sách kết quả
+                if (resultList.isEmpty()) {
+                    return new Object[0][0]; // Không có kết quả
+                }
+
+                // Chuyển danh sách thành mảng 2 chiều
+                return resultList.toArray(new Object[0][]);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Trả về null nếu xảy ra lỗi
+        }
+    }
+
+
+
+
+
+
 }
