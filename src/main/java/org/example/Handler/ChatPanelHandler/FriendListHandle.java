@@ -2,6 +2,7 @@ package org.example.Handler.ChatPanelHandler;
 
 import org.example.GUI.ChatPanelGUI.SidebarFrame;
 import org.example.Model.endUserModel;
+import org.example.Model.groupChatMemberModel;
 import org.example.Model.groupChatModel;
 import org.example.Model.userFriendModel;
 
@@ -76,9 +77,9 @@ public class FriendListHandle {
 
         // Update new contacts list
         boolean contactExists = false;
-
+        List<Contact> contacts=SidebarFrame.getContacts();
         // Check if the contact already exists
-        for (Contact existingContact : newcontacts) {
+        for (Contact existingContact : contacts) {
             if (existingContact.getId() == contact.getId() && !existingContact.isGroup()) {
                 contactExists = true;
                 break;
@@ -108,10 +109,10 @@ public class FriendListHandle {
         String groupName="group "+user.getAccountName();
         List<Integer> memberIds = new ArrayList<>();
         memberIds.add(user.getUserId());
-        groupChatModel.createGroupChat(groupName, currentUserId,memberIds);
-        // Create a Contact object for the target user
+        int groupid=groupChatModel.createGroupChat(groupName, currentUserId,memberIds);
+
         Contact contact = new Contact(
-                user.getAccountName(),
+                groupName,
                 user.getOnline(),
                 true, // this is group chat
                 user.getUserId()

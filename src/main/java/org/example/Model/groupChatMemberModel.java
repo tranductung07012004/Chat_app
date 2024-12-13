@@ -203,15 +203,16 @@ public class groupChatMemberModel {
         }
         return false;
     }
-    public static boolean addMember(int groupId, int targetUserId) {
+    public static boolean addMember(int groupId, int targetUserId, boolean isAdmin) {
         String query = "INSERT INTO group_chat_member (group_chat_id, group_member_id, isadminofgroup) " +
-                "VALUES (?, ?, false)"; // Default isadminofgroup to 0 (not an admin)
+                "VALUES (?, ?, ?)"; // Default isadminofgroup to 0 (not an admin)
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, groupId);
             stmt.setInt(2, targetUserId);
+            stmt.setBoolean(3, isAdmin);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0; // Return true if a row was inserted

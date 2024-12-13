@@ -208,7 +208,7 @@ public class RightPanelButtonListener {
         }
 
         // Add the friend to the group
-        boolean success = groupChatMemberModel.addMember(groupId, id);
+        boolean success = groupChatMemberModel.addMember(groupId, id, false);
         if (success) {
             JOptionPane.showMessageDialog(null, "Member added to the group successfully.", "Success",
                     JOptionPane.INFORMATION_MESSAGE);

@@ -130,7 +130,10 @@ public class SidebarFrame extends JPanel {
     }
     public static void updateContactsPanel() {
         // Assuming `contactsPanel` is the JPanel displaying contacts
+        List<Contact>newcontacts=FriendListHandle.getNewcontacts();
         contacts.addAll(FriendListHandle.getNewcontacts());
+        newcontacts.clear();
+
 
 
         // Clear the panel

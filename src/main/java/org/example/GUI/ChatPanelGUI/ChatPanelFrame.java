@@ -5,15 +5,12 @@ import org.example.Handler.ChatPanelHandler.ChatPanelHandler;
 import org.example.Handler.ChatPanelHandler.Contact;
 import org.example.Handler.ChatPanelHandler.RightPanelButtonListener;
 import org.example.Model.*;
+import org.example.Server.ChatClient;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.swing.*;
@@ -38,10 +35,11 @@ public class ChatPanelFrame extends JPanel {
     private static int currentMessageIndex; // Tracks the index of the current message being displayed
     private static int totalMessages;       // Total number of messages for the contact
 
-    private int CHUNK=2;
+    private int CHUNK=5;
     // Biến để lưu trạng thái tìm kiếm hiện tại
     private int currentSearchIndex = -1; // Vị trí kết quả hiện tại
     private String lastKeyword = ""; // Từ khóa tìm kiếm gần nhất
+    private ChatClient client;  // Instance of ChatClient to send/receive messages
 
 
     public ChatPanelFrame(MainFrameGUI mainFrame) {
@@ -81,6 +79,7 @@ public class ChatPanelFrame extends JPanel {
         // Disable buttons initially
         previousButton.setEnabled(false);
         nextButton.setEnabled(false);
+
 
 
     }
@@ -216,13 +215,43 @@ public class ChatPanelFrame extends JPanel {
         messageField = new JTextField();
         sendButton = new JButton("Send");
 
+        ChatClient client = new ChatClient("localhost", 12343, message -> {
+            // Update chat panel or UI with the received message
+            // Parse the incoming payload
+            String[] parts = message.split("\\|");
+            if (parts.length == 4) {
+                int senderId = Integer.parseInt(parts[0]);
+                int receiverId = Integer.parseInt(parts[1]);
+                boolean isGroup = Boolean.parseBoolean(parts[2]);
+                String content=parts[3];
+                if (contact.isGroup()==isGroup && ( senderId==contact.getId() || receiverId==contact.getId())) {
+                    String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
+                            ? "You: "
+                            : endUserModel.getUserFromId(senderId).getUsername() + ": ";
+                    Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                    appendMessage(sender +content , senderId, currentTime);
+
+                }
+            }
+
+            });
+
 
         // Add action listener for send button
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //save to database
+
+                String message = messageField.getText().trim();
                 sendMessage();
-                openChat(contact);
+                if (!message.isEmpty()) {
+                    client.sendMessage(message,contact.isGroup(),targetUserId,mainFrame.getCurrentUserId());
+
+                } else {
+                    System.out.println("Message cannot be empty.");
+                }
+
             }
         });
 
@@ -253,21 +282,26 @@ public class ChatPanelFrame extends JPanel {
     private void sendMessage() {
         String message = messageField.getText().trim();
         if (!message.isEmpty()) {
-            if (!contact.isGroup())
+
+            // Thêm tin nhắn vào cơ sở dữ liệu
+            if (!contact.isGroup()) {
                 messageOfUserModel.sendUserMessage(message, mainFrame.getCurrentUserId(), targetUserId);
-            else
+            } else {
                 messageOfGroupModel.addGroupMessage(message, mainFrame.getCurrentUserId(), targetUserId);
+            }
+
+            String sender = "You: ";
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+            appendMessage(sender + message, targetUserId, currentTime);
 
             // Clear the message input field
             messageField.setText("");
-
-            // Additional functionality to send message to the backend can be added here
-        }
-        else{
+        } else {
             System.out.println("Message cannot be empty.");
-
         }
     }
+
     public void openChat(Contact contact) {
         ChatPanelFrame.contact = contact;
         targetUserId = contact.getId();
@@ -326,9 +360,9 @@ public class ChatPanelFrame extends JPanel {
 
         // Placeholder behavior
         searchTextField.setForeground(Color.GRAY);
-        searchTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+        searchTextField.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            public void focusGained(FocusEvent evt) {
                 if (searchTextField.getText().equals("Search chat")) {
                     searchTextField.setText("");
                     searchTextField.setForeground(Color.BLACK);
@@ -336,7 +370,7 @@ public class ChatPanelFrame extends JPanel {
             }
 
             @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
+            public void focusLost(FocusEvent evt) {
                 if (searchTextField.getText().isEmpty()) {
                     searchTextField.setText("Search chat");
                     searchTextField.setForeground(Color.GRAY);
@@ -618,8 +652,7 @@ public class ChatPanelFrame extends JPanel {
     private void updatePaginationButtons() {
         nextButton.setEnabled(currentMessageIndex > 0); // Enable if not on the latest message
         previousButton.setEnabled(currentMessageIndex +CHUNK < totalMessages); // Enable if not on the oldest message
-        System.out.print("current Index: "+currentMessageIndex);
-        System.out.print("totalMessages: "+totalMessages);
+
 
     }
     private void searchMessage(String keyword) {
@@ -659,6 +692,7 @@ public class ChatPanelFrame extends JPanel {
             currentSearchIndex = -1; // Reset nếu không tìm thấy kết quả
         }
     }
+
 
 
 
