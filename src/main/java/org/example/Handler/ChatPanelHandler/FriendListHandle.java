@@ -2,6 +2,7 @@ package org.example.Handler.ChatPanelHandler;
 
 import org.example.GUI.ChatPanelGUI.SidebarFrame;
 import org.example.Model.endUserModel;
+import org.example.Model.groupChatModel;
 import org.example.Model.userFriendModel;
 
 import javax.swing.*;
@@ -91,11 +92,34 @@ public class FriendListHandle {
 
         // Update SidebarFrame's UI
         SidebarFrame.updateContactsPanel();
-
-        // Example chat initiation logic
-        String targetUserName = targetUser.getAccountName();
     }
     public static List<Contact> getNewcontacts()
     {return newcontacts;}
+
+    public void createGroupChat(int currentUserId, endUserModel user)
+    {
+        // Get the friend list dialog using the getFriendListDialog method
+        JDialog friendListDialog = SidebarFrame.getFriendListDialog();
+
+        // Close the friend list dialog
+        if (friendListDialog != null && friendListDialog.isShowing()) {
+            friendListDialog.dispose(); // Close the dialog
+        }
+        String groupName="group "+user.getAccountName();
+        List<Integer> memberIds = new ArrayList<>();
+        memberIds.add(user.getUserId());
+        groupChatModel.createGroupChat(groupName, currentUserId,memberIds);
+        // Create a Contact object for the target user
+        Contact contact = new Contact(
+                user.getAccountName(),
+                user.getOnline(),
+                true, // this is group chat
+                user.getUserId()
+        );
+        newcontacts.add(contact);
+        SidebarFrame.updateContactsPanel();
+
+    }
+
 
 }

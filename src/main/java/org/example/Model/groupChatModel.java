@@ -13,10 +13,58 @@ public class groupChatModel {
         this.group_name = initGroup_name;
         this.time_created = initTime_created;
     }
+    public static int createGroupChat(String groupName, int creatorId, List<Integer> memberIds) {
+        String insertGroupQuery = "INSERT INTO group_chat (group_name, time_created) VALUES (?, ?) RETURNING group_id";
+        String insertMemberQuery = "INSERT INTO group_chat_member (group_chat_id, group_member_id, isadminofgroup) VALUES (?, ?, ?)";
+
+        try (Connection conn = DBConn.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+
+            // Insert the group chat and get the generated group ID
+            int groupId;
+            try (PreparedStatement groupStmt = conn.prepareStatement(insertGroupQuery)) {
+                groupStmt.setString(1, groupName);
+                groupStmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+
+                try (ResultSet rs = groupStmt.executeQuery()) {
+                    if (rs.next()) {
+                        groupId = rs.getInt("group_id");
+                    } else {
+                        conn.rollback();
+                        throw new SQLException("Failed to create group chat, no ID returned.");
+                    }
+                }
+            }
+
+            // Add the creator as an admin
+            try (PreparedStatement memberStmt = conn.prepareStatement(insertMemberQuery)) {
+                // Add the creator
+                memberStmt.setInt(1, groupId);
+                memberStmt.setInt(2, creatorId);
+                memberStmt.setBoolean(3, true); // Admin flag
+                memberStmt.executeUpdate();
+
+                // Add additional members
+                for (int memberId : memberIds) {
+                    memberStmt.setInt(1, groupId);
+                    memberStmt.setInt(2, memberId);
+                    memberStmt.setBoolean(3, false); // Not admin
+                    memberStmt.executeUpdate();
+                }
+            }
+
+            conn.commit(); // Commit transaction
+            return groupId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // Indicate failure
+        }
+    }
 
     public static Object[][] getAllGroupInfo() {
         String query = "select g.group_name, g.time_created " +
-                      "from group_chat g ";
+                "from group_chat g ";
         List<Object[]> groupsList = new ArrayList<>();
 
         try (Connection conn = DBConn.getConnection();
@@ -26,7 +74,7 @@ public class groupChatModel {
                 while (rs.next()) {
                     String groupName = rs.getString("group_name");
                     Timestamp timeRegistered = rs.getTimestamp("time_created");
-                    groupsList.add(new Object[]{groupName, timeRegistered.toString().split("\\.")[0]});
+                    groupsList.add(new Object[]{groupName, timeRegistered.toString()});
                 }
             }
 
@@ -43,8 +91,8 @@ public class groupChatModel {
     }
     public static Object[][] getGroupByGroupName(String group_name) {
         String query = "select g.group_name, g.time_created " +
-                       "from group_chat g " +
-                       "where group_name like ?";
+                "from group_chat g " +
+                "where group_name like ?";
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -56,7 +104,7 @@ public class groupChatModel {
                 while (rs.next()) {
                     String name_of_group = rs.getString("group_name");
                     Timestamp timeRegistered = rs.getTimestamp("time_created");
-                    friendsList.add(new Object[]{name_of_group, timeRegistered.toString().split("\\.")[0]});
+                    friendsList.add(new Object[]{name_of_group, timeRegistered.toString()});
                 }
 
                 // Kiểm tra danh sách bạn bè
@@ -75,10 +123,10 @@ public class groupChatModel {
     }
     public static Object[][] getGroupAdminGroupName(String group_name) {
         String query =  "select gc.group_name, eu.username" +
-                        " from group_chat gc " +
-                        " join group_chat_member gm on gc.group_id = gm.group_chat_id" +
-                        " join end_user eu on eu.user_id = gm.group_member_id" +
-                        " where gm.isadminofgroup is true and gc.group_name like ?";
+                " from group_chat gc " +
+                " join group_chat_member gm on gc.group_id = gm.group_chat_id" +
+                " join end_user eu on eu.user_id = gm.group_member_id" +
+                " where gm.isadminofgroup is true and gc.group_name like ?";
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -109,10 +157,10 @@ public class groupChatModel {
     }
     public static Object[][] getMemberByGroupName(String group_name) {
         String query =  " select g.group_name, eu.username" +
-                        " from group_chat g " +
-                        " join group_chat_member gm on g.group_id = gm.group_chat_id" +
-                        " join end_user eu on eu.user_id = gm.group_member_id" +
-                        " where g.group_name like ?";
+                " from group_chat g " +
+                " join group_chat_member gm on g.group_id = gm.group_chat_id" +
+                " join end_user eu on eu.user_id = gm.group_member_id" +
+                " where g.group_name like ?";
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -129,7 +177,6 @@ public class groupChatModel {
 
                 // Kiểm tra danh sách bạn bè
                 if (groupMember.isEmpty()) {
-                    System.out.println("Không có bạn bè");
                     return new Object[0][0]; // Không có bạn bè
                 }
 
@@ -142,4 +189,24 @@ public class groupChatModel {
             return null; // Trả về null nếu xảy ra lỗi
         }
     }
+
+    public static boolean renameGroup(int groupId, String newGroupName) {
+        String updateQuery = "UPDATE group_chat SET group_name = ? WHERE group_id = ?";
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+
+            // Set parameters for the query
+            stmt.setString(1, newGroupName); // New group name
+            stmt.setInt(2, groupId);         // Group ID
+
+            int rowsAffected = stmt.executeUpdate(); // Execute the update query
+            return rowsAffected > 0; // Return true if any rows were updated
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log exception
+            return false; // Indicate failure
+        }
+    }
+
 }

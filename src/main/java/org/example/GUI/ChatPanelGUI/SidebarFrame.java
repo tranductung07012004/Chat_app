@@ -54,6 +54,30 @@ public class SidebarFrame extends JPanel {
                 }
             }
         });
+        searchField.addActionListener(e -> {
+            String searchText = searchField.getText().trim().toLowerCase();
+            contactsPanel.removeAll(); // Xóa danh sách hiện tại
+
+            // Lọc danh sách liên lạc
+            for (Contact contact : contacts) {
+                if (contact.getName().toLowerCase().contains(searchText)) {
+                    contactsPanel.add(createContactPanel(contact)); // Thêm liên lạc phù hợp
+                }
+            }
+
+            // Làm mới giao diện
+            contactsPanel.revalidate();
+            contactsPanel.repaint();
+
+            // Nếu không tìm thấy liên lạc nào
+            if (contactsPanel.getComponentCount() == 0) {
+                JOptionPane.showMessageDialog(null,
+                        "No results found for: " + searchText,
+                        "Search Result",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
 
         add(searchField, BorderLayout.NORTH);
 
@@ -133,10 +157,20 @@ public class SidebarFrame extends JPanel {
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
         // Status label
-        JLabel statusLabel = new JLabel(contact.isOnline() ? "Online" : "Offline");
-        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        statusLabel.setForeground(contact.isOnline() ? Color.GREEN : Color.RED);
+
+        JLabel statusLabel;
+        if (contact.isGroup()) {
+            statusLabel = new JLabel("Group");
+            statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+            statusLabel.setForeground(Color.BLUE);  // Set color to blue for group
+        } else {
+            statusLabel = new JLabel(contact.isOnline() ? "Online" : "Offline");
+            statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+            statusLabel.setForeground(contact.isOnline() ? Color.GREEN : Color.RED);  // Green for online, red for offline
+        }
+
         statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
 
         contactPanel.add(nameLabel, BorderLayout.CENTER);
         contactPanel.add(statusLabel, BorderLayout.EAST);
@@ -190,7 +224,6 @@ public class SidebarFrame extends JPanel {
         JButton unfriendButton = new JButton("Unfriend");
         unfriendButton.setFont(new Font("Arial", Font.PLAIN, 12));
         unfriendButton.setForeground(Color.RED);
-
         unfriendButton.addActionListener(e -> {
             // Optionally remove from the database (if needed)
             handler.unfriendUser(mainFrame.getCurrentUserId(), user.getUserId());
@@ -211,10 +244,20 @@ public class SidebarFrame extends JPanel {
             friendListPanel.repaint();
         });
 
+        // Create Group Chat button
+        JButton createGroupChatButton = new JButton("Create Group Chat");
+        createGroupChatButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        createGroupChatButton.addActionListener(e -> {
+            // Create group chat logic
+            handler.createGroupChat(mainFrame.getCurrentUserId(), user);
+
+            // Pass current user ID and target user
+        });
 
         // Add buttons to the panel
         buttonsPanel.add(chatButton);
         buttonsPanel.add(unfriendButton);
+        buttonsPanel.add(createGroupChatButton); // Add the new button
 
         // Combine name and status with buttons
         JPanel infoPanel = new JPanel(new BorderLayout());
@@ -249,10 +292,6 @@ public class SidebarFrame extends JPanel {
     }
 
 
-
-
-
-
     private void createFriendList() {
         // Kiểm tra nếu dialog đã tồn tại và đang hiển thị
         if (friendListDialog != null && friendListDialog.isShowing()) {
@@ -272,7 +311,7 @@ public class SidebarFrame extends JPanel {
 
         // Create dialog
         friendListDialog = new JDialog(mainFrame, "Friend List", true);
-        friendListDialog.setSize(300, 550);
+        friendListDialog.setSize(500, 550);
         friendListDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         friendListDialog.setLayout(new BorderLayout());
         friendListDialog.setLocationRelativeTo(null);

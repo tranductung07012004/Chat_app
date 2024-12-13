@@ -9,11 +9,11 @@ import java.util.List;
 public class ChatPanelHandler {
 
     // Fetch the chat history between two users
-    public static List<messageOfUserModel> loadChatHistory(int currentUserId, int targetUserId) {
-        return messageOfUserModel.loadChatHistory(currentUserId, targetUserId);
+    public static List<messageOfUserModel> loadChatHistory(int currentUserId, int targetUserId, int limit, int offset) {
+        return messageOfUserModel.loadChatHistory(currentUserId, targetUserId, limit, offset);
     }
-    public static List<messageOfUserModel> loadGroupChatHistory( int targetUserId) {
-        return messageOfGroupModel.loadChatHistory( targetUserId);
+    public static List<messageOfUserModel> loadGroupChatHistory(int currentUserId, int targetUserId, int limit, int offset) {
+        return messageOfGroupModel.loadChatHistory( targetUserId, limit, offset, currentUserId);
     }
 
     // Search messages containing a specific query

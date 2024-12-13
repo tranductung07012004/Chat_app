@@ -1,6 +1,7 @@
 package org.example.GUI.UserFriendRequest;
 
 import org.example.GUI.MainFrameGUI;
+import org.example.Handler.ChatPanelHandler.FriendListHandle;
 import org.example.Handler.FriendRequestHandler.FriendRequestHandler;
 import org.example.Model.blockModel;
 import org.example.Model.endUserModel;
@@ -166,6 +167,8 @@ public class FriendRequestFrame extends JPanel {
             // Buttons for sending/withdrawing friend requests and blocking/unblocking the user
             JButton actionButton = new JButton(); // Dynamic button for friend requests
             JButton blockButton = new JButton();  // Dynamic button for blocking/unblocking
+            JButton chatButton = new JButton("Chat"); // Chat button
+            JButton groupChatButton = new JButton("Group Chat"); // Group chat button
 
             // Determine button states
             int currentUserId = mainFrame.getCurrentUserId();
@@ -181,9 +184,21 @@ public class FriendRequestFrame extends JPanel {
                     friendRequestHandler.handleUnfriend(result.getUserId());
                     updateSearchResults(results); // Refresh results after unfriending
                 });
-            } else if (isBlocked) {
 
+                // Enable Group Chat button for friends
+                groupChatButton.setEnabled(true);
+                groupChatButton.addActionListener(e -> {
+                    // Handle group chat logic here
+                    FriendListHandle handler= new FriendListHandle();
+                    handler.createGroupChat(mainFrame.getCurrentUserId(), result);
+                    mainFrame.showChatPanel();
+
+
+                });
+            } else if (isBlocked) {
                 actionButton.setEnabled(false); // Disable button if the user is blocked
+                groupChatButton.setEnabled(true);
+                chatButton.setEnabled(true);
             } else if (isRequestSent) {
                 actionButton.setText("Retrieve Request");
                 actionButton.addActionListener(e -> {
@@ -196,6 +211,9 @@ public class FriendRequestFrame extends JPanel {
                     friendRequestHandler.handleSendFriendRequest(result.getUserId());
                     updateSearchResults(results); // Refresh results after sending request
                 });
+
+                // Disable Group Chat button if not friends
+                groupChatButton.setEnabled(false);
             }
 
             // Configure block/unblock button
@@ -213,10 +231,21 @@ public class FriendRequestFrame extends JPanel {
                 });
             }
 
+            // Configure Chat button
+            chatButton.addActionListener(e -> {
+                FriendListHandle handler= new FriendListHandle();
+
+                mainFrame.showChatPanel();
+                handler.openChat(mainFrame.getCurrentUserId(), result); // Pass current user ID and target user
+
+            });
+
             // Panel for buttons
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             buttonPanel.add(actionButton);
             buttonPanel.add(blockButton);
+            buttonPanel.add(chatButton); // Add chat button
+            buttonPanel.add(groupChatButton); // Add group chat button
 
             // Adding panels to the result panel
             resultPanel.add(userInfoPanel, BorderLayout.CENTER);

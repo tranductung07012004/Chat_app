@@ -231,17 +231,13 @@ public class endUserModel {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+
 
     public String getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+
 
     public String getEmail() {
         return email;
@@ -255,9 +251,7 @@ public class endUserModel {
         return isAdmin;
     }
 
-    public void setIsAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
-    }
+
     public String getPassword() {
         return password;
     }
@@ -291,10 +285,6 @@ public class endUserModel {
         return blockedAccountByAdmin;
     }
 
-    public void setBlockedAccountByAdmin(boolean blockedAccountByAdmin) {
-        this.blockedAccountByAdmin = blockedAccountByAdmin;
-    }
-
     public Timestamp getTimeRegistered() {
         return time_registered;
     }
@@ -323,7 +313,26 @@ public class endUserModel {
         }
         return false;
     }
+    public static Integer getUserIdByUsername(String username) {
+        String query = "SELECT user_id FROM end_user WHERE username = ?";
+        Integer userId = null;
 
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, username);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    userId = rs.getInt("user_id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userId;
+    }
 
     public static int deleteUser(String username) {
         String query = "DELETE FROM end_user WHERE username = ?";
