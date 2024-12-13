@@ -206,4 +206,43 @@ public class messageOfGroupModel {
         }
     }
 
+    public static Object[][] searchForMessage(String chatContent, int user_id) {
+        String query = " SELECT eu.account_name AS sender, gc.group_name AS receiver, mog.chat_content " +
+                " FROM message_of_group mog " +
+                " JOIN end_user eu ON mog.from_user = eu.user_id" +
+                " JOIN group_chat gc ON mog.to_group = gc.group_id" +
+                " WHERE  mog.from_user = ? AND mog.chat_content LIKE ?";
+
+        List<Object[]> resultList = new ArrayList<>();
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán tham số cho câu lệnh SQL
+            stmt.setInt(1, user_id);
+            stmt.setString(2, chatContent + "%");
+
+            // Thực thi truy vấn và xử lý kết quả
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy dữ liệu từ các cột
+                    String sender = rs.getString("sender");
+                    String receiver = rs.getString("receiver");
+                    String chat_content = rs.getString("chat_content");
+
+                    // Thêm dữ liệu vào danh sách
+                    resultList.add(new Object[]{sender, "N/A", receiver, chat_content});
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Trả về null nếu xảy ra lỗi
+        }
+
+        // Chuyển danh sách thành mảng 2 chiều
+        return resultList.toArray(new Object[0][]);
+    }
+
 }

@@ -35,18 +35,18 @@ public class FriendRequestFrame extends JPanel {
     
         // Header with Back Button, Search Field, and My ID
         JPanel headerPanel = new JPanel(new BorderLayout());
-        JLabel headerLabel = new JLabel("Friend Requests", JLabel.CENTER);
+        JLabel headerLabel = new JLabel("Lời mời kết bạn", JLabel.CENTER);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 20));
     
-        backButton = new JButton("Back");
+        backButton = new JButton("Trở lại");
     
         // Search field for filtering requests by name
         searchField = new JTextField();
-        searchField.setToolTipText("Search by name/ID...");
+        searchField.setToolTipText("Tìm kiếm bằng name/ID...");
     
         // "My ID" Display
         int myId = mainFrame.getCurrentUserId();
-        JLabel myIdLabel = new JLabel("My ID: " + myId);
+        JLabel myIdLabel = new JLabel("ID của tôi: " + myId);
         myIdLabel.setFont(new Font("Arial", Font.ITALIC, 12));
         myIdLabel.setForeground(Color.GRAY);
         myIdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -71,11 +71,11 @@ public class FriendRequestFrame extends JPanel {
     
         // Panel for searching new friends
         JPanel friendSearchPanel = new JPanel(new BorderLayout());
-        friendSearchPanel.setBorder(BorderFactory.createTitledBorder("Find New Friends"));
+        friendSearchPanel.setBorder(BorderFactory.createTitledBorder("Tìm bạn mời"));
     
         friendSearchField = new JTextField();
-        friendSearchField.setToolTipText("Enter friend's name...");
-        JButton searchFriendButton = new JButton("Search");
+        friendSearchField.setToolTipText("Nhập tên...");
+        JButton searchFriendButton = new JButton("Tìm kiếm");
     
         searchFriendButton.addActionListener(e -> friendRequestHandler.handleFriendSearch(friendSearchField.getText()));
     
@@ -118,13 +118,13 @@ public class FriendRequestFrame extends JPanel {
             requestPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
 
             endUserModel user= endUserModel.getUserFromId(request.getFrom_user_id());
-            String displayText = "User " + user.getUsername()+", Full name: "+user.getAccountName()+ ", ID: "+user.getUserId()+ " sent a friend request!";
+            String displayText = "User " + user.getUsername()+", Tên đầy đủ: "+user.getAccountName()+ ", ID: "+user.getUserId()+ " gửi một lời mời kết bạn!";
             JLabel nameLabel = new JLabel(displayText);
             nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            JButton acceptButton = new JButton("Accept");
-            JButton declineButton = new JButton("Decline");
+            JButton acceptButton = new JButton("Đồng ý");
+            JButton declineButton = new JButton("Từ chối");
 
             // Wire buttons to handler
             acceptButton.addActionListener(e -> friendRequestHandler.handleAccept(request));
@@ -168,7 +168,7 @@ public class FriendRequestFrame extends JPanel {
             JButton actionButton = new JButton(); // Dynamic button for friend requests
             JButton blockButton = new JButton();  // Dynamic button for blocking/unblocking
             JButton chatButton = new JButton("Chat"); // Chat button
-            JButton groupChatButton = new JButton("Group Chat"); // Group chat button
+            JButton groupChatButton = new JButton("Nhóm chat"); // Group chat button
 
             // Determine button states
             int currentUserId = mainFrame.getCurrentUserId();
@@ -178,7 +178,7 @@ public class FriendRequestFrame extends JPanel {
 
             // Configure action button for friend requests
             if (isFriend) {
-                actionButton.setText("Unfriend");
+                actionButton.setText("Hủy kết bạn");
                 actionButton.addActionListener(e -> {
                     // Handle unfriend logic here
                     friendRequestHandler.handleUnfriend(result.getUserId());
@@ -200,13 +200,13 @@ public class FriendRequestFrame extends JPanel {
                 groupChatButton.setEnabled(true);
                 chatButton.setEnabled(true);
             } else if (isRequestSent) {
-                actionButton.setText("Retrieve Request");
+                actionButton.setText("Thu hồi");
                 actionButton.addActionListener(e -> {
                     friendRequestHandler.handleRetrieveFriendRequest(result.getUserId());
                     updateSearchResults(results); // Refresh results after retrieving request
                 });
             } else {
-                actionButton.setText("Send Request");
+                actionButton.setText("Gửi");
                 actionButton.addActionListener(e -> {
                     friendRequestHandler.handleSendFriendRequest(result.getUserId());
                     updateSearchResults(results); // Refresh results after sending request
@@ -218,13 +218,13 @@ public class FriendRequestFrame extends JPanel {
 
             // Configure block/unblock button
             if (isBlocked) {
-                blockButton.setText("Unblock");
+                blockButton.setText("Bỏ chặn");
                 blockButton.addActionListener(e -> {
                     friendRequestHandler.handleUnblockUser(result.getUserId());
                     updateSearchResults(results); // Refresh results after unblocking
                 });
             } else {
-                blockButton.setText("Block");
+                blockButton.setText("Chặn");
                 blockButton.addActionListener(e -> {
                     friendRequestHandler.handleBlockUser(result.getUserId());
                     updateSearchResults(results); // Refresh results after blocking

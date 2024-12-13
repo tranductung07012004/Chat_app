@@ -12,9 +12,13 @@ import org.example.Model.userFriendModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class SidebarFrame extends JPanel {
     private static MainFrameGUI mainFrame;
@@ -26,13 +30,30 @@ public class SidebarFrame extends JPanel {
     private static JPanel contactsPanel; // Declare as class field
     private List<endUserModel> filteredUsers;
 
+    public class overallComponents {
+        public JButton searchAllMess = new JButton("Tìm tất cả tin nhắn");
+        public JDialog searchAllMessDialog = new JDialog(mainFrame, "Tìm tất cả tin nhắn", true);
+        public JTextField searchAllMessField = new JTextField(10);
+        public JButton submitSearchAllMess = new JButton("OK");
+        public JButton cancelSearchAllMess = new JButton("Hủy");
+
+        public JDialog searchResultDialog = new JDialog(mainFrame, "Tìm kết quả", true);
+        public JButton cancelSearchResultDialog = new JButton("Tắt");
+        public DefaultTableModel tableModel;
+
+
+    }
+    overallComponents components;
+
+    public overallComponents getTheComponents() { return this.components; }
 
     public SidebarFrame(MainFrameGUI mainFrame) {
+        this.components = new overallComponents();
         this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
 
         // Search bar at the top
-        JTextField searchField = new JTextField("Search..."); // Placeholder text
+        JTextField searchField = new JTextField("Tìm kiếm..."); // Placeholder text
         searchField.setPreferredSize(new Dimension(0, 30));
         searchField.setForeground(Color.GRAY); // Placeholder color
 
@@ -40,7 +61,7 @@ public class SidebarFrame extends JPanel {
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent evt) {
-                if (searchField.getText().equals("Search...")) {
+                if (searchField.getText().equals("Tìm kiếm...")) {
                     searchField.setText(""); // Clear placeholder
                     searchField.setForeground(Color.BLACK); // Change text color
                 }
@@ -49,7 +70,7 @@ public class SidebarFrame extends JPanel {
             @Override
             public void focusLost(java.awt.event.FocusEvent evt) {
                 if (searchField.getText().isEmpty()) {
-                    searchField.setText("Search..."); // Restore placeholder
+                    searchField.setText("Tìm kiếm..."); // Restore placeholder
                     searchField.setForeground(Color.GRAY); // Change text color back
                 }
             }
@@ -72,8 +93,8 @@ public class SidebarFrame extends JPanel {
             // Nếu không tìm thấy liên lạc nào
             if (contactsPanel.getComponentCount() == 0) {
                 JOptionPane.showMessageDialog(null,
-                        "No results found for: " + searchText,
-                        "Search Result",
+                        "Không có kết quả cho: " + searchText,
+                        "Kết quả",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
@@ -106,15 +127,20 @@ public class SidebarFrame extends JPanel {
 
         // Panel for the bottom section (dropdown list and action button)
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        JButton friendList = new JButton("Friend List");
+        JButton friendList = new JButton("Danh sách bạn");
         friendList.setPreferredSize(new Dimension(175, 25));
+        components.searchAllMess = new JButton("Tìm tất cả message");
+        components.searchAllMess.setPreferredSize(new Dimension(175, 25));
 
         // Dropdown list for actions (on the left side)
-        String[] options = { "Chat", "Friend Request", "Settings" };
+        String[] options = { "Nhắn tin", "Lời mời kết bạn", "Cài đặt" };
         optionsComboBox = new JComboBox<>(options);
         JPanel dropdownPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dropdownPanel.add(optionsComboBox);
-        bottomPanel.add(friendList, BorderLayout.WEST);
+        JPanel actionPanel = new JPanel(new BorderLayout());
+        actionPanel.add(friendList, BorderLayout.CENTER);
+        actionPanel.add(components.searchAllMess, BorderLayout.SOUTH);
+        bottomPanel.add(actionPanel, BorderLayout.WEST);
         bottomPanel.add(dropdownPanel, BorderLayout.SOUTH);
 
         add(bottomPanel, BorderLayout.SOUTH);
@@ -127,7 +153,69 @@ public class SidebarFrame extends JPanel {
             }
         });
 
+        // Thêm các dialog vào
+        searchAllMessDialog();
+        createSearchResultDialog();
     }
+
+
+    private void createSearchResultDialog() {
+        this.components.searchResultDialog.setSize(550, 200);
+        this.components.searchResultDialog.setLayout(new BorderLayout());
+
+        String[] columnNames = {"Người gửi (Tên)", "Người nhận (Tên)", "Nhóm nhận", "Nội dung"};
+        Object[][] data = {};
+        this.components.tableModel = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable friendTable = new JTable(this.components.tableModel) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                int row = rowAtPoint(e.getPoint());
+                int column = columnAtPoint(e.getPoint());
+                Object value = getValueAt(row, column);
+                return value == null ? null : value.toString();
+            }
+        };
+
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModel);
+        friendTable.setRowSorter(sorter);
+
+        sorter.setSortable(0, true);
+        sorter.setSortable(1, true);
+
+        this.components.searchResultDialog.add(new JScrollPane(friendTable), BorderLayout.CENTER);
+        this.components.searchResultDialog.add(this.components.cancelSearchResultDialog, BorderLayout.SOUTH);
+        this.components.searchResultDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.searchResultDialog.setVisible(false);
+    }
+
+    private void searchAllMessDialog() {
+        this.components.searchAllMessDialog.setSize(400, 130);
+        this.components.searchAllMessDialog.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Tin nhắn:"));
+        inputPanel.add(this.components.searchAllMessField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.components.submitSearchAllMess);
+        buttonPanel.add(this.components.cancelSearchAllMess);
+
+        this.components.searchAllMessDialog.add(inputPanel, BorderLayout.CENTER);
+        this.components.searchAllMessDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.components.searchAllMessDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.components.searchAllMessDialog.setVisible(false);
+
+
+
+    }
+
     public static void updateContactsPanel() {
         // Assuming `contactsPanel` is the JPanel displaying contacts
         List<Contact>newcontacts=FriendListHandle.getNewcontacts();
@@ -163,7 +251,7 @@ public class SidebarFrame extends JPanel {
 
         JLabel statusLabel;
         if (contact.isGroup()) {
-            statusLabel = new JLabel("Group");
+            statusLabel = new JLabel("Nhóm");
             statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
             statusLabel.setForeground(Color.BLUE);  // Set color to blue for group
         } else {
@@ -215,7 +303,7 @@ public class SidebarFrame extends JPanel {
         buttonsPanel.setOpaque(false); // Make the panel transparent
 
         // Chat button
-        JButton chatButton = new JButton("Chat");
+        JButton chatButton = new JButton("Nhắn tin");
         chatButton.setFont(new Font("Arial", Font.PLAIN, 12));
         FriendListHandle handler = new FriendListHandle();
         // Chat button logic
@@ -224,7 +312,7 @@ public class SidebarFrame extends JPanel {
         });
 
         // Unfriend button
-        JButton unfriendButton = new JButton("Unfriend");
+        JButton unfriendButton = new JButton("Hủy kết bạn");
         unfriendButton.setFont(new Font("Arial", Font.PLAIN, 12));
         unfriendButton.setForeground(Color.RED);
         unfriendButton.addActionListener(e -> {
@@ -248,7 +336,7 @@ public class SidebarFrame extends JPanel {
         });
 
         // Create Group Chat button
-        JButton createGroupChatButton = new JButton("Create Group Chat");
+        JButton createGroupChatButton = new JButton("Tạo nhóm chat");
         createGroupChatButton.setFont(new Font("Arial", Font.PLAIN, 12));
         createGroupChatButton.addActionListener(e -> {
             // Create group chat logic
@@ -313,7 +401,7 @@ public class SidebarFrame extends JPanel {
         }
 
         // Create dialog
-        friendListDialog = new JDialog(mainFrame, "Friend List", true);
+        friendListDialog = new JDialog(mainFrame, "Danh sách bạn", true);
         friendListDialog.setSize(500, 550);
         friendListDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         friendListDialog.setLayout(new BorderLayout());
@@ -323,7 +411,7 @@ public class SidebarFrame extends JPanel {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         // Search field
-        JTextField searchField = new JTextField("Search...");
+        JTextField searchField = new JTextField("Tìm kiếm...");
         searchField.setPreferredSize(new Dimension(0, 30));
         searchField.setForeground(Color.GRAY);
         mainPanel.add(searchField, BorderLayout.NORTH);
@@ -343,7 +431,7 @@ public class SidebarFrame extends JPanel {
         mainPanel.add(friendScrollPane, BorderLayout.CENTER);
 
         // Button to filter online friends
-        JButton filterOnlineButton = new JButton("Show Online Only");
+        JButton filterOnlineButton = new JButton("Chỉ ai online");
         filterOnlineButton.addActionListener(new ActionListener() {
             private boolean isFilteringOnline = false;
 
@@ -355,7 +443,7 @@ public class SidebarFrame extends JPanel {
                     for (endUserModel user : filteredUsers) {
                         friendListPanel.add(createFriendListObject(user));
                     }
-                    filterOnlineButton.setText("Show Online Only");
+                    filterOnlineButton.setText("Chỉ ai online");
                 } else {
                     // Show only online friends
                     for (endUserModel user : filteredUsers) {
@@ -363,7 +451,7 @@ public class SidebarFrame extends JPanel {
                             friendListPanel.add(createFriendListObject(user));
                         }
                     }
-                    filterOnlineButton.setText("Show All");
+                    filterOnlineButton.setText("Hiện tất cả");
                 }
                 isFilteringOnline = !isFilteringOnline;
                 friendListPanel.revalidate();
@@ -375,7 +463,7 @@ public class SidebarFrame extends JPanel {
         // Add search field functionality
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                if (searchField.getText().equals("Search...")) {
+                if (searchField.getText().equals("Tìm kiếm...")) {
                     searchField.setText("");
                     searchField.setForeground(Color.BLACK);
                 }
@@ -383,7 +471,7 @@ public class SidebarFrame extends JPanel {
 
             public void focusLost(java.awt.event.FocusEvent evt) {
                 if (searchField.getText().isEmpty()) {
-                    searchField.setText("Search...");
+                    searchField.setText("Tìm kiếm...");
                     searchField.setForeground(Color.GRAY);
                 }
             }

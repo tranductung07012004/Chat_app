@@ -2,8 +2,7 @@ package org.example.Handler.ChatPanelHandler;
 
 import org.example.GUI.ChatPanelGUI.SidebarFrame;
 import org.example.GUI.MainFrameGUI;
-import org.example.Model.DBConn;
-import org.example.Model.endUserModel;
+import org.example.Model.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import java.util.stream.Stream;
+import javax.swing.table.DefaultTableModel;
 
 public class SidebarHandler {
     private SidebarFrame sidebarFrame;
@@ -23,7 +24,57 @@ public class SidebarHandler {
     public SidebarHandler(SidebarFrame sidebarFrame, MainFrameGUI mainFrame) {
         this.sidebarFrame = sidebarFrame;
         this.mainFrame = mainFrame;
+
+        this.sidebarFrame.getTheComponents().searchAllMess.addActionListener(e -> handleSearchAllMess());
+        this.sidebarFrame.getTheComponents().cancelSearchAllMess.addActionListener(e -> handleCancelSearchAllMess());
+        this.sidebarFrame.getTheComponents().submitSearchAllMess.addActionListener(e -> handleSubmitSearchAllMess());
+        this.sidebarFrame.getTheComponents().cancelSearchResultDialog.addActionListener(e -> handleCancelSearchResultDialog());
         initializeHandlers();
+    }
+
+    public void updateTableData(DefaultTableModel inputTableModel, Object[][] data) {
+        // Xóa dữ liệu cũ
+        inputTableModel.setRowCount(0);
+
+        // Thêm dữ liệu mới
+        for (Object[] row : data) {
+            inputTableModel.addRow(row);
+        }
+    }
+
+    private void handleCancelSearchResultDialog() {
+        this.sidebarFrame.getTheComponents().searchResultDialog.setVisible(false);
+    }
+
+    private void handleSubmitSearchAllMess() {
+        this.sidebarFrame.getTheComponents().searchAllMessDialog.setVisible(false);
+        String chat_content = this.sidebarFrame.getTheComponents().searchAllMessField.getText();
+        int user_id = mainFrame.getCurrentUserId();
+        Object[][] messageUser = messageOfUserModel.searchForMessage(chat_content, user_id);
+        Object[][] messageGroup = messageOfGroupModel.searchForMessage(chat_content, user_id);
+
+        if (messageGroup != null && messageGroup.length == 0) {
+            JOptionPane.showMessageDialog(null, "Không có tin nhắn nào có chuỗi như vậy với nhóm khác.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+        }
+        if (messageUser != null && messageUser.length == 0) {
+            JOptionPane.showMessageDialog(null, "Không có tin nhắn nào có chuỗi như vậy với người khác.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        Object[][] mergedMessages = Stream.concat(
+                messageUser != null ? Stream.of(messageUser) : Stream.empty(),
+                messageGroup != null ? Stream.of(messageGroup) : Stream.empty()
+        ).toArray(Object[][]::new);
+
+        updateTableData(this.sidebarFrame.getTheComponents().tableModel, mergedMessages);
+
+        this.sidebarFrame.getTheComponents().searchResultDialog.setVisible(true);
+    }
+
+    private void handleCancelSearchAllMess() {
+        this.sidebarFrame.getTheComponents().searchAllMessDialog.setVisible(false);
+    }
+    private void handleSearchAllMess() {
+        this.sidebarFrame.getTheComponents().searchAllMessDialog.setVisible(true);
     }
 
     private void initializeHandlers() {
@@ -122,13 +173,13 @@ public class SidebarHandler {
 
     private void handleOptionSelection(String selectedOption) {
         if (null != selectedOption) switch (selectedOption) {
-            case "Settings":
+            case "Cài đặt":
                 mainFrame.showSettingsPanel(); // Show Settings Panel when selected
                 break;
-            case "Chat":
+            case "Nhắn tin":
                 mainFrame.showChatPanel(); // Show Chat Panel when selected
                 break;
-            case "Friend Request":
+            case "Lời mời kết bạn":
                 mainFrame.showFriendRequestFrame(); // Show FriendRequest Frame when selected
                 break;
             default:

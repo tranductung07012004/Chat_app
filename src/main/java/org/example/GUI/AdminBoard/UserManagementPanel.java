@@ -120,6 +120,7 @@ public class UserManagementPanel extends JPanel {
         sorter.setSortable(5, false);
         sorter.setSortable(6, true);
         sorter.setSortable(7, false);
+        sorter.setSortable(8, false);
 
 
         return userTable;
