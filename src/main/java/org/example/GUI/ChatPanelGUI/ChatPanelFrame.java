@@ -47,7 +47,7 @@ public class ChatPanelFrame extends JPanel {
         setLayout(new BorderLayout());
 
         // Friend's name label at the top
-        friendNameLabel = new JLabel("Chatting ");
+        friendNameLabel = new JLabel("Tin nhắn ");
         friendNameLabel.setFont(new Font("Arial", Font.BOLD, 16));
         friendNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(friendNameLabel, BorderLayout.NORTH);
@@ -60,8 +60,8 @@ public class ChatPanelFrame extends JPanel {
         add(chatScrollPane, BorderLayout.CENTER);
 
         // Pagination buttons
-        previousButton = new JButton("Previous");
-        nextButton = new JButton("Next");
+        previousButton = new JButton("Trước");
+        nextButton = new JButton("Sau");
 
         JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         paginationPanel.add(previousButton);
@@ -136,12 +136,12 @@ public class ChatPanelFrame extends JPanel {
     // Method to show the delete message dialog and return the user's choice
     private int showDeleteMessageDialog() {
         // Các tùy chọn trong hộp thoại
-        String[] options = {"Cancel", "Delete", "Delete All"};
+        String[] options = {"Đóng", "Xóa", "Thu hồi"};
 
         // Hiển thị hộp thoại tùy chọn và trả về sự lựa chọn của người dùng
         return JOptionPane.showOptionDialog(null,
-                "What would you like to do with this message?",
-                "Delete Message",
+                "Bạn muốn làm gì với tin nhắn này?",
+                "Xóa tin nhắn",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -156,17 +156,17 @@ public class ChatPanelFrame extends JPanel {
                         if (!contact.isGroup()) {
                             // Nếu không phải là nhóm, gọi phương thức delete1Message
                             if (messageOfUserModel.deleteChat(mainFrame.getCurrentUserId(), messageId)) {
-                                JOptionPane.showMessageDialog(null, "Message deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Xóa tin nhắn thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
                             } else {
-                                JOptionPane.showMessageDialog(null, "Failed to delete message.", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Lỗi khi xóa tin nhắn.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         } else {
                             // Nếu là nhóm, gọi phương thức deleteGroupMessage
                             deletedMessageOfGroupModel deleteMessageOfGroupModel=new deletedMessageOfGroupModel(mainFrame.getCurrentUserId(), messageId);
                             if (deleteMessageOfGroupModel.DeleteGroupMessage(mainFrame.getCurrentUserId(), messageId)) {
-                                JOptionPane.showMessageDialog(null, "Message deleted from the group successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Xóa tin nhắn khỏi nhóm thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
                             } else {
-                                JOptionPane.showMessageDialog(null, "Failed to delete message from the group.", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Lỗi xóa tin nhắn trong nhóm.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                         openChat(contact); // Refresh chat
@@ -176,23 +176,23 @@ public class ChatPanelFrame extends JPanel {
                         if (!contact.isGroup()) {
                             // Nếu không phải là nhóm, gọi phương thức delete1Message
                             if (messageOfUserModel.deleteChatBothSides(mainFrame.getCurrentUserId(), messageId)) {
-                                JOptionPane.showMessageDialog(null, "Message deleted on both sides successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Tin nhắn được thu hồi thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
                             } else {
-                                JOptionPane.showMessageDialog(null, "Failed to delete message on both sides.", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Lỗi khi thu hồi tin nhắn.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         } else {
                             // Nếu là nhóm, gọi phương thức deleteGroupMessage
                             if (messageOfGroupModel.deleteChat(contact.getId(),mainFrame.getCurrentUserId(), messageId)) {
-                                JOptionPane.showMessageDialog(null, "Message deleted from the group on both sides successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Tin nhắn được thu hồi trong nhóm thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
                             } else {
-                                JOptionPane.showMessageDialog(null, "Failed to delete message from the group on both sides.", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Lỗi khi thu hồi tin nhắn trong nhóm", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                         openChat(contact); // Refresh chat
                         break;
 
                     default: // "Cancel" hoặc đóng hộp thoại
-                        System.out.println("Deletion cancelled.");
+                        System.out.println("Tắt delete.");
                         break;
                 }
             }
@@ -213,7 +213,7 @@ public class ChatPanelFrame extends JPanel {
         // Message input area
         JPanel messageInputPanel = new JPanel(new BorderLayout());
         messageField = new JTextField();
-        sendButton = new JButton("Send");
+        sendButton = new JButton("Gửi");
 
         ChatClient client = new ChatClient("localhost", 12343, message -> {
             // Update chat panel or UI with the received message
@@ -227,7 +227,7 @@ public class ChatPanelFrame extends JPanel {
                     String content = parts[3];
                     if (contact.isGroup() == isGroup && (senderId == contact.getId() || receiverId == contact.getId())) {
                         String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
-                                ? "You: "
+                                ? "Bạn: "
                                 : endUserModel.getUserFromId(senderId).getUsername() + ": ";
                         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
                         appendMessage(sender + content, senderId, currentTime);
@@ -250,7 +250,7 @@ public class ChatPanelFrame extends JPanel {
                     client.sendMessage(message,contact.isGroup(),targetUserId,mainFrame.getCurrentUserId());
 
                 } else {
-                    System.out.println("Message cannot be empty.");
+                    System.out.println("Tin nhắn không thể rỗng.");
                 }
 
             }
@@ -291,7 +291,7 @@ public class ChatPanelFrame extends JPanel {
                 messageOfGroupModel.addGroupMessage(message, mainFrame.getCurrentUserId(), targetUserId);
             }
 
-            String sender = "You: ";
+            String sender = "Bạn: ";
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             currentMessageIndex=0;
             currentSearchIndex=0;
@@ -300,7 +300,7 @@ public class ChatPanelFrame extends JPanel {
             // Clear the message input field
             messageField.setText("");
         } else {
-            System.out.println("Message cannot be empty.");
+            System.out.println("Tin nhắn không được để trống.");
         }
     }
 
@@ -330,7 +330,7 @@ public class ChatPanelFrame extends JPanel {
                 messageOfUserModel message = chatHistory.get(i);
 
                 String sender = (!contact.isGroup() && message.getFromUser() == currentUserId)
-                        ? "You: "
+                        ? "bạn: "
                         : endUserModel.getUserFromId(message.getFromUser()).getUsername() + ": ";
 
                 appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime());
@@ -357,7 +357,7 @@ public class ChatPanelFrame extends JPanel {
         gbc.weightx = 1; // Ensure buttons stretch to fill available width
 
         // Initialize buttons
-        searchTextField = new JTextField("Search chat");
+        searchTextField = new JTextField("Tìm tin nhắn");
         searchTextField.setMaximumSize(new Dimension(200, 25));
 
         // Placeholder behavior
@@ -365,7 +365,7 @@ public class ChatPanelFrame extends JPanel {
         searchTextField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent evt) {
-                if (searchTextField.getText().equals("Search chat")) {
+                if (searchTextField.getText().equals("Tìm tin nhắn")) {
                     searchTextField.setText("");
                     searchTextField.setForeground(Color.BLACK);
                 }
@@ -374,22 +374,22 @@ public class ChatPanelFrame extends JPanel {
             @Override
             public void focusLost(FocusEvent evt) {
                 if (searchTextField.getText().isEmpty()) {
-                    searchTextField.setText("Search chat");
+                    searchTextField.setText("Tìm tin nhắn");
                     searchTextField.setForeground(Color.GRAY);
                 }
             }
         });
 
         // Buttons
-        searchButton = new JButton("Search message");
-        reportButton = new JButton("Report spam");
-        deleteHistoryButton = new JButton("Delete chat history");
-        blockFriendButton = new JButton("Block");
-        unfriendButton = new JButton("Unfriend");
-        addMemberButton = new JButton("Add member");
-        changeAdminButton = new JButton("Change admin");
-        removeMemberButton = new JButton("Remove member");
-        renameButton = new JButton("Rename group");
+        searchButton = new JButton("Tìm tin nhắn");
+        reportButton = new JButton("Báo spam");
+        deleteHistoryButton = new JButton("Xóa all chat");
+        blockFriendButton = new JButton("Chặn");
+        unfriendButton = new JButton("Hủy kết bạn");
+        addMemberButton = new JButton("Thêm thành viên");
+        changeAdminButton = new JButton("Đổi admin");
+        removeMemberButton = new JButton("Xóa thành viên");
+        renameButton = new JButton("Đổi tên nhóm");
 
 
 
@@ -464,7 +464,7 @@ public class ChatPanelFrame extends JPanel {
         // Add a scrollable member list panel
         memberListPanel = new JPanel();
         memberListPanel.setLayout(new BoxLayout(memberListPanel, BoxLayout.Y_AXIS));
-        memberListPanel.setBorder(BorderFactory.createTitledBorder("Members List"));
+        memberListPanel.setBorder(BorderFactory.createTitledBorder("Thành viên"));
         scrollPane = new JScrollPane(memberListPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -561,7 +561,7 @@ public class ChatPanelFrame extends JPanel {
 
             boolean isBlocked = blockModel.isBlocked(currentUserId, contact.getId());
             if (isBlocked) {
-                blockFriendButton.setText("Unblock");
+                blockFriendButton.setText("Bỏ chặn");
 
                 // Remove existing listeners to prevent duplicate actions
                 for (ActionListener listener : blockFriendButton.getActionListeners()) {
@@ -573,7 +573,7 @@ public class ChatPanelFrame extends JPanel {
                     updatePanelVisibility(); // Refresh visibility to update UI
                 });
             } else {
-                blockFriendButton.setText("Block");
+                blockFriendButton.setText("Chặn");
 
                 // Remove existing listeners to prevent duplicate actions
                 for (ActionListener listener : blockFriendButton.getActionListeners()) {
@@ -659,7 +659,7 @@ public class ChatPanelFrame extends JPanel {
     }
     private void searchMessage(String keyword) {
         if (contact == null || keyword == null || keyword.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid keyword.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Hãy nhập keyword chuẩn.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -690,7 +690,7 @@ public class ChatPanelFrame extends JPanel {
         }
 
         if (!found) {
-            JOptionPane.showMessageDialog(this, "No more messages found containing: " + keyword, "Search Result", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Không có tin nhắn nào chứa: " + keyword, "Kết quả", JOptionPane.INFORMATION_MESSAGE);
             currentSearchIndex = -1; // Reset nếu không tìm thấy kết quả
         }
     }

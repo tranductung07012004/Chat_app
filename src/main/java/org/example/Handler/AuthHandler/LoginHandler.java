@@ -87,6 +87,9 @@ public class LoginHandler implements ActionListener {
         String username = loginScreen.getAccountName().getText();
         String password = new String(loginScreen.getPassField().getPassword());
 
+        System.out.println(username);
+        System.out.println(password);
+
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(loginScreen, "Please enter both username and password!", "Error", JOptionPane.ERROR_MESSAGE);
             return;

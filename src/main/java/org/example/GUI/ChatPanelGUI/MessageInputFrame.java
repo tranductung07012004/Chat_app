@@ -21,7 +21,7 @@ public class MessageInputFrame extends JPanel {
         this.handler = new MessageInputHandler(chatPanel, messageField); // Initialize the handler
 
         setLayout(new BorderLayout());
-        JButton sendButton = new JButton("Send");
+        JButton sendButton = new JButton("Gửi");
 
         sendButton.addActionListener(e -> handler.sendMessage(messageField.getText().trim()));
 

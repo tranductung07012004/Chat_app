@@ -26,7 +26,7 @@ public class SettingsPanel extends JPanel {
         setPreferredSize(new Dimension(700, 550));
 
         // Title Label
-        JLabel titleLabel = new JLabel("Settings", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Cài đặt", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, BorderLayout.NORTH);
 
@@ -36,19 +36,19 @@ public class SettingsPanel extends JPanel {
 
         // Update Information Panel
         JPanel updateInfoPanel = createUpdateInfoPanel();
-        tabbedPane.addTab("Update Information", updateInfoPanel);
+        tabbedPane.addTab("Cập nhật thông tin", updateInfoPanel);
 
         // Change Password Panel
         JPanel passwordPanel = createPasswordPanel();
-        tabbedPane.addTab("Change Password", passwordPanel);
+        tabbedPane.addTab("Đổi mật khẩu", passwordPanel);
 
         // Add tabbed pane to center
         add(tabbedPane, BorderLayout.CENTER);
 
         // Bottom Navigation Panel
         JPanel navButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        backButton = new JButton("Back");
-        logoutButton = new JButton("Log Out");
+        backButton = new JButton("Trở lại");
+        logoutButton = new JButton("Đăng xuất");
 
         navButtonPanel.add(backButton);
         navButtonPanel.add(logoutButton);
@@ -65,17 +65,17 @@ public class SettingsPanel extends JPanel {
         JPanel infoPanel = new JPanel(new GridLayout(5, 2, 10, 10));
 
         // Labels and fields for user information
-        JLabel fullNameLabel = new JLabel("Full Name:");
+        JLabel fullNameLabel = new JLabel("Họ tên:");
         fullNameField = new JTextField();
 
-        JLabel genderLabel = new JLabel("Gender:");
+        JLabel genderLabel = new JLabel("Giới tính:");
         String[] genders = {"Male", "Female", "Other"};
         genderComboBox = new JComboBox<>(genders);
 
         JLabel addressLabel = new JLabel("Address:");
         addressField = new JTextField();
 
-        JLabel dobLabel = new JLabel("Date of Birth:");
+        JLabel dobLabel = new JLabel("Ngày sinh:");
         dobField = new JTextField("dd/MM/yyyy");
         dobField.setForeground(Color.GRAY);
 
@@ -112,7 +112,7 @@ public class SettingsPanel extends JPanel {
         infoPanel.add(emailLabel);
         infoPanel.add(emailField);
 
-        saveInfoButton = new JButton("Save Changes");
+        saveInfoButton = new JButton("Lưu thay đổi");
         updateInfoPanel.add(infoPanel, BorderLayout.CENTER);
         updateInfoPanel.add(saveInfoButton, BorderLayout.SOUTH);
 
@@ -128,15 +128,15 @@ public class SettingsPanel extends JPanel {
         JPanel passwordFieldsPanel = new JPanel(new GridLayout(3, 2, 10, 10));
     
         // Old Password
-        JLabel oldPasswordLabel = new JLabel("Old Password:");
+        JLabel oldPasswordLabel = new JLabel("Mật khẩu cũ:");
         oldPasswordField = new JPasswordField(15);
     
         // New Password
-        JLabel newPasswordLabel = new JLabel("New Password:");
+        JLabel newPasswordLabel = new JLabel("Mật khẩu mới:");
         newPasswordField = new JPasswordField(15);
     
         // Confirm New Password
-        JLabel confirmPasswordLabel = new JLabel("Confirm New Password:");
+        JLabel confirmPasswordLabel = new JLabel("Xác nhận:");
         JPasswordField confirmPasswordField = new JPasswordField(15);
     
         // Add all fields to the panel
@@ -148,7 +148,7 @@ public class SettingsPanel extends JPanel {
         passwordFieldsPanel.add(confirmPasswordField);
     
         // Save button
-        savePasswordButton = new JButton("Save Changes");
+        savePasswordButton = new JButton("Lưu thay đổi");
         savePasswordButton.setPreferredSize(new Dimension(140, 30));
         
         // Add validation on Save Changes button
