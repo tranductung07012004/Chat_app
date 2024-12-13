@@ -90,13 +90,25 @@ public class UserManagementHandler  {
 
     private void handleSubmitDelete() {
         String username = userManagement.deleteComponents.textFieldDeleteBtn.getText();
+
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Username không thể để trống.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            if (endUserModel.deleteUser(username) > 0) {
-                loadUserData();
-            }
+            return;
         }
+
+        if (username.equals(endUserModel.AdminSessionUsername)) {
+            JOptionPane.showMessageDialog(null, "Không thể xóa chính bản thân.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.deleteUser(username) > 0) {
+            JOptionPane.showMessageDialog(null, "Xóa người dùng thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            loadUserData();
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Lỗi trong quá trình truy vấn cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
     private void handleAddButton() {
@@ -333,8 +345,18 @@ public class UserManagementHandler  {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if (username.equals(endUserModel.AdminSessionUsername)) {
+            JOptionPane.showMessageDialog(null, "Không thể khóa bản thân bạn.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (endUserModel.lockUser(username) > 0) {
+            JOptionPane.showMessageDialog(null, "Khóa người dùng thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
             loadUserData();
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Lỗi trong quá trình truy vấn cơ sở dữ liệu hoặc người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -345,8 +367,18 @@ public class UserManagementHandler  {
             JOptionPane.showMessageDialog(null, "Phải nhập tên đăng nhập.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if (username.equals(endUserModel.AdminSessionUsername)) {
+            JOptionPane.showMessageDialog(null, "Không thể mở khóa bản thân bạn.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (endUserModel.unLockUser(username) > 0) {
+            JOptionPane.showMessageDialog(null, "Mở khóa người dùng thành công.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
             loadUserData();
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Lỗi truy vấn trong cơ sở dữ liệu hoặc người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

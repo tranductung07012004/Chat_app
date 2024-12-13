@@ -83,6 +83,13 @@ public class RegisterHandler implements ActionListener {
 
     private boolean validateForm(String username, String fullName, String address, String gender, String email, String dobText, String password, String confirmPassword) {
 
+
+        // Check if any required field is empty
+        if (username.isEmpty() || fullName.isEmpty() || address.isEmpty() || gender.isEmpty() || email.isEmpty() || dobText.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(registerScreen, "Hãy điền đầy đủ các thông tin.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
         if (endUserModel.checkIfUserExists(username)) {
             JOptionPane.showMessageDialog(null, "Username đã tồn tại, hãy chọn một username khác.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -91,12 +98,6 @@ public class RegisterHandler implements ActionListener {
             JOptionPane.showMessageDialog(null, "Username không được có khoảng trắng và có dấu.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        // Check if any required field is empty
-        if (username.isEmpty() || fullName.isEmpty() || address.isEmpty() || gender.isEmpty() || email.isEmpty() || dobText.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(registerScreen, "Hãy điền đầy đủ các thông tin.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
 
         // Check if passwords match
         if (!password.equals(confirmPassword)) {

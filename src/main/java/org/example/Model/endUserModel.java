@@ -347,13 +347,6 @@ public class endUserModel {
             // Thực thi câu lệnh xóa
             rowsAffected = stmt.executeUpdate();
 
-            // In ra số dòng bị ảnh hưởng (hoặc thông báo nếu không xóa được bản ghi nào)
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(null, "User was deleted successfully.", "Error", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "No username found.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
 
         } catch (SQLException e) {
             System.err.println("An error occurred while trying to delete the user: " + e.getMessage());
@@ -571,6 +564,58 @@ public class endUserModel {
         return exists;
     }
 
+    public static boolean checkOnline(String username) {
+        String query = "SELECT online FROM end_user WHERE username = ?";
+        boolean online = false;
+
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, username);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Gán người dùng đang online
+                    online = rs.getBoolean("online");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return online;
+    }
+
+    public static boolean checkBlockedByAdmin(String username) {
+        String query = "SELECT blockedaccountbyadmin FROM end_user WHERE username = ?";
+
+        boolean result = false;
+        // Sử dụng try-with-resources để đảm bảo đóng kết nối
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Gán giá trị tham số
+            stmt.setString(1, username);
+
+            // Thực thi truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Gán người dùng đang online
+                    result = rs.getBoolean("blockedaccountbyadmin");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     public static int updateUser(String curUsername, String newAccountName, Date sqlDate,
                                  String newAddress, String newGender, String newEmail) {
         String query = "UPDATE end_user SET account_name = ?, dob = ?, address = ?, gender = ?, email = ? " +
@@ -620,11 +665,6 @@ public class endUserModel {
             // Thực thi câu lệnh cập nhật
             rowsAffected = stmt.executeUpdate();
 
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(null, "Người dùng đã bị khóa.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Không thể thực hiện tác vụ, có thể người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
 
         } catch (SQLException e) {
             System.err.println("An error occurred while trying to update the user: " + e.getMessage());
@@ -648,14 +688,9 @@ public class endUserModel {
             // Thực thi câu lệnh cập nhật
             rowsAffected = stmt.executeUpdate();
 
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(null, "Người dùng đã được mở khóa.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Không thể thực hiện tác vụ, có thể người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
 
         } catch (SQLException e) {
-            System.err.println("An error occurred while trying to update the user: " + e.getMessage());
+            System.err.println("Có lỗi xảy ra khi mở khóa người dùng: " + e.getMessage());
             e.printStackTrace();
         }
 

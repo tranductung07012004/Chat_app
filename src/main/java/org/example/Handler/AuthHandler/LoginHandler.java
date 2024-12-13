@@ -87,11 +87,19 @@ public class LoginHandler implements ActionListener {
         String username = loginScreen.getAccountName().getText();
         String password = new String(loginScreen.getPassField().getPassword());
 
-        System.out.println(username);
-        System.out.println(password);
 
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(loginScreen, "Please enter both username and password!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.checkOnline(username)) {
+            JOptionPane.showMessageDialog(loginScreen, "Tài khoản đang được đăng nhập ở nơi khác, vui lòng kiểm tra lại", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (endUserModel.checkBlockedByAdmin(username)) {
+            JOptionPane.showMessageDialog(loginScreen, "Tài khoản đã bị khóa bởi admin, vui lòng liên hệ tổng đài hỗ trợ", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 

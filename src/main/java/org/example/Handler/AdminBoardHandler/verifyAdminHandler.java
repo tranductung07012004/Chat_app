@@ -60,6 +60,11 @@ public class verifyAdminHandler implements ActionListener {
             return false;
         }
 
+        if (endUserModel.checkBlockedByAdmin(username)) {
+            JOptionPane.showMessageDialog(null, "Tài khoản đã bị khóa bởi admin, vui lòng liên hệ tổng đài hỗ trợ", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
 
 
         boolean success = false;

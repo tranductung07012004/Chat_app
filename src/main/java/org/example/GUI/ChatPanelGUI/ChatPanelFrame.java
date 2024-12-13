@@ -93,7 +93,7 @@ public class ChatPanelFrame extends JPanel {
 
     }
 
-    public void appendMessage(String message, long messageId, Timestamp timestamp) {
+    public void appendMessage(String message, long messageId, Timestamp timestamp, boolean side) {
         // Format the timestamp into "hh:mm dd/MM/yyyy"
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm dd/MM/yyyy");
         String formattedTime = dateFormat.format(new Date(timestamp.getTime())); // Convert Timestamp to Date and format
@@ -112,10 +112,11 @@ public class ChatPanelFrame extends JPanel {
         // Enable wrapping for the JLabel
         messageLabel.setText("<html><body style='width: 100px;'>" + fullMessage + "</body></html>");
 
-        // Add the message label to the active chat area (JPanel)
-        activeChatArea.add(messageLabel);
+        // Create a panel to hold the label (this will help with positioning)
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new FlowLayout(side ? FlowLayout.RIGHT : FlowLayout.LEFT));
+        messagePanel.add(messageLabel);
 
-// Add mouse listener to detect click on the message
         // Add mouse listener to the message label
         messageLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -128,11 +129,14 @@ public class ChatPanelFrame extends JPanel {
             }
         });
 
+        // Add the message panel to the active chat area
+        activeChatArea.add(messagePanel);
 
         // Revalidate and repaint the chat area
         activeChatArea.revalidate();
         activeChatArea.repaint();
     }
+
     // Method to show the delete message dialog and return the user's choice
     private int showDeleteMessageDialog() {
         // Các tùy chọn trong hộp thoại
@@ -230,7 +234,8 @@ public class ChatPanelFrame extends JPanel {
                                 ? "Bạn: "
                                 : endUserModel.getUserFromId(senderId).getUsername() + ": ";
                         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-                        appendMessage(sender + content, senderId, currentTime);
+
+                        appendMessage(sender + content, senderId, currentTime, mainFrame.getCurrentUserId() == senderId);
 
                     }
                 }
@@ -295,7 +300,7 @@ public class ChatPanelFrame extends JPanel {
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             currentMessageIndex=0;
             currentSearchIndex=0;
-            appendMessage(sender + message, targetUserId, currentTime);
+            appendMessage(sender + message, targetUserId, currentTime, true);
 
             // Clear the message input field
             messageField.setText("");
@@ -333,7 +338,7 @@ public class ChatPanelFrame extends JPanel {
                         ? "bạn: "
                         : endUserModel.getUserFromId(message.getFromUser()).getUsername() + ": ";
 
-                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime());
+                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime(), message.getFromUser() == currentUserId);
             }
         }
 
@@ -640,10 +645,10 @@ public class ChatPanelFrame extends JPanel {
                 messageOfUserModel message = chatHistory.get(i);
 
                 String sender = (!contact.isGroup() && message.getFromUser() == currentUserId)
-                        ? "You: "
+                        ? "Bạn: "
                         : endUserModel.getUserFromId(message.getFromUser()).getUsername() + ": ";
 
-                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime());
+                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime(), message.getFromUser() == currentUserId);
             }
         }
 
