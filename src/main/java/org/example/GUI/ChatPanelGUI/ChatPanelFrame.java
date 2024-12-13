@@ -218,23 +218,24 @@ public class ChatPanelFrame extends JPanel {
         ChatClient client = new ChatClient("localhost", 12343, message -> {
             // Update chat panel or UI with the received message
             // Parse the incoming payload
-            String[] parts = message.split("\\|");
-            if (parts.length == 4) {
-                int senderId = Integer.parseInt(parts[0]);
-                int receiverId = Integer.parseInt(parts[1]);
-                boolean isGroup = Boolean.parseBoolean(parts[2]);
-                String content=parts[3];
-                if (contact.isGroup()==isGroup && ( senderId==contact.getId() || receiverId==contact.getId())) {
-                    String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
-                            ? "You: "
-                            : endUserModel.getUserFromId(senderId).getUsername() + ": ";
-                    Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-                    appendMessage(sender +content , senderId, currentTime);
+            if(currentMessageIndex==0&&currentSearchIndex==0) {
+                String[] parts = message.split("\\|");
+                if (parts.length == 4) {
+                    int senderId = Integer.parseInt(parts[0]);
+                    int receiverId = Integer.parseInt(parts[1]);
+                    boolean isGroup = Boolean.parseBoolean(parts[2]);
+                    String content = parts[3];
+                    if (contact.isGroup() == isGroup && (senderId == contact.getId() || receiverId == contact.getId())) {
+                        String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
+                                ? "You: "
+                                : endUserModel.getUserFromId(senderId).getUsername() + ": ";
+                        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                        appendMessage(sender + content, senderId, currentTime);
 
+                    }
                 }
             }
-
-            });
+        });
 
 
         // Add action listener for send button
@@ -292,7 +293,8 @@ public class ChatPanelFrame extends JPanel {
 
             String sender = "You: ";
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-
+            currentMessageIndex=0;
+            currentSearchIndex=0;
             appendMessage(sender + message, targetUserId, currentTime);
 
             // Clear the message input field
