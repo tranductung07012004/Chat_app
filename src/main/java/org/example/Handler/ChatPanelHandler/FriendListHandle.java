@@ -115,8 +115,8 @@ public class FriendListHandle {
                 groupName,
                 user.getOnline(),
                 true, // this is group chat
-                user.getUserId()
-        );
+                groupid
+         );
         newcontacts.add(contact);
         SidebarFrame.updateContactsPanel();
 

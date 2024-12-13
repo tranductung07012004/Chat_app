@@ -93,7 +93,7 @@ public class ChatPanelFrame extends JPanel {
             long messageId=Long.parseLong((parts[4]));
             String content = parts[5];
 
-            if (contact.isGroup() == isGroup &&
+            if (contact!=null && contact.isGroup() == isGroup &&
                     (senderId == contact.getId() || receiverId == contact.getId())) {
                 String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
                         ? "You: "
@@ -101,6 +101,7 @@ public class ChatPanelFrame extends JPanel {
                 Timestamp currentTime = new Timestamp(System.currentTimeMillis());
                 appendMessage(sender + content, messageId, currentTime);
             }
+            SidebarFrame.updateContactsPanel();
         }
     }
     public void handleDeleteMessage(String message) {
@@ -115,7 +116,7 @@ public class ChatPanelFrame extends JPanel {
 
 
                 // Check if the message is relevant to this chat panel
-                if (contact.isGroup() == isGroup && (who_delete == contact.getId()||who_not== contact.getId())) {
+                if (contact!=null&& contact.isGroup() == isGroup && (who_delete == contact.getId()||who_not== contact.getId())) {
                     updateAfterDelete(messageId);
                 }
             } catch (NumberFormatException e) {

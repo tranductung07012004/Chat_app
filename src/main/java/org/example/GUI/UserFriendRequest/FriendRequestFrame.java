@@ -197,16 +197,20 @@ public class FriendRequestFrame extends JPanel {
                 });
             } else if (isBlocked) {
                 actionButton.setEnabled(false); // Disable button if the user is blocked
-                groupChatButton.setEnabled(true);
+                groupChatButton.setEnabled(false);
                 chatButton.setEnabled(true);
             } else if (isRequestSent) {
                 actionButton.setText("Thu hồi");
+                groupChatButton.setEnabled(false);
+                chatButton.setEnabled(true);
                 actionButton.addActionListener(e -> {
                     friendRequestHandler.handleRetrieveFriendRequest(result.getUserId());
                     updateSearchResults(results); // Refresh results after retrieving request
                 });
             } else {
                 actionButton.setText("Gửi");
+                groupChatButton.setEnabled(false);
+                chatButton.setEnabled(true);
                 actionButton.addActionListener(e -> {
                     friendRequestHandler.handleSendFriendRequest(result.getUserId());
                     updateSearchResults(results); // Refresh results after sending request
