@@ -57,7 +57,7 @@ public class messageOfUserModel {
         String updateQuery = "UPDATE MESSAGE_OF_USER " +
                 "SET delete_by_sender = true, delete_by_receiver = true " +
                 "WHERE message_user_id = ? " +
-                "  AND (from_user = ? OR to_user = ?)";
+                "  AND (from_user = ? )";
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
@@ -65,7 +65,6 @@ public class messageOfUserModel {
             // Set parameters for the query
             stmt.setLong(1, messageId);     // Set message ID to identify the message
             stmt.setInt(2, currentUserId); // Check if the currentUserId matches from_user
-            stmt.setInt(3, currentUserId); // Check if the currentUserId matches to_user
 
             int rowsAffected = stmt.executeUpdate(); // Execute the update query
             return rowsAffected > 0; // Return true if any rows were updated
@@ -125,30 +124,29 @@ public class messageOfUserModel {
             return false; // Thất bại do lỗi truy vấn
         }
     }
-    public static boolean sendUserMessage(String message, int currentUserID, int targetUserId) {
+    public static int sendUserMessage(String message, int currentUserID, int targetUserId) {
         if (message == null || message.trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Message cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return -1; // Return -1 to indicate failure
         }
 
         if (currentUserID <= 0 || targetUserId <= 0) {
             JOptionPane.showMessageDialog(null, "Invalid user IDs.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return -1; // Return -1 to indicate failure
         }
-        boolean isBlock=blockModel.isBlocked(currentUserID, targetUserId)||blockModel.isBlocked(targetUserId, currentUserID);
 
-        if(isBlock)
-        {
+        boolean isBlock = blockModel.isBlocked(currentUserID, targetUserId) || blockModel.isBlocked(targetUserId, currentUserID);
+
+        if (isBlock) {
             JOptionPane.showMessageDialog(null, "Invalid user", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return -1; // Return -1 to indicate failure
         }
 
-        // Assume a method `getConnection()` to fetch the database connection
         try (Connection connection = DBConn.getConnection()) {
             String insertMessageSQL = "INSERT INTO message_of_user (from_user, to_user, chat_time, chat_content, delete_by_sender, delete_by_receiver) " +
                     "VALUES (?, ?, ?, ?, ?, ?)";
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(insertMessageSQL)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertMessageSQL, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setInt(1, currentUserID);
                 preparedStatement.setInt(2, targetUserId);
                 preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis())); // Current timestamp
@@ -159,19 +157,25 @@ public class messageOfUserModel {
                 int rowsAffected = preparedStatement.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    System.out.println("Message sent successfully.");
-                    return true;
-                } else {
-                    System.out.println("Failed to send the message.");
-                    return false;
+                    try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int messageId = generatedKeys.getInt(1); // Retrieve the generated messageId
+                            System.out.println("Message sent successfully with ID: " + messageId);
+                            return messageId; // Return the generated messageId
+                        }
+                    }
                 }
+
+                System.out.println("Failed to send the message.");
+                return -1; // Return -1 to indicate failure
             }
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("An error occurred while sending the message.");
-            return false;
+            return -1; // Return -1 to indicate failure
         }
     }
+
     public static int getTotalMessages(int currentUserId, int targetUserId) {
         String query = "SELECT COUNT(*) FROM MESSAGE_OF_USER " +
                 "WHERE ((from_user = ? AND to_user = ? AND delete_by_sender = false) " +
