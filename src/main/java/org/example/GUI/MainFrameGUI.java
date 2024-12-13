@@ -9,11 +9,13 @@ import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
 import org.example.GUI.UserFriendRequest.FriendRequestFrame;
 import org.example.GUI.UserSettingGUI.SettingsPanel;
 import org.example.Model.endUserModel;
+import org.example.Server.ChatClient;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrameGUI extends JFrame {
+    private ChatClient client;  // Instance of ChatClient to send/receive messages
     private int currentUserId=-1;
     private ChatPanelFrame chatPanelFrame=new ChatPanelFrame(this);
     public MainFrameGUI() {

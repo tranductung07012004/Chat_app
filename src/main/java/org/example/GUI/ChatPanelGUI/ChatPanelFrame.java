@@ -247,7 +247,9 @@ public class ChatPanelFrame extends JPanel {
                 String message = messageField.getText().trim();
                 sendMessage();
                 if (!message.isEmpty()) {
-                    client.sendMessage(message,contact.isGroup(),targetUserId,mainFrame.getCurrentUserId());
+                    boolean isBlock=blockModel.isBlocked(mainFrame.getCurrentUserId(), targetUserId)||blockModel.isBlocked(targetUserId, mainFrame.getCurrentUserId());
+                    if(!isBlock)
+                        client.sendMessage(message,contact.isGroup(),targetUserId,mainFrame.getCurrentUserId());
 
                 } else {
                     System.out.println("Message cannot be empty.");
@@ -283,6 +285,8 @@ public class ChatPanelFrame extends JPanel {
     private void sendMessage() {
         String message = messageField.getText().trim();
         if (!message.isEmpty()) {
+            boolean isBlock=blockModel.isBlocked(mainFrame.getCurrentUserId(), targetUserId)||blockModel.isBlocked(targetUserId, mainFrame.getCurrentUserId());
+
 
             // Thêm tin nhắn vào cơ sở dữ liệu
             if (!contact.isGroup()) {
@@ -290,13 +294,14 @@ public class ChatPanelFrame extends JPanel {
             } else {
                 messageOfGroupModel.addGroupMessage(message, mainFrame.getCurrentUserId(), targetUserId);
             }
+            if (!isBlock) {
+                String sender = "You: ";
+                Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                currentMessageIndex = 0;
+                currentSearchIndex = 0;
+                appendMessage(sender + message, targetUserId, currentTime);
 
-            String sender = "You: ";
-            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-            currentMessageIndex=0;
-            currentSearchIndex=0;
-            appendMessage(sender + message, targetUserId, currentTime);
-
+            }
             // Clear the message input field
             messageField.setText("");
         } else {

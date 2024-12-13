@@ -1,5 +1,6 @@
 package org.example.Model;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,12 +127,19 @@ public class messageOfUserModel {
     }
     public static boolean sendUserMessage(String message, int currentUserID, int targetUserId) {
         if (message == null || message.trim().isEmpty()) {
-            System.out.println("Message cannot be empty.");
+            JOptionPane.showMessageDialog(null, "Message cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         if (currentUserID <= 0 || targetUserId <= 0) {
-            System.out.println("Invalid user IDs.");
+            JOptionPane.showMessageDialog(null, "Invalid user IDs.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        boolean isBlock=blockModel.isBlocked(currentUserID, targetUserId)||blockModel.isBlocked(targetUserId, currentUserID);
+
+        if(isBlock)
+        {
+            JOptionPane.showMessageDialog(null, "Invalid user", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
