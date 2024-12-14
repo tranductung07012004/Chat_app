@@ -111,12 +111,10 @@ public class ChatPanelFrame extends JPanel {
             if (parts.length == 2) { // Validate number of parts
                 try {
                     int userId = Integer.parseInt(parts[1]);
-                    System.out.println("user login is: "+userId);
 
                     if (userFriendModel.isFriend(userId, mainFrame.getCurrentUserId()))
                     {
                         SidebarFrame.updateContactsPanel();
-                        System.out.println("Update contactpanel");
                     }
                 } catch (NumberFormatException e) {
                     System.err.println("Update online/offline fail: " + Arrays.toString(parts));

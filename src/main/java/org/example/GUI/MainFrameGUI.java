@@ -61,7 +61,6 @@ public class MainFrameGUI extends JFrame {
                 endUserModel user = endUserModel.getUserFromId(currentUserId);
                 if (user != null)
                     user.setOnline(false);  // Set user as offline
-                getChatClient().notifyLogin(getCurrentUserId());
 
                 // Optional cleanup tasks
                 logOut(); // Optional, you can call logOut() if you want
@@ -148,6 +147,7 @@ public class MainFrameGUI extends JFrame {
 
     public void logOut() {
         removePanel(); // Remove the previous panel
+        getChatClient().notifyLogin(currentUserId);
         currentUserId=-1;
         // Log out and show the login panel again
         JPanel loginPanel = new LoginGUI(this);

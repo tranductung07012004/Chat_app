@@ -39,7 +39,6 @@ public class SettingsHandler {
             //remove newcontacts
             List<Contact>contacts=FriendListHandle.getNewcontacts();
             contacts.clear();
-            mainFrame.getChatClient().notifyLogin(mainFrame.getCurrentUserId());
 
             // Now log the user out
             mainFrame.logOut();
