@@ -93,10 +93,10 @@ public class LoginHandler implements ActionListener {
             return;
         }
 
-        if (endUserModel.checkOnline(username)) {
-            JOptionPane.showMessageDialog(loginScreen, "Tài khoản đang được đăng nhập ở nơi khác, vui lòng kiểm tra lại", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
+//        if (endUserModel.checkOnline(username)) {
+//            JOptionPane.showMessageDialog(loginScreen, "Tài khoản đang được đăng nhập ở nơi khác, vui lòng kiểm tra lại", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+//            return;
+//        }
 
         if (endUserModel.checkBlockedByAdmin(username)) {
             JOptionPane.showMessageDialog(loginScreen, "Tài khoản đã bị khóa bởi admin, vui lòng liên hệ tổng đài hỗ trợ", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
@@ -109,6 +109,7 @@ public class LoginHandler implements ActionListener {
             endUserModel user=endUserModel.getUserFromId(currentUserId);
             user.setOnline(true);
             mainFrame.showChatPanel();
+            mainFrame.getChatClient().notifyLogin(currentUserId);
         } else {
             JOptionPane.showMessageDialog(loginScreen, "Invalid username or password!", "Error", JOptionPane.ERROR_MESSAGE);
         }

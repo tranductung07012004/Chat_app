@@ -105,6 +105,26 @@ public class ChatPanelFrame extends JPanel {
             SidebarFrame.updateContactsPanel();
         }
     }
+    public void handleInputOutputMessage(String message)
+    {
+            String[] parts = message.split("\\|");
+            if (parts.length == 2) { // Validate number of parts
+                try {
+                    int userId = Integer.parseInt(parts[1]);
+                    System.out.println("user login is: "+userId);
+
+                    if (userFriendModel.isFriend(userId, mainFrame.getCurrentUserId()))
+                    {
+                        SidebarFrame.updateContactsPanel();
+                        System.out.println("Update contactpanel");
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Update online/offline fail: " + Arrays.toString(parts));
+                }
+            } else {
+                System.err.println("Invalid login payload format: " + Arrays.toString(parts));
+            }
+    }
     public void handleDeleteMessage(String message) {
         // Process incoming messages specific to this chat panel
         String[] parts = message.split("\\|");
@@ -231,17 +251,24 @@ public class ChatPanelFrame extends JPanel {
                 options[0]);
     }
 
-    private void updateAfterDelete(long messageId){
+    private void updateAfterDelete(long messageId) {
         for (Component component : activeChatArea.getComponents()) {
-            if (component instanceof JLabel) {
-                JLabel label = (JLabel) component;
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
 
-                // Retrieve the associated message ID stored as a client property
-                Long labelMessageId = (Long) label.getClientProperty("messageId");
-                if (labelMessageId != null && labelMessageId == messageId) {
-                    // Remove the message label from the chat area
-                    activeChatArea.remove(label);
-                    break; // Exit the loop once the message is found and removed
+                // Check if the panel contains a JLabel with the specified messageId
+                for (Component child : panel.getComponents()) {
+                    if (child instanceof JLabel) {
+                        JLabel label = (JLabel) child;
+
+                        // Retrieve the associated message ID stored as a client property
+                        Long labelMessageId = (Long) label.getClientProperty("messageId");
+                        if (labelMessageId != null && labelMessageId == messageId) {
+                            // Remove the message panel from the chat area
+                            activeChatArea.remove(panel);
+                            break; // Exit the inner loop once the message is found
+                        }
+                    }
                 }
             }
         }
@@ -249,6 +276,7 @@ public class ChatPanelFrame extends JPanel {
         activeChatArea.revalidate();
         activeChatArea.repaint();
     }
+
             // Method to handle the deletion of the message
             private void processMessageDeletion(int choice, long messageId, Contact contact) {
                 switch (choice) {
@@ -333,7 +361,8 @@ public class ChatPanelFrame extends JPanel {
         messageField.setWrapStyleWord(true); // Đảm bảo từ sẽ không bị cắt giữa chừng
         sendButton = new JButton("Gửi");
 
-
+        if (contact==null)
+            sendButton.setEnabled(false);
 
         // Add action listener for send button
         sendButton.addActionListener(new ActionListener() {
@@ -385,6 +414,15 @@ public class ChatPanelFrame extends JPanel {
         return panel;
 
     }
+    public void updateSendButton(){
+        if (contact==null)
+            sendButton.setEnabled(false);
+        else
+        {
+            boolean isBlock=blockModel.isBlocked(mainFrame.getCurrentUserId(), targetUserId)||blockModel.isBlocked(targetUserId, mainFrame.getCurrentUserId());
+            sendButton.setEnabled(!isBlock);
+        }
+    }
     private long sendMessage() {
         String message = messageField.getText().trim();
         long messageId=-1;
@@ -414,9 +452,12 @@ public class ChatPanelFrame extends JPanel {
                     appendMessage(sender + message, messageId, currentTime, true);
 
             }
+            else
+                updateSendButton();
             // Clear the message input field
             messageField.setText("");
         } else {
+
             System.out.println("Tin nhắn không được để trống.");
         }
         return  messageId;
@@ -458,6 +499,7 @@ public class ChatPanelFrame extends JPanel {
         setFriendName(contact.getName());
         updatePanelVisibility();
         updatePaginationButtons();
+        updateSendButton();
 
     }
 
@@ -689,6 +731,7 @@ public class ChatPanelFrame extends JPanel {
                 blockFriendButton.addActionListener(e -> {
                     RightPanelButtonListener.handleUnblockUser(currentUserId, targetUserId);
                     updatePanelVisibility(); // Refresh visibility to update UI
+                    updateSendButton();
                 });
             } else {
                 blockFriendButton.setText("Chặn");

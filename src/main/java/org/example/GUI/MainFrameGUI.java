@@ -6,18 +6,22 @@ import org.example.GUI.AdminBoard.verifyAdminGUI;
 import org.example.GUI.Auth.LoginGUI;
 import org.example.GUI.Auth.RegisterGUI;
 import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
+import org.example.GUI.ChatPanelGUI.SidebarFrame;
 import org.example.GUI.UserFriendRequest.FriendRequestFrame;
 import org.example.GUI.UserSettingGUI.SettingsPanel;
 import org.example.Model.endUserModel;
+import org.example.Model.userFriendModel;
 import org.example.Server.ChatClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 public class MainFrameGUI extends JFrame {
     private ChatClient chatClient;  // Instance of ChatClient to send/receive messages
-    private int currentUserId=-1;
-    private ChatPanelFrame chatPanelFrame=new ChatPanelFrame(this);
+    private int currentUserId = -1;
+    private ChatPanelFrame chatPanelFrame = new ChatPanelFrame(this);
+
     public MainFrameGUI() {
         setTitle("Main Frame");
         setSize(700, 550);
@@ -38,11 +42,14 @@ public class MainFrameGUI extends JFrame {
                     @Override
                     public void onDeleteMessage(String deleteMessage) {
                         handleIncomingMessage(deleteMessage);
+                    }
 
+                    @Override
+                    public void onLoginMessage(String login) {
+                        handleLoginMessage(login);
                     }
                 }
         );
-
 
 
         this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -52,8 +59,9 @@ public class MainFrameGUI extends JFrame {
 
                 // Set user as offline when the window is closed
                 endUserModel user = endUserModel.getUserFromId(currentUserId);
-                if(user!=null)
+                if (user != null)
                     user.setOnline(false);  // Set user as offline
+                getChatClient().notifyLogin(getCurrentUserId());
 
                 // Optional cleanup tasks
                 logOut(); // Optional, you can call logOut() if you want
@@ -125,6 +133,7 @@ public class MainFrameGUI extends JFrame {
         repaint();
 
     }
+
     public void showChatPanel() {
         removePanel(); // Remove the previous panel
 
@@ -139,7 +148,7 @@ public class MainFrameGUI extends JFrame {
 
     public void logOut() {
         removePanel(); // Remove the previous panel
-
+        currentUserId=-1;
         // Log out and show the login panel again
         JPanel loginPanel = new LoginGUI(this);
         add(loginPanel);
@@ -169,6 +178,7 @@ public class MainFrameGUI extends JFrame {
         revalidate();
         repaint();
     }
+
     // Setter for currentUserId
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
@@ -182,6 +192,7 @@ public class MainFrameGUI extends JFrame {
     public ChatPanelFrame getChatPanelFrame() {
         return chatPanelFrame;
     }
+
     private void handleIncomingMessage(String message) {
         ChatPanelFrame activeChatPanel = getChatPanelFrame();
         if (activeChatPanel != null) {
@@ -193,9 +204,16 @@ public class MainFrameGUI extends JFrame {
         }
     }
 
+    private void handleLoginMessage(String message) {
+        ChatPanelFrame activeChatPanel = getChatPanelFrame();
+        if (activeChatPanel != null) {
+            if (message.startsWith("LOGIN|")) {
+                activeChatPanel.handleInputOutputMessage(message);
+            }
+        }
+    }
 
     public ChatClient getChatClient() {
         return chatClient;
     }
-
 }
