@@ -89,7 +89,7 @@ public class FriendRequestHandler {
 
         // If no results found, show a message
         if (filteredRequests.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "No friend requests found matching your search!");
+            JOptionPane.showMessageDialog(frame, "Không có lời mời kết bạn nào giống như thông tin bạn tìm kiếm!");
         } else {
             // Update the UI with the filtered results
             frame.refreshRequests(filteredRequests);
@@ -134,6 +134,10 @@ public class FriendRequestHandler {
                 boolean blockedAccountByAdmin = rs.getBoolean("blockedAccountByAdmin");
                 Timestamp timeRegistered = rs.getTimestamp("time_registered");
 
+                if (blockedAccountByAdmin) {
+                    continue;
+                }
+
                 // Create a new endUserModel object with all the fields
                 endUserModel user = new endUserModel(userId, username, password, accountName, dob, address, gender, isAdmin, email, online, blockedAccountByAdmin, timeRegistered);
                 results.add(user);
@@ -142,7 +146,9 @@ public class FriendRequestHandler {
             e.printStackTrace();
             JOptionPane.showMessageDialog(frame, "Error searching for users.");
         }
-
+        if (results.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Không có người dùng nào thỏa mãn thông tin bạn tìm kiếm.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+        }
         frame.updateSearchResults(results); // Pass the result to updateSearchResults
     }
 

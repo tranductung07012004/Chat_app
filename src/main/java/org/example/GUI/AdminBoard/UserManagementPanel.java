@@ -22,6 +22,7 @@ public class UserManagementPanel extends JPanel {
     public updateUserComponents updateComponents;
     public lockUserComponents lockComponents;
     public updatePassUserComponents updatePassComponents;
+    public resetPassUserComponents resetPassComponents;
 
 
     private MainFrameGUI mainFrame;
@@ -37,6 +38,7 @@ public class UserManagementPanel extends JPanel {
         this.addComponents = new addUserComponents();
         this.deleteComponents = new deleteUserComponents();
         this.components = new UserManagementComponents();
+        this.resetPassComponents = new resetPassUserComponents();
         this.mainFrame = inputmainFrame;
         setLayout(new BorderLayout());
 
@@ -82,6 +84,7 @@ public class UserManagementPanel extends JPanel {
         loginHistoryDialog();
         friendDialog();
         updatePassDialog();
+        resetPassDialog();
 
         // Xử lý sự kiện cho các nút
         new UserManagementHandler(this);
@@ -190,12 +193,13 @@ public class UserManagementPanel extends JPanel {
         actionPanel.add(this.components.reloadBtn);
         actionPanel.add(this.deleteComponents.deleteButton);
         actionPanel.add(this.addComponents.addButton);
-        actionPanel.add(this.searchComponents.searchBtn);
         actionPanel.add(this.updateComponents.updateButton);
+        actionPanel.add(this.searchComponents.searchBtn);
         actionPanel.add(this.lockComponents.lockButton);
         actionPanel.add(this.loginHistoryComponents.loginHistoryBtn);
         actionPanel.add(this.friendComponents.friendBtn);
         actionPanel.add(this.updatePassComponents.updatePassword);
+        actionPanel.add(this.resetPassComponents.resetPassBtn);
 
         return actionPanel;
     }
@@ -447,6 +451,25 @@ public class UserManagementPanel extends JPanel {
         this.loginHistoryComponents.loginHistoryDialog.setVisible(false);
     }
 
+    public void resetPassDialog() {
+        this.resetPassComponents.resetPassDialog.setSize(400, 130);
+        this.resetPassComponents.resetPassDialog.setLayout(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        inputPanel.add(new JLabel("Gmail:"));
+        inputPanel.add(this.resetPassComponents.gmailTextField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(this.resetPassComponents.submitResetPassBtn);
+        buttonPanel.add(this.resetPassComponents.cancelResetPassBtn);
+
+        this.resetPassComponents.resetPassDialog.add(inputPanel, BorderLayout.CENTER);
+        this.resetPassComponents.resetPassDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        this.resetPassComponents.resetPassDialog.setLocationRelativeTo(mainFrame); // Căn giữa dialog trên frame
+        this.resetPassComponents.resetPassDialog.setVisible(false);
+    }
+
     public void friendDialog() {
         this.friendComponents.friendDialog.setSize(400, 130);
         this.friendComponents.friendDialog.setLayout(new BorderLayout());
@@ -601,9 +624,17 @@ public class UserManagementPanel extends JPanel {
         public JButton submitFriendBtn = new JButton("OK");
     }
 
+    public class resetPassUserComponents {
+        public JButton resetPassBtn = new JButton("Reset pass");
+        public JDialog resetPassDialog = new JDialog(mainFrame, "Khởi tạo lại mật khẩu qua Gmail", true);
+        public JTextField gmailTextField = new JTextField(10);
+        public JButton cancelResetPassBtn = new JButton("Hủy");
+        public JButton submitResetPassBtn = new JButton("OK");
+    }
+
     public class updatePassUserComponents {
         public JButton updatePassword = new JButton("Cập nhật mật khẩu");
-        public JDialog updatePassDialog = new JDialog(mainFrame, "Tra cứu bạn bè", true);
+        public JDialog updatePassDialog = new JDialog(mainFrame, "Cập nhật mật khẩu", true);
         public JTextField usernameTextField = new JTextField(10);
         public JPasswordField oldPassTextField = new JPasswordField(10);
         public JPasswordField newPassTextField = new JPasswordField(10);

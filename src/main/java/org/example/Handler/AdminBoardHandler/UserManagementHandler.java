@@ -4,6 +4,7 @@ import org.example.GUI.AdminBoard.UserManagementPanel;
 import org.example.Model.endUserModel;
 import org.example.Model.loginHistoryModel;
 import org.example.Model.userFriendModel;
+import org.example.Service.resetPass;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,11 @@ public class UserManagementHandler  {
 
         // Reload function
         userManagement.components.reloadBtn.addActionListener(e -> handleReloadBtn());
+
+        // Reset password via gmail
+        userManagement.resetPassComponents.resetPassBtn.addActionListener(e -> handleResetPassBtn());
+        userManagement.resetPassComponents.submitResetPassBtn.addActionListener(e -> handleSubmitResetPassBtn());
+        userManagement.resetPassComponents.cancelResetPassBtn.addActionListener(e -> handleCancelResetPassBtn());
 
         // Delete function
         userManagement.deleteComponents.deleteButton.addActionListener(e -> handleDeleteButton());
@@ -78,7 +84,28 @@ public class UserManagementHandler  {
         userManagement.updateTableData(userManagement.components.tableModel, userData);
     }
 
+    private void handleResetPassBtn() {
+        userManagement.resetPassComponents.resetPassDialog.setVisible(true);
+    }
 
+    private void handleSubmitResetPassBtn() {
+        String gmail = userManagement.resetPassComponents.gmailTextField.getText().trim();
+
+        if (gmail.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Gmail không thể để trống.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!endUserModel.checkIfEmailExists(gmail)) {
+            JOptionPane.showMessageDialog(null, "Gmail không tồn tại trong cơ sở dữ liệu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        resetPass.handlePasswordResetRequest(gmail);
+    }
+
+    private void handleCancelResetPassBtn() {
+        userManagement.resetPassComponents.resetPassDialog.setVisible(false);
+    }
 
     private void handleDeleteButton() {
         userManagement.deleteComponents.deleteDialog.setVisible(true);

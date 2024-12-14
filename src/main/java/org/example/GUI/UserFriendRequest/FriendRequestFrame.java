@@ -76,8 +76,7 @@ public class FriendRequestFrame extends JPanel {
         friendSearchField = new JTextField();
         friendSearchField.setToolTipText("Nhập tên...");
         JButton searchFriendButton = new JButton("Tìm kiếm");
-    
-        searchFriendButton.addActionListener(e -> friendRequestHandler.handleFriendSearch(friendSearchField.getText()));
+        searchFriendButton.addActionListener(e -> friendRequestHandler.handleFriendSearch(friendSearchField.getText().trim()));
     
         JPanel friendSearchInputPanel = new JPanel(new BorderLayout());
         friendSearchInputPanel.add(friendSearchField, BorderLayout.CENTER);
@@ -102,7 +101,7 @@ public class FriendRequestFrame extends JPanel {
         // Add dynamic loading
         refreshRequests(friendRequestHandler.loadFriendRequests());
         backButton.addActionListener(e -> friendRequestHandler.handleBack());
-        searchField.addActionListener(e -> friendRequestHandler.handleSearch(searchField.getText()));
+        searchField.addActionListener(e -> friendRequestHandler.handleSearch(searchField.getText().trim()));
     }
 
 
