@@ -30,7 +30,7 @@ public class ChatPanelFrame extends JPanel {
     private JPanel memberListPanel;
     private JScrollPane scrollPane;
     private JTextField searchTextField;
-    private static JTextField messageField;
+    private static JTextArea  messageField;
     private static JButton sendButton;
 
     private static int currentMessageIndex; // Tracks the index of the current message being displayed
@@ -58,6 +58,7 @@ public class ChatPanelFrame extends JPanel {
         activeChatArea.setLayout(new BoxLayout(activeChatArea, BoxLayout.Y_AXIS)); // Vertical layout for messages
         JScrollPane chatScrollPane = new JScrollPane(activeChatArea);
         add(chatScrollPane, BorderLayout.CENTER);
+
 
         // Pagination buttons
         previousButton = new JButton("Trước");
@@ -137,34 +138,60 @@ public class ChatPanelFrame extends JPanel {
 
     }
 
+    public String formatTextWithLineBreaks(String input) {
+        // Tách chuỗi thành các từ
+        String[] words = input.split(" ");
+
+        // Chia chuỗi thành các phần nhỏ với tối đa 5 từ mỗi phần
+        StringBuilder formattedText = new StringBuilder();
+        for (int i = 0; i < words.length; i += 5) {
+            // Lấy tối đa 5 từ trong mỗi vòng lặp
+            int end = Math.min(i + 5, words.length);
+            for (int j = i; j < end; j++) {
+                formattedText.append(words[j]).append(" ");
+            }
+            // Thêm dấu xuống dòng sau mỗi đoạn 5 từ
+            formattedText.append("<br>");
+        }
+
+        // Chuyển chuỗi thành dạng HTML để có thể sử dụng trong JLabel
+        return formattedText.toString().trim();
+    }
+
+
+
     public void appendMessage(String message, long messageId, Timestamp timestamp, boolean side) {
         // Format the timestamp into "hh:mm dd/MM/yyyy"
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm dd/MM/yyyy");
         String formattedTime = dateFormat.format(new Date(timestamp.getTime())); // Convert Timestamp to Date and format
+        String formattedMessage = formatTextWithLineBreaks(message);
 
-        // Create the message content with message ID and formatted time
-        String fullMessage = "<html>" + message + "<br><font color='gray'>" + formattedTime + "</font></html>";
-
-        // Create a clickable label for the message
-        JLabel messageLabel = new JLabel(fullMessage);
+        // Create the message label with automatic word wrap (without fixed width in HTML)
+        JLabel messageLabel = new JLabel("<html>" + formattedMessage  + "<br><font color='gray' size='2'>" + formattedTime + "</font></html>");
         messageLabel.setOpaque(true);
-        messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        // Associate messageId with the label for easy retrieval
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Padding inside the label
         messageLabel.putClientProperty("messageId", messageId);
-
-        // Set font and styling for the message
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // Enable wrapping for the JLabel
-        messageLabel.setText("<html><body style='width: 100px;'>" + fullMessage + "</body></html>");
+        // Set background color for the message box based on the side
+        if (side) {
+            messageLabel.setBackground(new Color(173, 216, 230)); // Light blue for the right side
+            messageLabel.setForeground(Color.BLACK);
+        } else {
+            messageLabel.setBackground(new Color(211, 211, 211)); // Light gray for the left side
+            messageLabel.setForeground(Color.BLACK);
+        }
 
-        // Create a panel to hold the label (this will help with positioning)
+        // Create a panel to hold the label
         JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new FlowLayout(side ? FlowLayout.RIGHT : FlowLayout.LEFT));
+        messagePanel.setLayout(new FlowLayout(side ? FlowLayout.RIGHT : FlowLayout.LEFT)); // Use FlowLayout for left or right alignment
+        messagePanel.setOpaque(false); // Make the background of the panel transparent
         messagePanel.add(messageLabel);
 
-// Add mouse listener to detect click on the message
-        // Add mouse listener to the message label
+        // Set vertical padding between messages by adjusting panel border
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Adjust top and bottom spacing
+
+        // Add mouse listener to detect click on the message
         messageLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -177,12 +204,17 @@ public class ChatPanelFrame extends JPanel {
         });
 
         // Add the message panel to the active chat area
+        activeChatArea.setLayout(new BoxLayout(activeChatArea, BoxLayout.Y_AXIS)); // Set BoxLayout for vertical stacking
         activeChatArea.add(messagePanel);
 
         // Revalidate and repaint the chat area
         activeChatArea.revalidate();
         activeChatArea.repaint();
     }
+
+
+
+
     // Method to show the delete message dialog and return the user's choice
     private int showDeleteMessageDialog() {
         // Các tùy chọn trong hộp thoại
@@ -295,7 +327,10 @@ public class ChatPanelFrame extends JPanel {
         ChatPanelFrame chatPanel = new ChatPanelFrame(mainFrame);
         // Message input area
         JPanel messageInputPanel = new JPanel(new BorderLayout());
-        messageField = new JTextField();
+        // Tạo JTextArea với 3 dòng và 20 ký tự chiều rộng
+        messageField = new JTextArea(3, 20);
+        messageField.setLineWrap(true);  // Kích hoạt tính năng xuống dòng tự động
+        messageField.setWrapStyleWord(true); // Đảm bảo từ sẽ không bị cắt giữa chừng
         sendButton = new JButton("Gửi");
 
 
@@ -376,7 +411,7 @@ public class ChatPanelFrame extends JPanel {
 
                 }
                 else
-                appendMessage(sender + message, messageId, currentTime, true);
+                    appendMessage(sender + message, messageId, currentTime, true);
 
             }
             // Clear the message input field
