@@ -9,11 +9,13 @@ import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
 import org.example.GUI.UserFriendRequest.FriendRequestFrame;
 import org.example.GUI.UserSettingGUI.SettingsPanel;
 import org.example.Model.endUserModel;
+import org.example.Server.ChatClient;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrameGUI extends JFrame {
+    private ChatClient chatClient;  // Instance of ChatClient to send/receive messages
     private int currentUserId=-1;
     private ChatPanelFrame chatPanelFrame=new ChatPanelFrame(this);
     public MainFrameGUI() {
@@ -23,6 +25,25 @@ public class MainFrameGUI extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
+        // Initialize ChatClient with both message and delete handlers
+        chatClient = new ChatClient(
+                "localhost",
+                12343,
+                new ChatClient.MessageListener() {
+                    @Override
+                    public void onMessageReceived(String message) {
+                        handleIncomingMessage(message);
+                    }
+
+                    @Override
+                    public void onDeleteMessage(String deleteMessage) {
+                        handleIncomingMessage(deleteMessage);
+
+                    }
+                }
+        );
+
+
 
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -161,4 +182,20 @@ public class MainFrameGUI extends JFrame {
     public ChatPanelFrame getChatPanelFrame() {
         return chatPanelFrame;
     }
+    private void handleIncomingMessage(String message) {
+        ChatPanelFrame activeChatPanel = getChatPanelFrame();
+        if (activeChatPanel != null) {
+            if (message.startsWith("DELETE|")) {
+                activeChatPanel.handleDeleteMessage(message);
+            } else {
+                activeChatPanel.handleIncomingMessage(message);
+            }
+        }
+    }
+
+
+    public ChatClient getChatClient() {
+        return chatClient;
+    }
+
 }

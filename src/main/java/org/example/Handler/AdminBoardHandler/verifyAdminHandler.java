@@ -70,11 +70,10 @@ public class verifyAdminHandler implements ActionListener {
         boolean success = false;
 
         // SQL query to validate user credentials
-        String query = "SELECT user_id FROM end_user WHERE username = ? AND pass = ? AND isadmin = true";
+        String query = "SELECT user_id FROM end_user WHERE username = ? AND pass = ? AND isadmin = true AND blockedaccountbyadmin=false";
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-
             // Set the parameters for the SQL query
             stmt.setString(1, username);
             stmt.setString(2, password);

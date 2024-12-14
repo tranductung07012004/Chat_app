@@ -63,14 +63,18 @@ public class ChatServer {
 
                     // Parse the incoming payload
                     String[] parts = messagePayload.split("\\|");
-                    if (parts.length == 4) {
-                        int currentUserId = Integer.parseInt(parts[0]);
-                        int targetUserId = Integer.parseInt(parts[1]);
-                        boolean isGroup = Boolean.parseBoolean(parts[2]);
-                        String message = parts[3];
-
-                        // Broadcast the message to other clients
-                        broadcastMessage(messagePayload, currentUserId);
+                    if (parts.length > 0) {
+                        String command = parts[0]; // First part of the payload is the command
+                        switch (command) {
+                            case "MESSAGE":
+                                handleIncomingMessage(parts);
+                                break;
+                            case "DELETE":
+                                handleDeleteMessage(parts);
+                                break;
+                            default:
+                                System.err.println("Unknown command: " + command);
+                        }
                     } else {
                         System.err.println("Invalid message format: " + messagePayload);
                     }
@@ -82,21 +86,57 @@ public class ChatServer {
             }
         }
 
+        private void handleIncomingMessage(String[] parts) {
+            if (parts.length == 6) { // MESSAGE|currentUserId|targetUserId|isGroup|messageId|message
+                int currentUserId = Integer.parseInt(parts[1]);
+
+
+                String formattedPayload = String.join("|", parts);
+                broadcastMessage(formattedPayload, currentUserId);
+            } else {
+                System.err.println("Invalid message payload for MESSAGE.");
+            }
+        }
+
+        private void handleDeleteMessage(String[] parts) {
+            if (parts.length == 5) { // Validate number of parts
+                try {
+                    int messageId = Integer.parseInt(parts[1]);
+                    int currentUerId = Integer.parseInt(parts[2]);
+                    int targetId = Integer.parseInt(parts[3]);
+
+                    boolean isGroup = Boolean.parseBoolean(parts[4]);
+
+                    // Notify all clients about the deletion
+                    String deletePayload = String.format("DELETE|%d|%d|%d|%b", messageId,currentUerId, targetId, isGroup);
+                    broadcastMessage(deletePayload, currentUerId);
+                    System.out.println("Broadcasted delete for message ID: " + messageId);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid number format in delete message payload.");
+                }
+            } else {
+                System.err.println("Invalid delete payload format: " + Arrays.toString(parts));
+            }
+        }
+
+
         private void broadcastMessage(String messagePayload, int senderId) {
-            Set<Socket> clients = ClientManager.getClients();
-            for (Socket client : clients) {
-                if (!client.equals(socket)) { // Avoid sending the message back to the sender
-                    try {
-                        DataOutputStream clientOut = new DataOutputStream(client.getOutputStream());
-                        clientOut.writeUTF(messagePayload);
-                        clientOut.flush();
-                    } catch (IOException e) {
-                        System.err.println("Failed to send message to client " + client.getInetAddress() + ": " + e.getMessage());
-                        ClientManager.removeClient(client); // Remove faulty clients
+            synchronized (ClientManager.getClients()) {
+                for (Socket client : ClientManager.getClients()) {
+                    if (!client.equals(socket)) {
+                        try {
+                            DataOutputStream clientOut = new DataOutputStream(client.getOutputStream());
+                            clientOut.writeUTF(messagePayload);
+                            clientOut.flush();
+                        } catch (IOException e) {
+                            System.err.println("Failed to send message to client: " + e.getMessage());
+                            ClientManager.removeClient(client);
+                        }
                     }
                 }
             }
         }
+
 
         private void cleanup() {
             try {

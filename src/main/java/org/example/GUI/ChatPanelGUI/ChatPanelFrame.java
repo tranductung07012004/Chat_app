@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.swing.*;
@@ -39,7 +40,6 @@ public class ChatPanelFrame extends JPanel {
     // Biến để lưu trạng thái tìm kiếm hiện tại
     private int currentSearchIndex = -1; // Vị trí kết quả hiện tại
     private String lastKeyword = ""; // Từ khóa tìm kiếm gần nhất
-    private ChatClient client;  // Instance of ChatClient to send/receive messages
 
 
     public ChatPanelFrame(MainFrameGUI mainFrame) {
@@ -83,6 +83,50 @@ public class ChatPanelFrame extends JPanel {
 
 
     }
+    public void handleIncomingMessage(String message) {
+        // Process incoming messages specific to this chat panel
+        String[] parts = message.split("\\|");
+        if (parts.length == 6) {
+            int senderId = Integer.parseInt(parts[1]);
+            int receiverId = Integer.parseInt(parts[2]);
+            boolean isGroup = Boolean.parseBoolean(parts[3]);
+            long messageId=Long.parseLong((parts[4]));
+            String content = parts[5];
+
+            if (contact!=null && contact.isGroup() == isGroup &&
+                    (senderId == contact.getId() || receiverId == contact.getId())) {
+                String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
+                        ? "You: "
+                        : endUserModel.getUserFromId(senderId).getUsername() + ": ";
+                Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                appendMessage(sender + content, messageId, currentTime);
+            }
+            SidebarFrame.updateContactsPanel();
+        }
+    }
+    public void handleDeleteMessage(String message) {
+        // Process incoming messages specific to this chat panel
+        String[] parts = message.split("\\|");
+        if (parts.length == 5) { // Validate number of parts
+            try {
+                int messageId = Integer.parseInt(parts[1]);
+                int who_delete = Integer.parseInt(parts[2]);
+                int who_not = Integer.parseInt(parts[3]);
+                boolean isGroup = Boolean.parseBoolean(parts[4]);
+
+
+                // Check if the message is relevant to this chat panel
+                if (contact!=null&& contact.isGroup() == isGroup && (who_delete == contact.getId()||who_not== contact.getId())) {
+                    updateAfterDelete(messageId);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid number format in delete message payload: " + Arrays.toString(parts));
+            }
+        } else {
+            System.err.println("Invalid delete payload format: " + Arrays.toString(parts));
+        }
+    }
+
     public static JPanel getActiveChatArea(){
         return activeChatArea;
     }
@@ -93,7 +137,7 @@ public class ChatPanelFrame extends JPanel {
 
     }
 
-    public void appendMessage(String message, long messageId, Timestamp timestamp, boolean side) {
+    public void appendMessage(String message, long messageId, Timestamp timestamp) {
         // Format the timestamp into "hh:mm dd/MM/yyyy"
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm dd/MM/yyyy");
         String formattedTime = dateFormat.format(new Date(timestamp.getTime())); // Convert Timestamp to Date and format
@@ -105,6 +149,8 @@ public class ChatPanelFrame extends JPanel {
         JLabel messageLabel = new JLabel(fullMessage);
         messageLabel.setOpaque(true);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Associate messageId with the label for easy retrieval
+        messageLabel.putClientProperty("messageId", messageId);
 
         // Set font and styling for the message
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -112,11 +158,10 @@ public class ChatPanelFrame extends JPanel {
         // Enable wrapping for the JLabel
         messageLabel.setText("<html><body style='width: 100px;'>" + fullMessage + "</body></html>");
 
-        // Create a panel to hold the label (this will help with positioning)
-        JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new FlowLayout(side ? FlowLayout.RIGHT : FlowLayout.LEFT));
-        messagePanel.add(messageLabel);
+        // Add the message label to the active chat area (JPanel)
+        activeChatArea.add(messageLabel);
 
+// Add mouse listener to detect click on the message
         // Add mouse listener to the message label
         messageLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -129,14 +174,11 @@ public class ChatPanelFrame extends JPanel {
             }
         });
 
-        // Add the message panel to the active chat area
-        activeChatArea.add(messagePanel);
 
         // Revalidate and repaint the chat area
         activeChatArea.revalidate();
         activeChatArea.repaint();
     }
-
     // Method to show the delete message dialog and return the user's choice
     private int showDeleteMessageDialog() {
         // Các tùy chọn trong hộp thoại
@@ -153,6 +195,24 @@ public class ChatPanelFrame extends JPanel {
                 options[0]);
     }
 
+    private void updateAfterDelete(long messageId){
+        for (Component component : activeChatArea.getComponents()) {
+            if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+
+                // Retrieve the associated message ID stored as a client property
+                Long labelMessageId = (Long) label.getClientProperty("messageId");
+                if (labelMessageId != null && labelMessageId == messageId) {
+                    // Remove the message label from the chat area
+                    activeChatArea.remove(label);
+                    break; // Exit the loop once the message is found and removed
+                }
+            }
+        }
+        // Revalidate and repaint the chat area to reflect the change
+        activeChatArea.revalidate();
+        activeChatArea.repaint();
+    }
             // Method to handle the deletion of the message
             private void processMessageDeletion(int choice, long messageId, Contact contact) {
                 switch (choice) {
@@ -161,6 +221,7 @@ public class ChatPanelFrame extends JPanel {
                             // Nếu không phải là nhóm, gọi phương thức delete1Message
                             if (messageOfUserModel.deleteChat(mainFrame.getCurrentUserId(), messageId)) {
                                 JOptionPane.showMessageDialog(null, "Xóa tin nhắn thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                updateAfterDelete(messageId);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Lỗi khi xóa tin nhắn.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
@@ -169,18 +230,27 @@ public class ChatPanelFrame extends JPanel {
                             deletedMessageOfGroupModel deleteMessageOfGroupModel=new deletedMessageOfGroupModel(mainFrame.getCurrentUserId(), messageId);
                             if (deleteMessageOfGroupModel.DeleteGroupMessage(mainFrame.getCurrentUserId(), messageId)) {
                                 JOptionPane.showMessageDialog(null, "Xóa tin nhắn khỏi nhóm thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                updateAfterDelete(messageId);
+
                             } else {
                                 JOptionPane.showMessageDialog(null, "Lỗi xóa tin nhắn trong nhóm.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
-                        openChat(contact); // Refresh chat
+
                         break;
 
                     case 2: // "Delete Both Sides" - Xóa tin nhắn ở cả hai phía
                         if (!contact.isGroup()) {
-                            // Nếu không phải là nhóm, gọi phương thức delete1Message
+                            // Send delete event to the server
+                            String deleteCommand = "DELETE|" + messageId + "|" + contact.getId() + "|false";
+
+                            // Perform local deletion (optional as a safeguard)
                             if (messageOfUserModel.deleteChatBothSides(mainFrame.getCurrentUserId(), messageId)) {
                                 JOptionPane.showMessageDialog(null, "Tin nhắn được thu hồi thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                updateAfterDelete(messageId);
+                                mainFrame.getChatClient().deleteMessage(messageId,mainFrame.getCurrentUserId(), contact.getId(), contact.isGroup());
+
+
                             } else {
                                 JOptionPane.showMessageDialog(null, "Lỗi khi thu hồi tin nhắn.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
@@ -188,12 +258,17 @@ public class ChatPanelFrame extends JPanel {
                             // Nếu là nhóm, gọi phương thức deleteGroupMessage
                             if (messageOfGroupModel.deleteChat(contact.getId(),mainFrame.getCurrentUserId(), messageId)) {
                                 JOptionPane.showMessageDialog(null, "Tin nhắn được thu hồi trong nhóm thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                updateAfterDelete(messageId);
+                                // Send delete event to the server for a group message
+                                mainFrame.getChatClient().deleteMessage(messageId,mainFrame.getCurrentUserId(), contact.getId(), contact.isGroup());
+
                             } else {
                                 JOptionPane.showMessageDialog(null, "Lỗi khi thu hồi tin nhắn trong nhóm", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
-                        openChat(contact); // Refresh chat
+
                         break;
+
 
                     default: // "Cancel" hoặc đóng hộp thoại
                         System.out.println("Tắt delete.");
@@ -219,28 +294,6 @@ public class ChatPanelFrame extends JPanel {
         messageField = new JTextField();
         sendButton = new JButton("Gửi");
 
-        ChatClient client = new ChatClient("localhost", 12343, message -> {
-            // Update chat panel or UI with the received message
-            // Parse the incoming payload
-            if(currentMessageIndex==0&&currentSearchIndex==0) {
-                String[] parts = message.split("\\|");
-                if (parts.length == 4) {
-                    int senderId = Integer.parseInt(parts[0]);
-                    int receiverId = Integer.parseInt(parts[1]);
-                    boolean isGroup = Boolean.parseBoolean(parts[2]);
-                    String content = parts[3];
-                    if (contact.isGroup() == isGroup && (senderId == contact.getId() || receiverId == contact.getId())) {
-                        String sender = (!contact.isGroup() && senderId == mainFrame.getCurrentUserId())
-                                ? "Bạn: "
-                                : endUserModel.getUserFromId(senderId).getUsername() + ": ";
-                        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-
-                        appendMessage(sender + content, senderId, currentTime, mainFrame.getCurrentUserId() == senderId);
-
-                    }
-                }
-            }
-        });
 
 
         // Add action listener for send button
@@ -250,9 +303,17 @@ public class ChatPanelFrame extends JPanel {
                 //save to database
 
                 String message = messageField.getText().trim();
-                sendMessage();
+                long messageid=sendMessage();
                 if (!message.isEmpty()) {
-                    client.sendMessage(message,contact.isGroup(),targetUserId,mainFrame.getCurrentUserId());
+                    boolean isBlock=blockModel.isBlocked(mainFrame.getCurrentUserId(), targetUserId)||blockModel.isBlocked(targetUserId, mainFrame.getCurrentUserId());
+                    if(!isBlock)
+                        mainFrame.getChatClient().sendMessage(
+                                message,
+                                contact.isGroup(),
+                                targetUserId,
+                                mainFrame.getCurrentUserId(),
+                                messageid
+                        );
 
                 } else {
                     System.out.println("Tin nhắn không thể rỗng.");
@@ -285,28 +346,41 @@ public class ChatPanelFrame extends JPanel {
         return panel;
 
     }
-    private void sendMessage() {
+    private long sendMessage() {
         String message = messageField.getText().trim();
+        long messageId=-1;
+
         if (!message.isEmpty()) {
+            boolean isBlock=blockModel.isBlocked(mainFrame.getCurrentUserId(), targetUserId)||blockModel.isBlocked(targetUserId, mainFrame.getCurrentUserId());
 
             // Thêm tin nhắn vào cơ sở dữ liệu
             if (!contact.isGroup()) {
-                messageOfUserModel.sendUserMessage(message, mainFrame.getCurrentUserId(), targetUserId);
+                 messageId=messageOfUserModel.sendUserMessage(message, mainFrame.getCurrentUserId(), targetUserId);
             } else {
-                messageOfGroupModel.addGroupMessage(message, mainFrame.getCurrentUserId(), targetUserId);
+                 messageId=messageOfGroupModel.addGroupMessage(message, mainFrame.getCurrentUserId(), targetUserId);
             }
+            if (!isBlock) {
+                String sender = "Bạn: ";
+                Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                if(currentSearchIndex>0 ||currentMessageIndex>0)
+                {
 
-            String sender = "Bạn: ";
-            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-            currentMessageIndex=0;
-            currentSearchIndex=0;
-            appendMessage(sender + message, targetUserId, currentTime, true);
+                    loadMessage(0);
+                    currentSearchIndex=0;
+                    currentMessageIndex=0;
+                    updatePaginationButtons();
 
+                }
+                else
+                appendMessage(sender + message, messageId, currentTime);
+
+            }
             // Clear the message input field
             messageField.setText("");
         } else {
             System.out.println("Tin nhắn không được để trống.");
         }
+        return  messageId;
     }
 
     public void openChat(Contact contact) {
@@ -334,11 +408,11 @@ public class ChatPanelFrame extends JPanel {
             for (int i = chatHistory.size() - 1; i >= 0; i--) {
                 messageOfUserModel message = chatHistory.get(i);
 
-                String sender = (!contact.isGroup() && message.getFromUser() == currentUserId)
-                        ? "bạn: "
+                String sender = ( message.getFromUser() == currentUserId)
+                        ? "Bạn: "
                         : endUserModel.getUserFromId(message.getFromUser()).getUsername() + ": ";
 
-                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime(), message.getFromUser() == currentUserId);
+                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime());
             }
         }
 
@@ -644,11 +718,11 @@ public class ChatPanelFrame extends JPanel {
             for (int i = chatHistory.size() - 1; i >= 0; i--) {
                 messageOfUserModel message = chatHistory.get(i);
 
-                String sender = (!contact.isGroup() && message.getFromUser() == currentUserId)
+                String sender = (message.getFromUser() == currentUserId)
                         ? "Bạn: "
                         : endUserModel.getUserFromId(message.getFromUser()).getUsername() + ": ";
 
-                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime(), message.getFromUser() == currentUserId);
+                appendMessage(sender + message.getChatContent(), message.getMessageUserId(), message.getChatTime());
             }
         }
 

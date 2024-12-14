@@ -105,13 +105,9 @@ public class LoginHandler implements ActionListener {
 
         if (authenticateUser(username, password)) {
             //JOptionPane.showMessageDialog(loginScreen, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
             mainFrame.setCurrentUserId(currentUserId); // Pass userId to MainFrameGUI
             endUserModel user=endUserModel.getUserFromId(currentUserId);
             user.setOnline(true);
-
-
-
             mainFrame.showChatPanel();
         } else {
             JOptionPane.showMessageDialog(loginScreen, "Invalid username or password!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -119,7 +115,7 @@ public class LoginHandler implements ActionListener {
     }
 
     private boolean authenticateUser(String username, String password) {
-        String query = "SELECT user_id FROM end_user WHERE username = ? AND pass = ?";
+        String query = "SELECT user_id FROM end_user WHERE username = ? AND pass = ? AND blockedaccountbyadmin=false";
 
         try (Connection conn = DBConn.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

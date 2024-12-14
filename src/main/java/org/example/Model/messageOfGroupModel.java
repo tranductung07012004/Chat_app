@@ -99,29 +99,29 @@ public class messageOfGroupModel {
 
 
 
-    public static boolean addGroupMessage(String message, int currentUserID, int groupId) {
+    public static int addGroupMessage(String message, int currentUserID, int groupId) {
         // Validate inputs
         if (message == null || message.trim().isEmpty()) {
             System.out.println("Message cannot be empty.");
-            return false;
+            return -1; // Return -1 to indicate failure
         }
 
         if (currentUserID <= 0 || groupId <= 0) {
             System.out.println("Invalid user ID or group ID.");
-            return false;
+            return -1; // Return -1 to indicate failure
         }
 
         // Get the current timestamp for the message
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-
 
         // Insert message into the database
         try (Connection connection = DBConn.getConnection()) {
             String insertMessageSQL = "INSERT INTO message_of_group (from_user, to_group, chat_time, chat_content, isdeletedall) " +
                     "VALUES (?, ?, ?, ?, ?)";
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(insertMessageSQL)) {
-                preparedStatement.setInt(1,currentUserID);
+            // Use Statement.RETURN_GENERATED_KEYS to retrieve the auto-generated key
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertMessageSQL, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setInt(1, currentUserID);
                 preparedStatement.setInt(2, groupId);
                 preparedStatement.setTimestamp(3, currentTime);
                 preparedStatement.setString(4, message);
@@ -130,19 +130,26 @@ public class messageOfGroupModel {
                 int rowsAffected = preparedStatement.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    System.out.println("Group message sent successfully.");
-                    return true;
-                } else {
-                    System.out.println("Failed to send the group message.");
-                    return false;
+                    // Retrieve the auto-generated key (messageId)
+                    try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int messageId = generatedKeys.getInt(1); // Retrieve the generated messageId
+                            System.out.println("Group message sent successfully with ID: " + messageId);
+                            return messageId; // Return the generated messageId
+                        }
+                    }
                 }
+
+                System.out.println("Failed to send the group message.");
+                return -1; // Return -1 to indicate failure
             }
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("An error occurred while sending the group message.");
-            return false;
+            return -1; // Return -1 to indicate failure
         }
     }
+
     public static boolean deleteChat(int groupId, int currentUserId, long messageGroupId) {
         // Step 1: Get the message's timestamp and sender to check if it was sent within the last 24 hours
         String query = "SELECT chat_time, from_user FROM message_of_group WHERE message_group_id = ? AND to_group = ?";

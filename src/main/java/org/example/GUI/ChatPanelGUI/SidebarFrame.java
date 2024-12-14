@@ -220,6 +220,22 @@ public class SidebarFrame extends JPanel {
         // Assuming `contactsPanel` is the JPanel displaying contacts
         List<Contact>newcontacts=FriendListHandle.getNewcontacts();
         contacts.addAll(FriendListHandle.getNewcontacts());
+
+        List<Contact>loadcontacts=SidebarHandler.loadAllContacts(mainFrame.getCurrentUserId());
+        // Create a Contact object for the target user
+
+        for (Contact existingContact : contacts) {
+            for (Contact loadcontact:loadcontacts)
+                if (existingContact.getId() == loadcontact.getId() && existingContact.isGroup()==loadcontact.isGroup()) {
+                    loadcontacts.remove(loadcontact);
+
+                    break;
+                }
+        }
+
+        contacts.addAll(loadcontacts);
+
+
         newcontacts.clear();
 
 

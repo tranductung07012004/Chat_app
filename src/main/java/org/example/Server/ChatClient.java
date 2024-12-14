@@ -16,7 +16,9 @@ public class ChatClient {
     // Callback interface for message updates
     public interface MessageListener {
         void onMessageReceived(String message);
+        void onDeleteMessage(String deleteMessage); // New callback for delete events
     }
+
 
     public ChatClient(String serverAddress, int serverPort, MessageListener listener) {
         this.messageListener = listener;
@@ -39,15 +41,30 @@ public class ChatClient {
         }
     }
 
-    public void sendMessage(String message, boolean isGroup, int targetId, int currentUserId) {
+    public void sendMessage(String message, boolean isGroup, int targetId, int currentUserId, long messageId) {
         try {
-            String payload = String.format("%d|%d|%b|%s", currentUserId, targetId, isGroup, message);
+            // Include `messageId` in the payload
+            // MESSAGE|currentUserId|targetUserId|isGroup|messageId|message
+            String payload = String.format("MESSAGE|%d|%d|%b|%d|%s", currentUserId, targetId, isGroup, messageId, message);
             out.writeUTF(payload); // Send the message to the server
             out.flush();
+            System.out.println("Message sent: " + payload);
         } catch (IOException e) {
             System.err.println("Failed to send message: " + e.getMessage());
         }
     }
+
+    public void deleteMessage(long messageId,int currentUserId, int targetId, boolean isGroup) {
+        try {
+            String payload = String.format("DELETE|%d|%d|%d|%b", messageId,currentUserId, targetId, isGroup);
+            out.writeUTF(payload);
+            out.flush();
+        } catch (IOException e) {
+            System.err.println("Failed to send delete request: " + e.getMessage());
+        }
+    }
+
+
 
     private void startListening() {
         executorService.execute(() -> {
@@ -56,9 +73,13 @@ public class ChatClient {
                     String message = in.readUTF(); // Receive message from the server
                     System.out.println("Received message: " + message);
 
-                    // Notify listener (e.g., GUI component) of the new message
                     if (messageListener != null) {
-                        messageListener.onMessageReceived(message);
+                        // Check if the message is a delete operation
+                        if (message.startsWith("DELETE|")) {
+                            messageListener.onDeleteMessage(message); // Notify for deletion
+                        } else {
+                            messageListener.onMessageReceived(message); // Notify for regular messages
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -69,6 +90,7 @@ public class ChatClient {
             }
         });
     }
+
 
     private void reconnect(String serverAddress, int serverPort) {
         try {
