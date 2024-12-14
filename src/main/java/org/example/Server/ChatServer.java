@@ -66,6 +66,9 @@ public class ChatServer {
                     if (parts.length > 0) {
                         String command = parts[0]; // First part of the payload is the command
                         switch (command) {
+                            case "LOGIN":
+                                handleLogin(parts);
+                                break;
                             case "MESSAGE":
                                 handleIncomingMessage(parts);
                                 break;
@@ -102,14 +105,14 @@ public class ChatServer {
             if (parts.length == 5) { // Validate number of parts
                 try {
                     int messageId = Integer.parseInt(parts[1]);
-                    int currentUerId = Integer.parseInt(parts[2]);
+                    int currentUserId = Integer.parseInt(parts[2]);
                     int targetId = Integer.parseInt(parts[3]);
 
                     boolean isGroup = Boolean.parseBoolean(parts[4]);
 
                     // Notify all clients about the deletion
-                    String deletePayload = String.format("DELETE|%d|%d|%d|%b", messageId,currentUerId, targetId, isGroup);
-                    broadcastMessage(deletePayload, currentUerId);
+                    String deletePayload = String.format("DELETE|%d|%d|%d|%b", messageId,currentUserId, targetId, isGroup);
+                    broadcastMessage(deletePayload, currentUserId);
                     System.out.println("Broadcasted delete for message ID: " + messageId);
                 } catch (NumberFormatException e) {
                     System.err.println("Invalid number format in delete message payload.");
@@ -118,7 +121,22 @@ public class ChatServer {
                 System.err.println("Invalid delete payload format: " + Arrays.toString(parts));
             }
         }
+        private void handleLogin(String[] parts) {
+            if (parts.length == 2) { // LOGIN|currentUserId
+                try {
+                    int currentUserId = Integer.parseInt(parts[1]);
+                    System.out.println("User logged in: " + currentUserId);
 
+                    // Notify other clients about the new login
+                    String loginNotification = String.format("LOGIN|%d", currentUserId);
+                    broadcastMessage(loginNotification, currentUserId);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid user ID format in login payload.");
+                }
+            } else {
+                System.err.println("Invalid login payload format.");
+            }
+        }
 
         private void broadcastMessage(String messagePayload, int senderId) {
             synchronized (ClientManager.getClients()) {

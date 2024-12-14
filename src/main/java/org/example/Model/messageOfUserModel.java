@@ -1,5 +1,8 @@
 package org.example.Model;
 
+import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
+import org.example.GUI.MainFrameGUI;
+
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -138,7 +141,7 @@ public class messageOfUserModel {
         boolean isBlock = blockModel.isBlocked(currentUserID, targetUserId) || blockModel.isBlocked(targetUserId, currentUserID);
 
         if (isBlock) {
-            JOptionPane.showMessageDialog(null, "Invalid user", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Không thể gửi tin nhắn cho người này", "Error", JOptionPane.ERROR_MESSAGE);
             return -1; // Return -1 to indicate failure
         }
 

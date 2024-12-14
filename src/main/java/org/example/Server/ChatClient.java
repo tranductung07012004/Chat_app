@@ -17,6 +17,7 @@ public class ChatClient {
     public interface MessageListener {
         void onMessageReceived(String message);
         void onDeleteMessage(String deleteMessage); // New callback for delete events
+        void onLoginMessage(String Message);
     }
 
 
@@ -43,7 +44,7 @@ public class ChatClient {
 
     public void sendMessage(String message, boolean isGroup, int targetId, int currentUserId, long messageId) {
         try {
-            // Include `messageId` in the payload
+            // Include messageId in the payload
             // MESSAGE|currentUserId|targetUserId|isGroup|messageId|message
             String payload = String.format("MESSAGE|%d|%d|%b|%d|%s", currentUserId, targetId, isGroup, messageId, message);
             out.writeUTF(payload); // Send the message to the server
@@ -63,6 +64,17 @@ public class ChatClient {
             System.err.println("Failed to send delete request: " + e.getMessage());
         }
     }
+    public void notifyLogin(int currentUserId) {
+        try {
+            // LOGIN|currentUserId
+            String payload = String.format("LOGIN|%d", currentUserId);
+            out.writeUTF(payload);
+            out.flush();
+            System.out.println("Login notification sent: " + payload);
+        } catch (IOException e) {
+            System.err.println("Failed to notify server about login: " + e.getMessage());
+        }
+    }
 
 
 
@@ -77,10 +89,13 @@ public class ChatClient {
                         // Check if the message is a delete operation
                         if (message.startsWith("DELETE|")) {
                             messageListener.onDeleteMessage(message); // Notify for deletion
-                        } else {
+                        } else if ((message.startsWith("MESSAGE"))) {
                             messageListener.onMessageReceived(message); // Notify for regular messages
+                        } else if(message.startsWith("LOGIN")) {
+                            messageListener.onLoginMessage(message);
                         }
                     }
+
                 }
             } catch (IOException e) {
                 if (running) {
