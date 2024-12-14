@@ -388,6 +388,39 @@ public class loginHistoryModel {
         return newestYear;
     }
 
+    public static int recordLoginOfUser(String username) {
+        String getUserIdQuery = "SELECT user_id FROM end_user WHERE username = ?"; // Truy vấn lấy user_id
+        String insertLoginHistoryQuery = "INSERT INTO login_history (user_id, login_time) VALUES (?, ?)"; // Thêm bản ghi
+
+        try (Connection conn = DBConn.getConnection();
+             PreparedStatement getUserIdStmt = conn.prepareStatement(getUserIdQuery);
+             PreparedStatement insertLoginHistoryStmt = conn.prepareStatement(insertLoginHistoryQuery)) {
+
+            // 1. Kiểm tra và lấy user_id từ bảng end_user
+            getUserIdStmt.setString(1, username); // Gán giá trị username
+            ResultSet rs = getUserIdStmt.executeQuery();
+
+            int userId;
+            if (rs.next()) {
+                userId = rs.getInt("user_id"); // Lấy user_id từ kết quả truy vấn
+            } else {
+                return -1; //  User không tồn tại
+            }
+
+            // 2. Thêm bản ghi vào bảng login_history
+            insertLoginHistoryStmt.setInt(1, userId); // Gán user_id
+            insertLoginHistoryStmt.setTimestamp(2, new Timestamp(System.currentTimeMillis())); // Thời gian hiện tại
+
+            int rowsInserted = insertLoginHistoryStmt.executeUpdate(); // Thực thi truy vấn
+            if (rowsInserted > 0) {
+                return 1; // Thêm thành công
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 
 }

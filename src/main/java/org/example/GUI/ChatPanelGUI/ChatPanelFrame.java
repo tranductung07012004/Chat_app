@@ -164,20 +164,50 @@ public class ChatPanelFrame extends JPanel {
 
         // Chia chuỗi thành các phần nhỏ với tối đa 5 từ mỗi phần
         StringBuilder formattedText = new StringBuilder();
-        for (int i = 0; i < words.length; i += 5) {
-            // Lấy tối đa 5 từ trong mỗi vòng lặp
-            int end = Math.min(i + 5, words.length);
-            for (int j = i; j < end; j++) {
-                formattedText.append(words[j]).append(" ");
+        int wordCountInLine = 0;
+
+        for (String word : words) {
+            // Nếu từ chỉ chứa dấu câu, thêm vào nhưng không tăng wordCountInLine
+            if (word.matches("[.,?!]+")) {
+                formattedText.append(word).append(" ");
+                continue;
             }
-            // Thêm dấu xuống dòng sau mỗi đoạn 5 từ
-            formattedText.append("<br>");
+
+            // Nếu từ dài hơn 25 ký tự, chia nhỏ từ đó
+            if (word.length() > 25) {
+                if (wordCountInLine > 0) {
+                    formattedText.append("<br>"); // Xuống dòng nếu dòng hiện tại không trống
+                }
+                for (int i = 0; i < word.length(); i += 25) {
+                    int end = Math.min(i + 25, word.length());
+                    formattedText.append(word, i, end).append("<br>");
+                }
+                wordCountInLine = 0; // Reset bộ đếm từ cho dòng tiếp theo
+            }
+            // Nếu từ dài hơn 10 ký tự nhưng không quá 25 ký tự, đưa xuống dòng mới
+            else if (word.length() > 10) {
+                if (wordCountInLine > 0) {
+                    formattedText.append("<br>");
+                }
+                formattedText.append(word).append("<br>");
+                wordCountInLine = 0;
+            }
+            // Xử lý từ ngắn bình thường
+            else {
+                formattedText.append(word).append(" ");
+                wordCountInLine++;
+
+                // Nếu đủ 5 từ thì xuống dòng
+                if (wordCountInLine >= 5) {
+                    formattedText.append("<br>");
+                    wordCountInLine = 0;
+                }
+            }
         }
 
         // Chuyển chuỗi thành dạng HTML để có thể sử dụng trong JLabel
         return formattedText.toString().trim();
     }
-
 
 
     public void appendMessage(String message, long messageId, Timestamp timestamp, boolean side) {
