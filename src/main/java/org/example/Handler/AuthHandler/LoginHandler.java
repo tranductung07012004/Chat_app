@@ -4,6 +4,7 @@ import org.example.GUI.Auth.LoginGUI;
 import org.example.GUI.MainFrameGUI;
 import org.example.Model.DBConn;
 import org.example.Model.endUserModel;
+import org.example.Model.loginHistoryModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,10 +109,24 @@ public class LoginHandler implements ActionListener {
             mainFrame.setCurrentUserId(currentUserId); // Pass userId to MainFrameGUI
             endUserModel user=endUserModel.getUserFromId(currentUserId);
             user.setOnline(true);
+            addUserLoginToLoginHistory(username);
             mainFrame.showChatPanel();
         } else {
-            JOptionPane.showMessageDialog(loginScreen, "Invalid username or password!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(loginScreen, "Tài khoản hoặc mật khẩu không đúng", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void addUserLoginToLoginHistory(String username) {
+        int res = loginHistoryModel.recordLoginOfUser(username);
+        if (res == -1) {
+            JOptionPane.showMessageDialog(loginScreen, "Người dùng không tồn tại", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (res == 0) {
+            JOptionPane.showMessageDialog(loginScreen, "Thêm bản ghi vào login_history không thành công, hãy kiểm tra lại", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        System.out.println("Hành vi đăng nhập của người dùng đã được thêm bản ghi vào login_history");
     }
 
     private boolean authenticateUser(String username, String password) {
