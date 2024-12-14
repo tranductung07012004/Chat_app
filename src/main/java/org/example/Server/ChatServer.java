@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 public class ChatServer {
     private static final int PORT = 12343;
-    private static final int MAX_CLIENTS = 10; // Limit for client connections
+    private static final int MAX_CLIENTS = 100; // Limit for client connections
     private static ServerSocket serverSocket;
     private static ExecutorService clientThreadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
 
