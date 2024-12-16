@@ -74,7 +74,7 @@ public class groupChatModel {
                 while (rs.next()) {
                     String groupName = rs.getString("group_name");
                     Timestamp timeRegistered = rs.getTimestamp("time_created");
-                    groupsList.add(new Object[]{groupName, timeRegistered.toString()});
+                    groupsList.add(new Object[]{groupName, timeRegistered.toString().split("\\.")[0]});
                 }
             }
 
@@ -104,7 +104,7 @@ public class groupChatModel {
                 while (rs.next()) {
                     String name_of_group = rs.getString("group_name");
                     Timestamp timeRegistered = rs.getTimestamp("time_created");
-                    friendsList.add(new Object[]{name_of_group, timeRegistered.toString()});
+                    friendsList.add(new Object[]{name_of_group, timeRegistered.toString().split("\\.")[0]});
                 }
 
                 // Kiểm tra danh sách bạn bè

@@ -198,11 +198,21 @@ public class RightPanelButtonListener {
             JOptionPane.showMessageDialog(null, "Invalid username entered.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        if (!endUserModel.checkIfUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "Người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         int id=endUserModel.getUserIdByUsername(username);
         // Check if the entered username is a friend of the current user
         boolean isFriend = userFriendModel.isFriend(currentUserId, id);
         if (id==-1 || !isFriend) {
             JOptionPane.showMessageDialog(null, "The specified user is not your friend.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (endUserModel.checkBlockedByAdmin(username.trim())) {
+            JOptionPane.showMessageDialog(null, "Người dùng đã bị khóa bởi admin.", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }

@@ -9,6 +9,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 
 public class LoginHistoryPanel extends JPanel {
     public loginHistoryComponent components;
@@ -56,6 +60,30 @@ public class LoginHistoryPanel extends JPanel {
         // Tính năng sắp xếp
         TableRowSorter<TableModel> sorterGroupTable = new TableRowSorter<>(this.components.tableModel);
         loginHistoryTable.setRowSorter(sorterGroupTable);
+        SimpleDateFormat ss = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date d1 = ss.parse("2024-11-11 09:00:01");
+            Date d2 = ss.parse("2024-11-11 09:00:02");
+            System.out.println(d1.compareTo(d2));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        sorterGroupTable.setComparator(0, new Comparator<String>() {
+            private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    Date date1 = sdf.parse(o1);
+                    Date date2 = sdf.parse(o2);
+                    return date1.compareTo(date2);
+                } catch(ParseException e) {
+                    System.out.println("Lỗi trong userManagementPanel, hàm createUserTable()");
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
 
 
         sorterGroupTable.setSortable(0, true);

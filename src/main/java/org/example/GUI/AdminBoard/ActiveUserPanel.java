@@ -9,6 +9,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 
 public class ActiveUserPanel extends JPanel {
     public overallComponents components;
@@ -80,6 +84,21 @@ public class ActiveUserPanel extends JPanel {
         // Tính năng sắp xếp
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModel);
         activeUserTable.setRowSorter(sorter);
+
+        sorter.setComparator(2, new Comparator<String>() {
+            private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    Date date1 = sdf.parse(o1);
+                    Date date2 = sdf.parse(o2);
+                    return date1.compareTo(date2);
+                } catch(ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
 
 
         sorter.setSortable(0, false);

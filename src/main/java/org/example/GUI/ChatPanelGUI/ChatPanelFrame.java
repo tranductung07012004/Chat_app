@@ -587,6 +587,7 @@ public class ChatPanelFrame extends JPanel {
 // Gắn sự kiện cho nút tìm kiếm
         searchButton.addActionListener(e -> {
             String keyword = searchTextField.getText().trim();
+                // Nếu từ khóa mới, reset trạng thái tìm kiếm
             if (!keyword.equals(lastKeyword)) {
                 // Nếu từ khóa mới, reset trạng thái tìm kiếm
                 currentSearchIndex = -1;
@@ -847,11 +848,10 @@ public class ChatPanelFrame extends JPanel {
 
     }
     private void searchMessage(String keyword) {
-        if (contact == null || keyword == null || keyword.trim().isEmpty()) {
+        if (contact == null || keyword == null || keyword.trim().isEmpty() || keyword.equals("Tìm tin nhắn")) {
             JOptionPane.showMessageDialog(this, "Hãy nhập keyword chuẩn.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         int currentUserId = mainFrame.getCurrentUserId();
         List<messageOfUserModel> chatHistory;
         boolean found = false;
@@ -875,7 +875,10 @@ public class ChatPanelFrame extends JPanel {
                 }
             }
 
-            if (found) break;
+            if (found) {
+                JOptionPane.showMessageDialog(this, "Đã tìm thấy.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
         }
 
         if (!found) {

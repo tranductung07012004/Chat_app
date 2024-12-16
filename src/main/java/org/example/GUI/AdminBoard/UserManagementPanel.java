@@ -7,6 +7,10 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 import javax.swing.table.*;
 
 
@@ -115,6 +119,22 @@ public class UserManagementPanel extends JPanel {
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModel);
         userTable.setRowSorter(sorter);
 
+        sorter.setComparator(6, new Comparator<String>() {
+            private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    Date date1 = sdf.parse(o1);
+                    Date date2 = sdf.parse(o2);
+                    return date1.compareTo(date2);
+                } catch(ParseException e) {
+                    System.out.println("Lỗi trong userManagementPanel, hàm createUserTable()");
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
+
         sorter.setSortable(0, false);
         sorter.setSortable(1, true);
         sorter.setSortable(2, false);
@@ -151,6 +171,22 @@ public class UserManagementPanel extends JPanel {
 
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(this.components.tableModelLogin);
         loginTable.setRowSorter(sorter);
+
+        sorter.setComparator(1, new Comparator<String>() {
+            private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    Date date1 = sdf.parse(o1);
+                    Date date2 = sdf.parse(o2);
+                    return date1.compareTo(date2);
+                } catch(ParseException e) {
+                    System.out.println("Lỗi trong userManagementPanel, hàm createUserTable()");
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
 
         sorter.setSortable(0, false);
         sorter.setSortable(1, true);

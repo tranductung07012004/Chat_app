@@ -9,6 +9,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 
 public class ChatGroupPanel extends JPanel {
     public chatGroupComponents components;
@@ -196,6 +200,21 @@ public class ChatGroupPanel extends JPanel {
         // Tính năng sắp xếp
         TableRowSorter<TableModel> sorterGroupTable = new TableRowSorter<>(this.components.tableGroupModel);
         groupTable.setRowSorter(sorterGroupTable);
+
+        sorterGroupTable.setComparator(1, new Comparator<String>() {
+            private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    Date date1 = sdf.parse(o1);
+                    Date date2 = sdf.parse(o2);
+                    return date1.compareTo(date2);
+                } catch(ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
 
 
         sorterGroupTable.setSortable(0, true);
