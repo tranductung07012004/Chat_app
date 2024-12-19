@@ -25,12 +25,12 @@ public class FriendListHandle {
         boolean success = userFriendModel.deleteFriend(userId, targetUserId);
         if (success) {
             JOptionPane.showMessageDialog(null,
-                    "You have successfully unfriended the user.",
+                    "Huỷ kết bạn thành công.",
                     "Unfriend Success",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null,
-                    "Failed to unfriend the user. Please try again later.",
+                    "Huỷ kết bạn thất bại. Vui lòng thử lại sau.",
                     "Unfriend Failed",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -53,7 +53,7 @@ public class FriendListHandle {
         // Check if the target user is valid
         if (targetUser == null) {
             JOptionPane.showMessageDialog(null,
-                    "The selected user does not exist.",
+                    "Đoạn chat không tồn tại.",
                     "Chat Error",
                     JOptionPane.ERROR_MESSAGE);
             return;

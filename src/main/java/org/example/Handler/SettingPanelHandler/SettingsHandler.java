@@ -139,9 +139,9 @@ public class SettingsHandler {
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
-                JOptionPane.showMessageDialog(null, "User information updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cập nhật thông tin thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to update user information.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cập nhật thông tin thất bại.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (SQLException e) {
@@ -156,7 +156,7 @@ public class SettingsHandler {
 
         // Password validation
         if (newPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "New password cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "New password không thể trống!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

@@ -637,9 +637,9 @@ public class endUserModel {
             rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(null, "User information was updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cập nhật thông tin người dùng thành công.", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to update user information. User might not exist.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cập nhật thông tin người dùng thất bại", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (SQLException e) {

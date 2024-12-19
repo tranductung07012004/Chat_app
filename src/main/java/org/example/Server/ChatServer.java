@@ -5,14 +5,21 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.example.Handler.configLoader;
+
 
 public class ChatServer {
-    private static final int PORT = 12343;
-    private static final int MAX_CLIENTS = 100; // Limit for client connections
+    private static int PORT;
+    private static int MAX_CLIENTS;
     private static ServerSocket serverSocket;
-    private static ExecutorService clientThreadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
+    private static ExecutorService clientThreadPool;
 
     public static void main(String[] args) {
+        // Load configuration
+        configLoader config = configLoader.getInstance();
+        PORT = config.getIntProperty("server.port", 12343); // Default port: 12343
+        MAX_CLIENTS = config.getIntProperty("server.max_clients", 100); // Default max clients: 100
+        clientThreadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
         try {
             serverSocket = new ServerSocket(PORT);
             System.out.println("Server started on port " + PORT);

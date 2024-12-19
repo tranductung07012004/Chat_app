@@ -42,7 +42,7 @@ public class FriendRequestFrame extends JPanel {
     
         // Search field for filtering requests by name
         searchField = new JTextField();
-        searchField.setToolTipText("Tìm kiếm bằng name/ID...");
+        searchField.setToolTipText("Tìm kiếm bằng username/ID/tên...");
     
         // "My ID" Display
         int myId = mainFrame.getCurrentUserId();

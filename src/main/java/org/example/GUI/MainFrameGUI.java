@@ -6,16 +6,14 @@ import org.example.GUI.AdminBoard.verifyAdminGUI;
 import org.example.GUI.Auth.LoginGUI;
 import org.example.GUI.Auth.RegisterGUI;
 import org.example.GUI.ChatPanelGUI.ChatPanelFrame;
-import org.example.GUI.ChatPanelGUI.SidebarFrame;
 import org.example.GUI.UserFriendRequest.FriendRequestFrame;
 import org.example.GUI.UserSettingGUI.SettingsPanel;
 import org.example.Model.endUserModel;
-import org.example.Model.userFriendModel;
-import org.example.Server.ChatClient;
+import org.example.Handler.ChatClient;
+import org.example.Handler.configLoader;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 public class MainFrameGUI extends JFrame {
     private ChatClient chatClient;  // Instance of ChatClient to send/receive messages
@@ -29,10 +27,15 @@ public class MainFrameGUI extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
+        // Load configuration
+        configLoader config = configLoader.getInstance();
+        String serverAddress = config.getProperty("server.address", "localhost"); // Default: localhost
+        int port = config.getIntProperty("server.port", 12343);
+        
         // Initialize ChatClient with both message and delete handlers
         chatClient = new ChatClient(
-                "localhost",
-                12343,
+                serverAddress,
+                port,
                 new ChatClient.MessageListener() {
                     @Override
                     public void onMessageReceived(String message) {

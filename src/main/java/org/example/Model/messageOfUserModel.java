@@ -129,7 +129,7 @@ public class messageOfUserModel {
     }
     public static int sendUserMessage(String message, int currentUserID, int targetUserId) {
         if (message == null || message.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Message cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Không được để tin nhắn trống.", "Error", JOptionPane.ERROR_MESSAGE);
             return -1; // Return -1 to indicate failure
         }
 

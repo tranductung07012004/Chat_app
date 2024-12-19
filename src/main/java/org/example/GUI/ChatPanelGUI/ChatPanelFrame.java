@@ -5,7 +5,6 @@ import org.example.Handler.ChatPanelHandler.ChatPanelHandler;
 import org.example.Handler.ChatPanelHandler.Contact;
 import org.example.Handler.ChatPanelHandler.RightPanelButtonListener;
 import org.example.Model.*;
-import org.example.Server.ChatClient;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -100,6 +99,7 @@ public class ChatPanelFrame extends JPanel {
                         ? "You: "
                         : endUserModel.getUserFromId(senderId).getUsername() + ": ";
                 Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+                if (currentSearchIndex<=0 && currentMessageIndex <=0)
                 appendMessage(sender + content, messageId, currentTime, senderId == mainFrame.getCurrentUserId());
             }
             SidebarFrame.updateContactsPanel();
@@ -620,7 +620,11 @@ public class ChatPanelFrame extends JPanel {
 
 
         });
-        renameButton.addActionListener(e -> RightPanelButtonListener.handleRenameGroup(currentUserId, targetUserId));
+        renameButton.addActionListener(e -> {
+            RightPanelButtonListener.handleRenameGroup(currentUserId, targetUserId);
+            updatePanelVisibility();
+
+        });
         addMemberButton.addActionListener(e -> {
             RightPanelButtonListener.handleAddMember(currentUserId, targetUserId);
             updatePanelVisibility();
@@ -876,7 +880,6 @@ public class ChatPanelFrame extends JPanel {
             }
 
             if (found) {
-                JOptionPane.showMessageDialog(this, "Đã tìm thấy.", "Thông tin", JOptionPane.INFORMATION_MESSAGE);
                 break;
             }
         }

@@ -76,12 +76,13 @@ public class FriendRequestHandler {
             endUserModel user = endUserModel.getUserFromId(request.getFrom_user_id());
             // Check if the username contains the search query (case-insensitive)
             boolean matchesUsername = user.getUsername().toLowerCase().contains(query.toLowerCase());
+            boolean matchesAccountName = user.getAccountName().toLowerCase().contains(query.toLowerCase());
 
             // Convert the user_id to a string and check if it contains the search query (case-insensitive)
             boolean matchesUserId = String.valueOf(user.getUserId()).toLowerCase().contains(query.toLowerCase());
 
             // If either username or user_id matches the query, add the request to the filtered list (only once)
-            if (matchesUsername || matchesUserId) {
+            if (matchesUsername || matchesUserId||matchesAccountName) {
                 filteredRequests.add(request);
             }
 

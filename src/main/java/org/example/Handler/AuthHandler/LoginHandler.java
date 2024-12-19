@@ -62,7 +62,7 @@ public class LoginHandler implements ActionListener {
         dialog.setSize(300, 150);
         dialog.setLayout(new FlowLayout());
 
-        JLabel emailLabel = new JLabel("Enter your email:");
+        JLabel emailLabel = new JLabel("Nhập email:");
         JTextField emailField = new JTextField(20);
 
 
@@ -70,7 +70,7 @@ public class LoginHandler implements ActionListener {
         okButton.addActionListener(event -> {
             String email = emailField.getText().trim();
             if (email.isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Please enter your email!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Hãy nhập email dùng để đăng ký tài khoản!", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 resetPass.handlePasswordResetRequest(email);
                 dialog.dispose();
@@ -91,7 +91,7 @@ public class LoginHandler implements ActionListener {
 
 
         if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(loginScreen, "Please enter both username and password!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(loginScreen, "Hãy nhập username và password", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

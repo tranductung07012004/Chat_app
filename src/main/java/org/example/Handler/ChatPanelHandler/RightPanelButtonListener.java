@@ -17,9 +17,9 @@ public class RightPanelButtonListener {
 
         // Show a message dialog to inform the user
         if (success) {
-            JOptionPane.showMessageDialog(null, "Friend reported as spam successfully.");
+            JOptionPane.showMessageDialog(null, "Báo cáo spam thành công.");
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to report friend as spam. Please try again.");
+            JOptionPane.showMessageDialog(null, "Báo cáp thất bại, hãy thử lại sau.");
         }
     }
 
@@ -28,7 +28,7 @@ public class RightPanelButtonListener {
 
         // Check if the user is already blocked
         if (blockModel.isBlocked(currentUserId, targetUserId)) {
-            JOptionPane.showMessageDialog(null, "User is already blocked.");
+            JOptionPane.showMessageDialog(null, "Người dùng đã bị block");
             return;
         }
 
@@ -44,7 +44,7 @@ public class RightPanelButtonListener {
 
 //            JOptionPane.showMessageDialog(frame, "User blocked!");
         } else {
-            JOptionPane.showMessageDialog(null, "Error blocking user.");
+            JOptionPane.showMessageDialog(null, "Lỗi.");
         }
     }
     public static void handleUnfriend(int currentUserId, int targetUserId){
@@ -54,7 +54,7 @@ public class RightPanelButtonListener {
     public static boolean handleDeleteAllUserChat(int currentUserId, int targetUserId) {
         // Hiển thị hộp thoại xác nhận
         int confirm = JOptionPane.showConfirmDialog(null,
-                "Are you sure you want to delete all chat history with this user?",
+                "Bạn có chắc chắn muốn xoá lịch sử chat với người này chứ?",
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -65,12 +65,12 @@ public class RightPanelButtonListener {
 
             if (isDeleted) {
                 JOptionPane.showMessageDialog(null,
-                        "Chat history deleted successfully.",
+                        "Xoá lịch sử chat thành công.",
                         "Deletion Success",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "Failed to delete chat history.",
+                        "Xoá lịch sử chat thất bại.",
                         "Deletion Failed",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -78,19 +78,18 @@ public class RightPanelButtonListener {
             return isDeleted;
         } else {
             // Người dùng chọn "No"
-            System.out.println("Deletion cancelled by user.");
             return false;
         }
     }
 
     public static boolean handleRenameGroup(int currentUserId, int groupId) {
         // Prompt the user to enter a new group name
-        String newName = JOptionPane.showInputDialog(null, "Enter new group name:",
+        String newName = JOptionPane.showInputDialog(null, "Nhập tên mới:",
                 "Rename Group", JOptionPane.QUESTION_MESSAGE);
 
         // If the user cancels or enters an invalid name, return false
         if (newName == null || newName.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Invalid group name. Rename canceled.",
+            JOptionPane.showMessageDialog(null, "Tên không hợp lệ",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -100,10 +99,10 @@ public class RightPanelButtonListener {
 
         // Notify user about the success/failure of renaming
         if (result) {
-            JOptionPane.showMessageDialog(null, "Group renamed successfully!",
+            JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to rename group. Try again later.",
+            JOptionPane.showMessageDialog(null, "Đổi tên nhóm thất bại. Hãy thử lại sau",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -117,11 +116,11 @@ public class RightPanelButtonListener {
     }
     public static boolean handleChangeAdmin(int currentUserId, int groupId) {
         // Prompt the user to enter the targetUserId via an input dialog
-        String input = JOptionPane.showInputDialog(null, "Enter the usrename to promote to Admin:");
+        String input = JOptionPane.showInputDialog(null, "Nhập username muốn chuyển thành admin");
 
         // Validate input
         if (input == null || input.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "username cannot be empty.");
+            JOptionPane.showMessageDialog(null, "username không thể trống");
             return false;
         }
 // Get the user ID based on the entered username
@@ -129,32 +128,32 @@ public class RightPanelButtonListener {
 
         // Check if the user exists in the system
         if (targetUserId == -1) {
-            JOptionPane.showMessageDialog(null, "The specified user does not exist.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // Check if the targetUserId is in the group
         if (!groupChatMemberModel.isUserInGroup(targetUserId, groupId)) {
-            JOptionPane.showMessageDialog(null, "The user is not a member of the group.");
+            JOptionPane.showMessageDialog(null, "Người dùng không phải là thành viên nhóm");
             return false;
         }
 
         // Proceed to change admin if the user is in the group
         boolean success = groupChatMemberModel.changeAdmin(currentUserId, targetUserId, groupId);
         if (success) {
-            JOptionPane.showMessageDialog(null, "Admin status changed successfully.");
+            JOptionPane.showMessageDialog(null, "Thay đổi admin thành công.");
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to change admin status.");
+            JOptionPane.showMessageDialog(null, "Thay đổi admin thất bại.");
         }
         return success;
     }
     public static boolean handleRemoveMember(int currentUserId, int groupId) {
         // Pop-up dialog to enter the username of the member to remove
-        String username = JOptionPane.showInputDialog(null, "Enter the username of the member to remove:",
+        String username = JOptionPane.showInputDialog(null, "Nhập username muốn xoá khỏi nhóm:",
                 "Remove Member", JOptionPane.PLAIN_MESSAGE);
 
         if (username == null || username.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Invalid username entered.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "username không hợp lệ.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -163,39 +162,39 @@ public class RightPanelButtonListener {
 
         // Check if the user exists in the system
         if (targetUserId == -1) {
-            JOptionPane.showMessageDialog(null, "The specified user does not exist.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Người dùng không tồn tại.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // Check if the current user is an admin of the group
         if (!groupChatMemberModel.isGroupAdmin(currentUserId, groupId)) {
-            JOptionPane.showMessageDialog(null, "You do not have permission to remove members from this group.",
+            JOptionPane.showMessageDialog(null, "Bạn không đủ quyền hạn để xoá thaành viên.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // Check if the user is part of the group
         if (!groupChatMemberModel.isUserInGroup(targetUserId, groupId)) {
-            JOptionPane.showMessageDialog(null, "The specified user is not a member of the group.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Người dùng không phải là thành viên của nhóm.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // Proceed to remove the user from the group
         boolean success = groupChatMemberModel.removeMember(currentUserId, targetUserId, groupId);
         if (success) {
-            JOptionPane.showMessageDialog(null, "Member removed from the group successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Xoá thành viên khỏi nhóm thành công", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to remove member from the group.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Xoá thành viên khỏi nhóm thất bại", "Error", JOptionPane.ERROR_MESSAGE);
         }
         return success;
     }
     public static boolean handleAddMember(int currentUserId, int groupId) {
         // Pop-up dialog to enter the username
-        String username = JOptionPane.showInputDialog(null, "Enter the username of the member to add:",
+        String username = JOptionPane.showInputDialog(null, "Nhập username thành viên muốn thêm",
                 "Add Member", JOptionPane.PLAIN_MESSAGE);
 
         if (username == null || username.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Invalid username entered.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "username không hợp lệ.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         if (!endUserModel.checkIfUserExists(username)) {
@@ -206,7 +205,7 @@ public class RightPanelButtonListener {
         // Check if the entered username is a friend of the current user
         boolean isFriend = userFriendModel.isFriend(currentUserId, id);
         if (id==-1 || !isFriend) {
-            JOptionPane.showMessageDialog(null, "The specified user is not your friend.", "Error",
+            JOptionPane.showMessageDialog(null, "Người dùng không phải bạn của bạn.", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -220,10 +219,10 @@ public class RightPanelButtonListener {
         // Add the friend to the group
         boolean success = groupChatMemberModel.addMember(groupId, id, false);
         if (success) {
-            JOptionPane.showMessageDialog(null, "Member added to the group successfully.", "Success",
+            JOptionPane.showMessageDialog(null, "Thêm thành viên thành công", "Success",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Failed to add member to the group.", "Error",
+            JOptionPane.showMessageDialog(null, "Thêm thành viên thất bại.", "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
         return success;
@@ -237,7 +236,7 @@ public class RightPanelButtonListener {
     public static boolean handleDeleteAllGroupChat(int currentUserId, int groupId) {
         // Hiển thị hộp thoại xác nhận
         int confirm = JOptionPane.showConfirmDialog(null,
-                "Are you sure you want to delete all chat history with this group?",
+                "Bạn có chắc muốn xoá bộ lịch sử chat với nhóm này?",
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -248,12 +247,12 @@ public class RightPanelButtonListener {
 
             if (isDeleted) {
                 JOptionPane.showMessageDialog(null,
-                        "Chat history deleted successfully.",
+                        "Xoá lịch sử chat nhóm thành công.",
                         "Deletion Success",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "Failed to delete chat history.",
+                        "Xoá lịch sử chat thất bại.",
                         "Deletion Failed",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -261,7 +260,6 @@ public class RightPanelButtonListener {
             return isDeleted;
         } else {
             // Người dùng chọn "No"
-            System.out.println("Deletion cancelled by user.");
             return false;
         }
     }
