@@ -97,6 +97,7 @@ public class RightPanelButtonListener {
         // Call renameGroup() with the entered name
         boolean result = groupChatModel.renameGroup(groupId, newName.trim());
 
+
         // Notify user about the success/failure of renaming
         if (result) {
             JOptionPane.showMessageDialog(null, "Đổi tên nhóm thành công",

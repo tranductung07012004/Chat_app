@@ -623,6 +623,11 @@ public class ChatPanelFrame extends JPanel {
         renameButton.addActionListener(e -> {
             RightPanelButtonListener.handleRenameGroup(currentUserId, targetUserId);
             updatePanelVisibility();
+            SidebarFrame.updateContactsPanel();
+            contact=SidebarFrame.getSpecialContact(contact);
+            setFriendName(contact.getName());
+            System.out.println(contact.getName());
+
 
         });
         addMemberButton.addActionListener(e -> {
@@ -873,6 +878,7 @@ public class ChatPanelFrame extends JPanel {
                 messageOfUserModel message = chatHistory.get(j);
                 if (message.getChatContent().toLowerCase().contains(keyword.toLowerCase())) {
                     currentSearchIndex = i + j; // Cập nhật vị trí tìm kiếm
+                    currentMessageIndex=currentSearchIndex;
                     loadMessage(currentSearchIndex);
                     found = true;
                     break;
@@ -889,6 +895,7 @@ public class ChatPanelFrame extends JPanel {
             currentSearchIndex = -1; // Reset nếu không tìm thấy kết quả
         }
     }
+
 
 
 

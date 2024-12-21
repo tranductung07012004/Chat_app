@@ -503,6 +503,15 @@ public class SidebarFrame extends JPanel {
         friendListDialog.add(mainPanel);
         friendListDialog.setVisible(true);
     }
+    public static Contact getSpecialContact(Contact targetContact) {
+        for (Contact contact : contacts) {
+            if (contact.isGroup == targetContact.isGroup &&
+                    contact.Id == targetContact.Id) {
+                return contact;
+            }
+        }
+        return null; // Return null if no matching contact is found
+    }
 
 }
 
